@@ -455,7 +455,10 @@ export default function App() {
 
         <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
           <div className="sidebar-header">
-            <div className="logo">Task<span>Flow</span></div>
+            <div className="logo">
+              <img src="/logo.svg" alt="" className="logo-icon" />
+              <span className="logo-text">Task<span>Flow</span></span>
+            </div>
             <div className="sidebar-today">
               <span className="sidebar-today-label">今日</span>
               <span className="sidebar-today-date">{formatTodayDisplay()}</span>
