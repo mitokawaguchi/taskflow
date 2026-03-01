@@ -3,7 +3,7 @@ import { SORT_OPTIONS, priorityOrder } from './constants'
 import { isOverdue, endDateLabel } from './utils'
 import TaskCard from './TaskCard'
 
-export default function ProjectDetail({ project, tasks, projects, onToggle, onEditTask, onAddTask, onUpdateProjectEndDate, sort, setSort, showDone }) {
+export default function ProjectDetail({ project, tasks, projects, onToggle, onEditTask, onAddTask, onEditProject, onUpdateProjectEndDate, sort, setSort, showDone }) {
   const [editingEndDate, setEditingEndDate] = useState(false)
   const [endDateInput, setEndDateInput] = useState(project.endDate || '')
   const allptasks = tasks.filter(t => t.projectId === project.id)
@@ -32,7 +32,12 @@ export default function ProjectDetail({ project, tasks, projects, onToggle, onEd
             <div className="proj-detail-name">{project.name}</div>
             <div style={{ fontSize:'13px', color:'var(--text-muted)' }}>{allptasks.filter(t=>!t.done).length} 件残り / 全 {allptasks.length} 件</div>
           </div>
-          <button className="btn btn-primary" style={{ marginLeft:'auto' }} onClick={onAddTask}>+ タスク追加</button>
+          <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto' }}>
+            {onEditProject && (
+              <button type="button" className="btn btn-ghost" onClick={onEditProject}>編集</button>
+            )}
+            <button className="btn btn-primary" onClick={onAddTask}>+ タスク追加</button>
+          </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--border)', flexWrap: 'wrap' }}>

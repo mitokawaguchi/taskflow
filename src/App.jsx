@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import {
   DndContext,
+  DragOverlay,
   closestCenter,
   PointerSensor,
   useSensor,
@@ -35,19 +36,15 @@ function SortableProjectCard({ item, setView, toggleTask, openTaskFormForProject
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: p.id,
   })
-  const style = { transform: CSS.Transform.toString(transform), transition }
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition: isDragging ? 'none' : transition,
+    background: `${p.color}28`,
+    border: `1px solid ${p.color}60`,
+    opacity: isDragging ? 0.4 : 1,
+  }
   return (
-    <div
-      ref={setNodeRef}
-      style={{
-        ...style,
-        background: `${p.color}18`,
-        border: `1px solid ${p.color}50`,
-      }}
-      className={`project-card ${isDragging ? 'project-card-dragging' : ''}`}
-      {...attributes}
-      {...listeners}
-    >
+    <div ref={setNodeRef} style={style} className={`project-card ${isDragging ? 'project-card-dragging' : ''}`} {...attributes} {...listeners}>
       <button
         type="button"
         className="project-card-header project-card-clickable"
@@ -110,6 +107,7 @@ export default function App() {
   const [editTask, setEditTask] = useState(null)
   const [taskFormProjectId, setTaskFormProjectId] = useState(null)
   const [showProjForm, setShowProjForm] = useState(false)
+  const [editProject, setEditProject] = useState(null)
   const [showTplForm, setShowTplForm] = useState(false)
   const [toasts, setToasts] = useState([])
   const [showDone, setShowDone] = useState(false)
@@ -213,16 +211,29 @@ export default function App() {
 
   const saveProject = useCallback(async (form) => {
     try {
-      const nextOrder = projects.length ? Math.max(...projects.map(p => p.sortOrder ?? 0), -1) + 1 : 0
-      const project = { ...form, id: 'p' + Date.now(), endDate: form.endDate ?? '', sortOrder: nextOrder }
-      const created = await insertProject(project)
-      setProjects(ps => [...ps, created])
-      setShowProjForm(false)
-      addToast('📁', 'プロジェクト作成', form.name)
+      if (editProject) {
+        const updated = await updateProject(editProject.id, {
+          name: form.name,
+          icon: form.icon,
+          color: form.color,
+          endDate: form.endDate ?? '',
+        })
+        setProjects(ps => ps.map(p => (p.id === updated.id ? updated : p)))
+        setShowProjForm(false)
+        setEditProject(null)
+        addToast('✏️', 'プロジェクトを更新しました', form.name)
+      } else {
+        const nextOrder = projects.length ? Math.max(...projects.map(p => p.sortOrder ?? 0), -1) + 1 : 0
+        const project = { ...form, id: 'p' + Date.now(), endDate: form.endDate ?? '', sortOrder: nextOrder }
+        const created = await insertProject(project)
+        setProjects(ps => [...ps, created])
+        setShowProjForm(false)
+        addToast('📁', 'プロジェクト作成', form.name)
+      }
     } catch (e) {
-      addToast('❌', '作成できませんでした', e?.message ?? '')
+      addToast('❌', editProject ? '更新できませんでした' : '作成できませんでした', e?.message ?? '')
     }
-  }, [addToast, projects])
+  }, [addToast, projects, editProject])
 
   const updateProjectEndDate = useCallback(async (projectId, endDate) => {
     try {
@@ -347,7 +358,7 @@ export default function App() {
     <div
       key={p.id}
       className="project-card"
-      style={{ background: `${p.color}18`, border: `1px solid ${p.color}50` }}
+      style={{ background: `${p.color}28`, border: `1px solid ${p.color}60` }}
     >
       <button type="button" className="project-card-header project-card-clickable" onClick={() => setView(`p:${p.id}`)}>
         <div className="project-icon" style={{ background: `${p.color}20` }}>{p.icon}</div>
@@ -387,6 +398,7 @@ export default function App() {
   const handleProjectDragEnd = useCallback(
     async (event) => {
       const { active, over } = event
+      setDragActiveId(null)
       if (!over || active.id === over.id) return
       const oldIndex = activeProjects.findIndex((x) => x.project.id === active.id)
       const newIndex = activeProjects.findIndex((x) => x.project.id === over.id)
@@ -407,8 +419,9 @@ export default function App() {
     [activeProjects, completedProjects, addToast]
   )
 
+  const [dragActiveId, setDragActiveId] = useState(null)
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } })
   )
 
   const isProjectView = view.startsWith('p:')
@@ -443,7 +456,10 @@ export default function App() {
         <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
           <div className="sidebar-header">
             <div className="logo">Task<span>Flow</span></div>
-            <div style={{ fontSize:'13px', color:'var(--text-muted)', marginTop:'4px' }}>{formatTodayDisplay()}</div>
+            <div className="sidebar-today">
+              <span className="sidebar-today-label">今日</span>
+              <span className="sidebar-today-date">{formatTodayDisplay()}</span>
+            </div>
             <div style={{ fontSize:'12px', color:'var(--text-muted)', marginTop:'2px' }}>{tasks.filter(t => !t.done).length} 件のタスク</div>
           </div>
 
@@ -472,7 +488,7 @@ export default function App() {
           <div className="sidebar-section">
             <div className="sidebar-label" style={{ display:'flex', alignItems:'center', justifyContent:'space-between', paddingRight:'8px' }}>
               プロジェクト
-              <button onClick={() => setShowProjForm(true)} style={{ background:'none', border:'none', color:'var(--accent)', cursor:'pointer', fontSize:'16px', lineHeight:1 }}>+</button>
+              <button onClick={() => { setEditProject(null); setShowProjForm(true) }} style={{ background:'none', border:'none', color:'var(--accent)', cursor:'pointer', fontSize:'16px', lineHeight:1 }}>+</button>
             </div>
             {projects.map(p => (
               <button key={p.id} className={`sidebar-item ${view===`p:${p.id}`?'active':''}`}
@@ -533,6 +549,7 @@ export default function App() {
                 onToggle={toggleTask}
                 onEditTask={setEditTask}
                 onAddTask={() => setShowTaskForm(true)}
+                onEditProject={() => { setEditProject(currentProject); setShowProjForm(true) }}
                 onUpdateProjectEndDate={updateProjectEndDate}
                 sort={sort}
                 setSort={setSort}
@@ -571,7 +588,7 @@ export default function App() {
                         >
                           <div
                             className="card-project-banner"
-                            style={{ background: `${c.color}18`, color: c.color, border: `1px solid ${c.color}40`, marginBottom: '10px' }}
+                            style={{ background: `${c.color}28`, color: c.color, border: `1px solid ${c.color}55`, marginBottom: '10px' }}
                           >
                             <span>{c.icon}</span>
                             <span>{c.name}</span>
@@ -631,11 +648,12 @@ export default function App() {
             {view === 'projects' && (
               <>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
-                  <button className="btn btn-primary" onClick={() => setShowProjForm(true)}>+ プロジェクト追加</button>
+                  <button className="btn btn-primary" onClick={() => { setEditProject(null); setShowProjForm(true) }}>+ プロジェクト追加</button>
                 </div>
                 <DndContext
                   sensors={sensors}
                   collisionDetection={closestCenter}
+                  onDragStart={({ active }) => setDragActiveId(active.id)}
                   onDragEnd={handleProjectDragEnd}
                 >
                   <SortableContext
@@ -654,6 +672,35 @@ export default function App() {
                       ))}
                     </div>
                   </SortableContext>
+                  <DragOverlay dropAnimation={null}>
+                    {dragActiveId ? (() => {
+                      const item = activeProjects.find((x) => x.project.id === dragActiveId)
+                      if (!item) return null
+                      const { project: p, ptasks, pct } = item
+                      return (
+                        <div
+                          className="project-card project-card-overlay"
+                          style={{ background: `${p.color}28`, border: `1px solid ${p.color}60` }}
+                        >
+                          <div className="project-card-header" style={{ cursor: 'grabbing' }}>
+                            <span className="project-card-drag-handle" aria-hidden>⋮⋮</span>
+                            <div className="project-icon" style={{ background: `${p.color}20` }}>{p.icon}</div>
+                            <div>
+                              <div className="project-name">{p.name}</div>
+                              <div className="project-count">
+                                {ptasks.filter((t) => !t.done).length} 件残り
+                                {p.endDate ? ` · ${endDateLabel(p.endDate)}` : ''}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="project-progress">
+                            <div className="project-progress-fill" style={{ width: `${pct}%`, background: p.color }} />
+                          </div>
+                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '6px' }}>{pct}% 完了</div>
+                        </div>
+                      )
+                    })() : null}
+                  </DragOverlay>
                 </DndContext>
                 {completedProjects.length > 0 && (
                   <div className="projects-completed-section">
@@ -733,7 +780,13 @@ export default function App() {
           onClose={closeTaskForm}
         />
       )}
-      {showProjForm && <ProjectForm onSave={saveProject} onClose={() => setShowProjForm(false)} />}
+      {showProjForm && (
+        <ProjectForm
+          project={editProject}
+          onSave={saveProject}
+          onClose={() => { setShowProjForm(false); setEditProject(null) }}
+        />
+      )}
       {showTplForm  && <TemplateForm onSave={saveTemplate} onClose={() => setShowTplForm(false)} />}
       {showClientForm && <ClientForm onSave={addClient} onClose={() => setShowClientForm(false)} />}
 

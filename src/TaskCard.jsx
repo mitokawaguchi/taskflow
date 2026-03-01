@@ -9,7 +9,7 @@ export default function TaskCard({ task, projects, onToggle, onClick }) {
   return (
     <div className={`task-card ${task.priority} ${task.done ? 'done' : ''}`} onClick={onClick}>
       {proj && (
-        <div className="card-project-banner" style={{ background: `${proj.color}18`, color: proj.color, border: `1px solid ${proj.color}40` }}>
+        <div className="card-project-banner" style={{ background: `${proj.color}28`, color: proj.color, border: `1px solid ${proj.color}55` }}>
           <span>{proj.icon}</span>
           <span>{proj.name}</span>
         </div>

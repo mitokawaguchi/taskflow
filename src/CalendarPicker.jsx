@@ -57,8 +57,13 @@ export default function CalendarPicker({ value, onChange, min, max, onClear }) {
     onChange(toYMD(d))
   }
 
+  const thisYear = new Date().getFullYear()
+  const yearOptions = Array.from({ length: 8 }, (_, i) => thisYear - 2 + i)
+  const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1)
+
   const prevMonth = () => setViewDate(new Date(year, month - 1, 1))
   const nextMonth = () => setViewDate(new Date(year, month + 1, 1))
+  const setYearMonth = (y, m) => setViewDate(new Date(y, m, 1))
   const goToToday = () => {
     const d = new Date()
     setViewDate(d)
@@ -74,9 +79,28 @@ export default function CalendarPicker({ value, onChange, min, max, onClear }) {
         <button type="button" className="calendar-picker-nav" onClick={prevMonth} aria-label="前月">
           ‹
         </button>
-        <span className="calendar-picker-title">
-          {year}年{month + 1}月
-        </span>
+        <div className="calendar-picker-year-month">
+          <select
+            className="calendar-picker-select"
+            value={year}
+            onChange={(e) => setYearMonth(Number(e.target.value), month)}
+            aria-label="年を選択"
+          >
+            {yearOptions.map((y) => (
+              <option key={y} value={y}>{y}年</option>
+            ))}
+          </select>
+          <select
+            className="calendar-picker-select"
+            value={month + 1}
+            onChange={(e) => setYearMonth(year, Number(e.target.value) - 1)}
+            aria-label="月を選択"
+          >
+            {monthOptions.map((m) => (
+              <option key={m} value={m}>{m}月</option>
+            ))}
+          </select>
+        </div>
         <button type="button" className="calendar-picker-nav" onClick={nextMonth} aria-label="翌月">
           ›
         </button>

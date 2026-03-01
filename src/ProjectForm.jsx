@@ -1,18 +1,29 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const ICONS   = ['📁','🏢','🤝','⚡','🎯','💡','🔬','🎨','🚀','📊','🏗','💼']
 const COLORS  = ['#2d6b3f','#ff4560','#ff8c42','#ffd166','#06d6a0','#00b4d8','#e040fb']
 
-export default function ProjectForm({ onSave, onClose }) {
-  const [name, setName] = useState('')
-  const [icon, setIcon] = useState('📁')
-  const [color, setColor] = useState(COLORS[0])
-  const [endDate, setEndDate] = useState('')
+export default function ProjectForm({ project, onSave, onClose }) {
+  const [name, setName] = useState(project?.name ?? '')
+  const [icon, setIcon] = useState(project?.icon ?? '📁')
+  const [color, setColor] = useState(project?.color ?? COLORS[0])
+  const [endDate, setEndDate] = useState(project?.endDate ?? '')
+
+  useEffect(() => {
+    if (project) {
+      setName(project.name)
+      setIcon(project.icon ?? '📁')
+      setColor(project.color ?? COLORS[0])
+      setEndDate(project.endDate ?? '')
+    }
+  }, [project])
+
+  const isEdit = Boolean(project)
 
   return (
     <div className="overlay" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="modal" style={{ maxWidth:'380px' }}>
-        <div className="modal-title">新しいプロジェクト</div>
+        <div className="modal-title">{isEdit ? 'プロジェクトを編集' : '新しいプロジェクト'}</div>
 
         <div className="form-group">
           <label className="form-label">アイコン</label>
@@ -55,7 +66,9 @@ export default function ProjectForm({ onSave, onClose }) {
 
         <div className="modal-actions">
           <button className="btn btn-ghost" onClick={onClose}>キャンセル</button>
-          <button className="btn btn-primary" onClick={() => { if (name.trim()) onSave({ name, icon, color, endDate: endDate || '' }) }} disabled={!name.trim()}>作成</button>
+          <button className="btn btn-primary" onClick={() => { if (name.trim()) onSave({ name, icon, color, endDate: endDate || '' }) }} disabled={!name.trim()}>
+            {isEdit ? '保存' : '作成'}
+          </button>
         </div>
       </div>
     </div>
