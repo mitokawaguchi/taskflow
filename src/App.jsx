@@ -462,7 +462,7 @@ export default function App() {
                 className="logo-icon"
                 onError={(e) => { e.target.onerror = null; e.target.src = '/logo.svg' }}
               />
-              <span className="logo-text">タスク管理アプリ</span>
+              <span className="logo-text">Task<span>Flow</span></span>
             </div>
             <div className="sidebar-today">
               <span className="sidebar-today-label">今日</span>
