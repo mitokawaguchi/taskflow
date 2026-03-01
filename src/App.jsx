@@ -442,22 +442,48 @@ export default function App() {
                     </button>
                   </div>
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {clients.map(c => (
-                      <button
-                        key={c.id}
-                        type="button"
-                        className="sidebar-item"
-                        style={{ textAlign: 'left', justifyContent: 'flex-start', padding: '14px 16px' }}
-                        onClick={() => { setView('c:' + c.id); setSidebarOpen(false) }}
-                      >
-                        <span style={{ background: `${c.color}30`, padding: '6px 10px', borderRadius: '8px', marginRight: '12px' }}>{c.icon}</span>
-                        {c.name}
-                        <span style={{ marginLeft: 'auto', fontSize: '12px', color: 'var(--text-muted)' }}>
-                          {remembers.filter(r => r.clientId === c.id).length} 件
-                        </span>
-                      </button>
-                    ))}
+                  <div className="projects-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
+                    {clients.map(c => {
+                      const clientRemembers = remembers.filter(r => r.clientId === c.id)
+                      return (
+                        <div
+                          key={c.id}
+                          className="task-card medium"
+                          style={{ cursor: 'default', display: 'flex', flexDirection: 'column', minHeight: '140px' }}
+                        >
+                          <div
+                            className="card-project-banner"
+                            style={{ background: `${c.color}18`, color: c.color, border: `1px solid ${c.color}40`, marginBottom: '10px' }}
+                          >
+                            <span>{c.icon}</span>
+                            <span>{c.name}</span>
+                          </div>
+                          <div className="card-header" style={{ marginBottom: '8px' }}>
+                            <div className="card-title" style={{ fontSize: '14px' }}>覚えておくこと</div>
+                          </div>
+                          {clientRemembers.length === 0 ? (
+                            <p style={{ fontSize: '13px', color: 'var(--text-muted)', flex: 1, margin: 0 }}>まだありません</p>
+                          ) : (
+                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, flex: 1, fontSize: '13px' }}>
+                              {clientRemembers.map(r => (
+                                <li key={r.id} style={{ padding: '6px 0', borderBottom: '1px solid var(--border)' }}>
+                                  {r.body}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                          <div className="card-footer" style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--border)' }}>
+                            <button
+                              type="button"
+                              className="btn btn-ghost btn-sm"
+                              onClick={() => { setView('c:' + c.id); setSidebarOpen(false) }}
+                            >
+                              編集・追加
+                            </button>
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
                 )}
               </>
