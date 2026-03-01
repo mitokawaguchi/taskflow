@@ -456,7 +456,12 @@ export default function App() {
         <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
           <div className="sidebar-header">
             <div className="logo">
-              <img src="/logo.svg" alt="" className="logo-icon" />
+              <img
+                src="/logo.png"
+                alt=""
+                className="logo-icon"
+                onError={(e) => { e.target.onerror = null; e.target.src = '/logo.svg' }}
+              />
               <span className="logo-text">Task<span>Flow</span></span>
             </div>
             <div className="sidebar-today">
