@@ -801,7 +801,7 @@ export default function App() {
                   <>
                     <div className="filter-bar">
                       <span className="sort-label">絞り込み</span>
-                      <div className="filter-group">
+                      <div className="filter-group filter-group--project">
                         <span className="filter-group-label">プロジェクト:</span>
                         <button
                           type="button"
