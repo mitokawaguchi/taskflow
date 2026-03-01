@@ -1,85 +1,104 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { PRIORITY, SORT_OPTIONS, priorityOrder, DEFAULT_PROJECTS, DEFAULT_TASKS } from './constants'
 import { load, save, today, isToday, isOverdue } from './utils'
-import MorningModal  from './MorningModal'
-import TaskCard      from './TaskCard'
-import TaskForm      from './TaskForm'
-import ProjectForm   from './ProjectForm'
-import TemplateForm  from './TemplateForm'
+import MorningModal from './MorningModal'
+import TaskCard from './TaskCard'
+import TaskForm from './TaskForm'
+import ProjectForm from './ProjectForm'
+import TemplateForm from './TemplateForm'
 import ProjectDetail from './ProjectDetail'
-import Toast         from './Toast'
+import Toast from './Toast'
+
+const DUE_TODAY_CHECK_DELAY_MS = 2000
+const TOAST_DURATION_MS = 4000
+const SIDEBAR_MENU_ITEMS = [
+  { key: 'projects', icon: '📁', label: 'プロジェクト' },
+  { key: 'all', icon: '📋', label: 'すべてのタスク' },
+  { key: 'today', icon: '☀️', label: '今日', badgeKey: 'todayCount' },
+  { key: 'overdue', icon: '🚨', label: '期限超過', badgeKey: 'overdueCount' },
+]
 
 export default function App() {
-  const [tasks,     setTasks]     = useState(() => load('tf_tasks',     DEFAULT_TASKS))
-  const [projects,  setProjects]  = useState(() => load('tf_projects',  DEFAULT_PROJECTS))
+  const [tasks, setTasks] = useState(() => load('tf_tasks', DEFAULT_TASKS))
+  const [projects, setProjects] = useState(() => load('tf_projects', DEFAULT_PROJECTS))
   const [templates, setTemplates] = useState(() => load('tf_templates', []))
-  const [view,      setView]      = useState('all')
-  const [sort,      setSort]      = useState('priority')
+  const [view, setView] = useState('projects')
+  const [sort, setSort] = useState('priority')
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [showTaskForm,  setShowTaskForm]  = useState(false)
-  const [editTask,      setEditTask]      = useState(null)
-  const [showProjForm,  setShowProjForm]  = useState(false)
-  const [showTplForm,   setShowTplForm]   = useState(false)
-  const [toasts,        setToasts]        = useState([])
-  const [showDone,      setShowDone]      = useState(false)
-  const [notifGranted,  setNotifGranted]  = useState(false)
-  const [showMorning,   setShowMorning]   = useState(() => localStorage.getItem('tf_morning') !== today())
+  const [showTaskForm, setShowTaskForm] = useState(false)
+  const [editTask, setEditTask] = useState(null)
+  const [taskFormProjectId, setTaskFormProjectId] = useState(null)
+  const [showProjForm, setShowProjForm] = useState(false)
+  const [showTplForm, setShowTplForm] = useState(false)
+  const [toasts, setToasts] = useState([])
+  const [showDone, setShowDone] = useState(false)
+  const [notifGranted, setNotifGranted] = useState(false)
+  const [showMorning, setShowMorning] = useState(() => localStorage.getItem('tf_morning') !== today())
 
-  useEffect(() => { save('tf_tasks',     tasks)     }, [tasks])
-  useEffect(() => { save('tf_projects',  projects)  }, [projects])
+  useEffect(() => { save('tf_tasks', tasks) }, [tasks])
+  useEffect(() => { save('tf_projects', projects) }, [projects])
   useEffect(() => { save('tf_templates', templates) }, [templates])
 
   useEffect(() => {
-    if ('Notification' in window && Notification.permission === 'granted') setNotifGranted(true)
+    if (typeof globalThis.window !== 'undefined' && 'Notification' in globalThis && globalThis.Notification.permission === 'granted') {
+      setNotifGranted(true)
+    }
+  }, [])
+
+  const addToast = useCallback((icon, title, msg) => {
+    const id = Date.now()
+    setToasts(prev => [...prev, { id, icon, title, msg }])
+    setTimeout(() => setToasts(prev => prev.filter(x => x.id !== id)), TOAST_DURATION_MS)
   }, [])
 
   useEffect(() => {
-    const check = () => {
+    const checkDueToday = () => {
       const dueToday = tasks.filter(t => !t.done && isToday(t.due))
       if (dueToday.length > 0) {
         addToast('⚠️', `今日が期限: ${dueToday.length}件`, dueToday.map(t => t.title).join('、'))
         if (notifGranted) {
-          new Notification('TaskFlow — 今日の期限', { body: dueToday.map(t => t.title).join('\n') })
+          new globalThis.Notification('TaskFlow — 今日の期限', { body: dueToday.map(t => t.title).join('\n') })
           if ('vibrate' in navigator) navigator.vibrate([200, 100, 200, 100, 400])
         }
       }
     }
-    const timer = setTimeout(check, 2000)
+    const timer = setTimeout(checkDueToday, DUE_TODAY_CHECK_DELAY_MS)
     return () => clearTimeout(timer)
-  }, [notifGranted]) // eslint-disable-line
+  }, [tasks, notifGranted, addToast])
 
-  const addToast = (icon, title, msg) => {
-    const id = Date.now()
-    setToasts(t => [...t, { id, icon, title, msg }])
-    setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 4000)
-  }
-
-  const requestNotif = async () => {
-    if ('Notification' in window) {
-      const p = await Notification.requestPermission()
-      if (p === 'granted') { setNotifGranted(true); addToast('🔔', '通知が有効になりました', '期限が近いタスクをお知らせします') }
+  const requestNotif = useCallback(async () => {
+    if (typeof globalThis.Notification === 'undefined') return
+    const permission = await globalThis.Notification.requestPermission()
+    if (permission === 'granted') {
+      setNotifGranted(true)
+      addToast('🔔', '通知が有効になりました', '期限が近いタスクをお知らせします')
     }
-  }
+  }, [addToast])
 
-  const saveTask = (form) => {
+  const closeTaskForm = useCallback(() => {
+    setShowTaskForm(false)
+    setEditTask(null)
+    setTaskFormProjectId(null)
+  }, [])
+
+  const saveTask = useCallback((form) => {
     if (editTask?.id) {
-      setTasks(ts => ts.map(t => t.id === editTask.id ? { ...t, ...form } : t))
+      setTasks(ts => ts.map(t => (t.id === editTask.id ? { ...t, ...form } : t)))
       addToast('✏️', 'タスクを更新しました', form.title)
     } else {
-      const t = { ...form, id: 't' + Date.now(), done: false, created: Date.now() }
-      setTasks(ts => [t, ...ts])
+      const newTask = { ...form, id: 't' + Date.now(), done: false, created: Date.now() }
+      setTasks(ts => [newTask, ...ts])
       addToast('✅', 'タスクを追加しました', form.title)
     }
-    setShowTaskForm(false); setEditTask(null)
-  }
+    closeTaskForm()
+  }, [editTask?.id, addToast, closeTaskForm])
 
-  const toggleTask = (id) => {
-    setTasks(ts => ts.map(t => {
-      if (t.id !== id) return t
-      if (!t.done) addToast('🎉', '完了！', t.title)
-      return { ...t, done: !t.done }
-    }))
-  }
+  const toggleTask = useCallback((id) => {
+    const task = tasks.find(t => t.id === id)
+    const willComplete = task && !task.done
+    setTasks(ts => ts.map(t => (t.id !== id ? t : { ...t, done: !t.done })))
+    if (willComplete) addToast('🎉', '完了！', task.title)
+  }, [tasks, addToast])
 
   const saveProject = (form) => {
     setProjects(ps => [...ps, { ...form, id: 'p' + Date.now() }])
@@ -113,18 +132,81 @@ export default function App() {
   const todayCount   = tasks.filter(t => !t.done && (isToday(t.due) || isOverdue(t.due))).length
   const overdueCount = tasks.filter(t => !t.done && isOverdue(t.due)).length
 
-  const viewTitle = () => {
-    if (view === 'all')       return 'すべてのタスク'
-    if (view === 'today')     return '今日のタスク'
-    if (view === 'overdue')   return '期限超過'
-    if (view === 'projects')  return 'プロジェクト'
+  const viewTitle = useCallback(() => {
+    if (view === 'all') return 'すべてのタスク'
+    if (view === 'today') return '今日のタスク'
+    if (view === 'overdue') return '期限超過'
+    if (view === 'projects') return 'プロジェクト'
     if (view === 'templates') return 'テンプレート'
-    if (view.startsWith('p:')) return projects.find(p => p.id === view.slice(2))?.name || ''
+    if (view.startsWith('p:')) return projects.find(p => p.id === view.slice(2))?.name ?? ''
     return ''
-  }
+  }, [view, projects])
+
+  const openTaskFormForProject = useCallback((projectId) => {
+    setTaskFormProjectId(projectId)
+    setShowTaskForm(true)
+  }, [])
+
+  const { activeProjects, completedProjects } = useMemo(() => {
+    const withStats = (projects || []).map(p => {
+      const ptasks = (tasks || []).filter(t => t.projectId === p.id).slice().sort(
+        (a, b) => (priorityOrder[a.priority] ?? 2) - (priorityOrder[b.priority] ?? 2)
+      )
+      const done = ptasks.filter(t => t.done).length
+      const pct = ptasks.length ? Math.round((done / ptasks.length) * 100) : 0
+      return { project: p, ptasks, pct }
+    })
+    return {
+      activeProjects: withStats.filter(({ ptasks, pct }) => ptasks.length === 0 || pct < 100),
+      completedProjects: withStats.filter(({ ptasks, pct }) => ptasks.length > 0 && pct === 100),
+    }
+  }, [projects, tasks])
+
+  const renderProjectCard = useCallback(({ project: p, ptasks, pct }) => (
+    <div key={p.id} className="project-card">
+      <button type="button" className="project-card-header project-card-clickable" onClick={() => setView(`p:${p.id}`)}>
+        <div className="project-icon" style={{ background: `${p.color}20` }}>{p.icon}</div>
+        <div>
+          <div className="project-name">{p.name}</div>
+          <div className="project-count">{ptasks.filter(t => !t.done).length} 件残り</div>
+        </div>
+      </button>
+      <div className="project-progress" onClick={() => setView(`p:${p.id}`)}>
+        <div className="project-progress-fill" style={{ width: `${pct}%`, background: p.color }} />
+      </div>
+      <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '6px' }}>{pct}% 完了</div>
+      <ul className="project-card-tasks" aria-label={`${p.name}のタスク`}>
+        {ptasks.map(t => (
+          <li key={t.id} className="project-task-row">
+            <input
+              type="checkbox"
+              className="project-task-check"
+              checked={!!t.done}
+              onChange={() => toggleTask(t.id)}
+              aria-label={`${t.title}を${t.done ? '未完了に' : '完了に'}`}
+            />
+            <span className={`project-task-title ${t.done ? 'done' : ''}`}>{t.title}</span>
+          </li>
+        ))}
+      </ul>
+      <button
+        type="button"
+        className="btn btn-ghost btn-sm project-card-add-task"
+        onClick={e => { e.stopPropagation(); openTaskFormForProject(p.id) }}
+      >
+        ＋ タスクを追加
+      </button>
+    </div>
+  ), [toggleTask, openTaskFormForProject])
 
   const isProjectView = view.startsWith('p:')
   const currentProject = isProjectView ? projects.find(p => p.id === view.slice(2)) : null
+
+  const taskFormInitialTask = useMemo(() => {
+    if (editTask) return editTask
+    const projectId = taskFormProjectId ?? (isProjectView ? view.slice(2) : null)
+    return projectId ? { projectId } : null
+  }, [editTask, taskFormProjectId, isProjectView, view])
 
   // ── Render ───────────────────────────────────────────────
   return (
@@ -153,18 +235,17 @@ export default function App() {
 
           <div className="sidebar-section" style={{ paddingBottom:'8px' }}>
             <div className="sidebar-label">メニュー</div>
-            {[
-              { key:'all',     icon:'📋', label:'すべて' },
-              { key:'today',   icon:'☀️', label:'今日',     badge: todayCount },
-              { key:'overdue', icon:'🚨', label:'期限超過', badge: overdueCount },
-            ].map(item => (
-              <button key={item.key} className={`sidebar-item ${view===item.key?'active':''}`}
-                onClick={() => { setView(item.key); setSidebarOpen(false) }}>
-                <span className="icon">{item.icon}</span>
-                {item.label}
-                {item.badge > 0 && <span className="badge">{item.badge}</span>}
-              </button>
-            ))}
+            {SIDEBAR_MENU_ITEMS.map(item => {
+              const badge = item.badgeKey === 'todayCount' ? todayCount : item.badgeKey === 'overdueCount' ? overdueCount : 0
+              return (
+                <button key={item.key} className={`sidebar-item ${view === item.key ? 'active' : ''}`}
+                  onClick={() => { setView(item.key); setSidebarOpen(false) }}>
+                  <span className="icon">{item.icon}</span>
+                  {item.label}
+                  {badge > 0 && <span className="badge">{badge}</span>}
+                </button>
+              )
+            })}
           </div>
 
           <div className="sidebar-section">
@@ -200,6 +281,11 @@ export default function App() {
         {/* ── MAIN ── */}
         <div className="main">
           <div className="topbar">
+            {isProjectView && (
+              <button type="button" className="btn btn-ghost btn-sm" onClick={() => setView('projects')} aria-label="プロジェクト一覧に戻る">
+                ← 戻る
+              </button>
+            )}
             <button className="hamburger" onClick={() => setSidebarOpen(true)}>☰</button>
             <div className="topbar-title">{viewTitle()}</div>
             <button className="btn btn-ghost btn-sm" onClick={() => setShowDone(!showDone)}>
@@ -230,31 +316,20 @@ export default function App() {
             {/* PROJECTS OVERVIEW */}
             {view === 'projects' && (
               <>
-                <div style={{ display:'flex', justifyContent:'flex-end', marginBottom:'20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
                   <button className="btn btn-primary" onClick={() => setShowProjForm(true)}>+ プロジェクト追加</button>
                 </div>
                 <div className="projects-grid">
-                  {projects.map(p => {
-                    const ptasks = tasks.filter(t => t.projectId === p.id)
-                    const done   = ptasks.filter(t => t.done).length
-                    const pct    = ptasks.length ? Math.round(done / ptasks.length * 100) : 0
-                    return (
-                      <div key={p.id} className="project-card" onClick={() => setView(`p:${p.id}`)}>
-                        <div className="project-card-header">
-                          <div className="project-icon" style={{ background:`${p.color}20` }}>{p.icon}</div>
-                          <div>
-                            <div className="project-name">{p.name}</div>
-                            <div className="project-count">{ptasks.filter(t=>!t.done).length} 件残り</div>
-                          </div>
-                        </div>
-                        <div className="project-progress">
-                          <div className="project-progress-fill" style={{ width:`${pct}%`, background:p.color }} />
-                        </div>
-                        <div style={{ fontSize:'11px', color:'var(--text-muted)', marginTop:'6px' }}>{pct}% 完了</div>
-                      </div>
-                    )
-                  })}
+                  {activeProjects.map(renderProjectCard)}
                 </div>
+                {completedProjects.length > 0 && (
+                  <div className="projects-completed-section">
+                    <h2 className="projects-completed-title">完了したプロジェクト</h2>
+                    <div className="projects-grid">
+                      {completedProjects.map(renderProjectCard)}
+                    </div>
+                  </div>
+                )}
               </>
             )}
 
@@ -303,7 +378,7 @@ export default function App() {
                     <button className="btn btn-primary" onClick={() => setShowTaskForm(true)}>タスクを追加</button>
                   </div>
                 ) : (
-                  <div className="cards-grid">
+                  <div className="cards-grid cards-grid--compact">
                     {sortedTasks.map(t => (
                       <TaskCard key={t.id} task={t} projects={projects} onToggle={toggleTask} onClick={() => setEditTask(t)} />
                     ))}
@@ -318,11 +393,11 @@ export default function App() {
 
       {(showTaskForm || editTask) && (
         <TaskForm
-          task={editTask || (isProjectView ? { projectId: view.slice(2) } : null)}
+          task={taskFormInitialTask}
           projects={projects}
           templates={templates}
           onSave={saveTask}
-          onClose={() => { setShowTaskForm(false); setEditTask(null) }}
+          onClose={closeTaskForm}
         />
       )}
       {showProjForm && <ProjectForm onSave={saveProject} onClose={() => setShowProjForm(false)} />}

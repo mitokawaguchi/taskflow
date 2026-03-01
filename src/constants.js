@@ -15,7 +15,7 @@ export const SORT_OPTIONS = [
 export const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 }
 
 export const DEFAULT_PROJECTS = [
-  { id: 'p1', name: '個人',          color: '#6c63ff', icon: '👤' },
+  { id: 'p1', name: '個人',          color: '#2d6b3f', icon: '👤' },
   { id: 'p2', name: 'T&D Holdings',  color: '#ff8c42', icon: '🏢' },
   { id: 'p3', name: 'クライアントA', color: '#06d6a0', icon: '🤝' },
 ]

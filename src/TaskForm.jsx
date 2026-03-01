@@ -14,7 +14,12 @@ export default function TaskForm({ task, projects, templates, onSave, onClose })
   return (
     <div className="overlay" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="modal">
-        <div className="modal-title">{task?.id ? 'タスクを編集' : '新しいタスク'}</div>
+        <div className="modal-header-with-back">
+          <button type="button" className="btn btn-ghost btn-sm modal-back" onClick={onClose} aria-label="戻る">
+            ← 戻る
+          </button>
+          <div className="modal-title">{task?.id ? 'タスクを編集' : '新しいタスク'}</div>
+        </div>
 
         {templates.length > 0 && !task?.id && (
           <div className="form-group">

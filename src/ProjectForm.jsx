@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 const ICONS   = ['📁','🏢','🤝','⚡','🎯','💡','🔬','🎨','🚀','📊','🏗','💼']
-const COLORS  = ['#6c63ff','#ff4560','#ff8c42','#ffd166','#06d6a0','#00b4d8','#e040fb']
+const COLORS  = ['#2d6b3f','#ff4560','#ff8c42','#ffd166','#06d6a0','#00b4d8','#e040fb']
 
 export default function ProjectForm({ onSave, onClose }) {
   const [name,  setName]  = useState('')
