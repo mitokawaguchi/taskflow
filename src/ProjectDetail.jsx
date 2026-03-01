@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { SORT_OPTIONS, priorityOrder } from './constants'
 import { isOverdue, endDateLabel } from './utils'
 import TaskCard from './TaskCard'
+import CalendarPicker from './CalendarPicker'
 
 export default function ProjectDetail({ project, tasks, projects, onToggle, onEditTask, onAddTask, onEditProject, onUpdateProjectEndDate, sort, setSort, showDone }) {
   const [editingEndDate, setEditingEndDate] = useState(false)
@@ -41,24 +42,26 @@ export default function ProjectDetail({ project, tasks, projects, onToggle, onEd
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--border)', flexWrap: 'wrap' }}>
-          <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>終了日:</span>
+          <span className="proj-detail-enddate-label">終了日:</span>
           {editingEndDate ? (
             <>
-              <input
-                type="date"
-                className="form-input"
-                value={endDateInput}
-                onChange={e => setEndDateInput(e.target.value)}
-                style={{ width: '160px' }}
-              />
-              <button type="button" className="btn btn-primary btn-sm" onClick={() => { onUpdateProjectEndDate(project.id, endDateInput); setEditingEndDate(false) }}>
-                保存
-              </button>
-              <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setEndDateInput(project.endDate || ''); setEditingEndDate(false) }}>キャンセル</button>
+              <div style={{ flex: '1 1 100%', maxWidth: '320px' }}>
+                <CalendarPicker
+                  value={endDateInput}
+                  onChange={setEndDateInput}
+                  onClear={() => setEndDateInput('')}
+                />
+              </div>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button type="button" className="btn btn-primary btn-sm" onClick={() => { onUpdateProjectEndDate(project.id, endDateInput); setEditingEndDate(false) }}>
+                  保存
+                </button>
+                <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setEndDateInput(project.endDate || ''); setEditingEndDate(false) }}>キャンセル</button>
+              </div>
             </>
           ) : (
             <>
-              <span style={{ fontSize: '14px' }}>{project.endDate ? `${project.endDate}（${endDateLabel(project.endDate)}）` : '未設定'}</span>
+              <span className="proj-detail-enddate-value">{project.endDate ? `${project.endDate}（${endDateLabel(project.endDate)}）` : '未設定'}</span>
               <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setEndDateInput(project.endDate || ''); setEditingEndDate(true) }}>{project.endDate ? '変更' : '設定'}</button>
             </>
           )}

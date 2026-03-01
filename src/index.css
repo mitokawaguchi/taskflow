@@ -98,12 +98,13 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 
 .main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
 .content { position: relative; }
+/* 画面切り替え時：メインエリアのコンテンツが右からスライドイン（全遷移で共通） */
 .content-view {
-  animation: contentViewIn 0.28s ease-out;
+  animation: contentViewIn 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 @keyframes contentViewIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { transform: translateX(32px); }
+  to { transform: translateX(0); }
 }
 .topbar {
   padding: 20px 28px;
@@ -167,8 +168,8 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
   display: flex; flex-direction: row; align-items: center; gap: 4px;
   min-height: 0; flex-wrap: nowrap; margin-left: 8px; justify-content: flex-end;
 }
-.cards-grid--compact .priority-badge, .cards-grid--compact .due-badge { font-size: 9px; padding: 1px 5px; }
-.cards-grid--compact .due-badge { font-size: 9px; }
+.cards-grid--compact .priority-badge { font-size: 9px; padding: 1px 5px; }
+.cards-grid--compact .due-badge { font-size: 12px; font-weight: 600; padding: 2px 6px; }
 
 .task-card {
   background: var(--surface);
@@ -228,9 +229,17 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 .priority-badge.medium { background: var(--medium-bg); color: var(--medium); }
 .priority-badge.low { background: var(--low-bg); color: var(--low); }
 
-.due-badge { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
-.due-badge.overdue { color: var(--critical); }
-.due-badge.today { color: var(--high); }
+.due-badge {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.02em;
+}
+.due-badge.overdue { color: var(--critical); font-weight: 700; }
+.due-badge.today { color: var(--high); font-weight: 700; }
 
 .overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.7);
@@ -259,6 +268,8 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 
 .form-group { margin-bottom: 16px; }
 .form-label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.8px; }
+.form-label--emphasis { font-size: 14px; text-transform: none; letter-spacing: 0; color: var(--text); }
+.form-due-display { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
 .form-input, .form-select, .form-textarea {
   width: 100%; padding: 10px 14px;
   background: var(--surface2); border: 1px solid var(--border);
@@ -338,7 +349,7 @@ select { appearance: none; }
 }
 .calendar-picker-weekday {
   text-align: center;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--text-muted);
 }
@@ -354,7 +365,8 @@ select { appearance: none; }
   background: transparent;
   color: var(--text);
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -412,7 +424,11 @@ select { appearance: none; }
 }
 .morning-task .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink:0; }
 .morning-task-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 600; }
-.morning-task-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.morning-task-meta { font-size: 14px; color: var(--text-muted); margin-top: 6px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.morning-task-proj { margin-right: 0; }
+.morning-task-due { font-weight: 600; color: var(--text); }
+.morning-task-due.overdue { color: var(--critical); }
+.morning-task-due.today { color: var(--high); }
 .morning-empty { color: var(--text-muted); text-align: center; font-size: 15px; padding: 20px; }
 .accent-glow-text { color: var(--accent); text-shadow: 0 0 20px var(--accent-glow); }
 
@@ -444,7 +460,8 @@ select { appearance: none; }
 .project-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
 .project-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
 .project-name { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; }
-.project-count { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.project-count { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+.project-due { font-weight: 600; color: var(--text); }
 .project-progress { background: var(--surface3); border-radius: 4px; height: 4px; margin-top: 12px; overflow: hidden; cursor: pointer; }
 .project-progress-fill { height: 100%; border-radius: 4px; transition: width 0.4s; }
 .projects-completed-section { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
@@ -470,6 +487,8 @@ select { appearance: none; }
 .proj-detail-title { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
 .proj-detail-icon { width: 52px; height: 52px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; }
 .proj-detail-name { font-size: 22px; font-weight: 800; margin-bottom: 2px; }
+.proj-detail-enddate-label { font-size: 14px; color: var(--text-muted); font-weight: 600; }
+.proj-detail-enddate-value { font-size: 16px; font-weight: 600; color: var(--text); }
 .proj-detail-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 4px; }
 .proj-stat { background: var(--surface2); border-radius: 10px; padding: 12px 14px; border: 1px solid var(--border); }
 .proj-stat-val { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 2px; }

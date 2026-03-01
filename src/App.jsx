@@ -56,7 +56,7 @@ function SortableProjectCard({ item, setView, toggleTask, openTaskFormForProject
           <div className="project-name">{p.name}</div>
           <div className="project-count">
             {ptasks.filter((t) => !t.done).length} 件残り
-            {p.endDate ? ` · ${endDateLabel(p.endDate)}` : ''}
+            {p.endDate && <span className="project-due"> · {endDateLabel(p.endDate)}</span>}
           </div>
         </div>
       </button>
@@ -364,7 +364,7 @@ export default function App() {
         <div className="project-icon" style={{ background: `${p.color}20` }}>{p.icon}</div>
         <div>
           <div className="project-name">{p.name}</div>
-          <div className="project-count">{ptasks.filter(t => !t.done).length} 件残り{p.endDate ? ` · ${endDateLabel(p.endDate)}` : ''}</div>
+          <div className="project-count">{ptasks.filter(t => !t.done).length} 件残り{p.endDate && <span className="project-due"> · {endDateLabel(p.endDate)}</span>}</div>
         </div>
       </button>
       <div className="project-progress" onClick={() => setView(`p:${p.id}`)}>
@@ -689,7 +689,7 @@ export default function App() {
                               <div className="project-name">{p.name}</div>
                               <div className="project-count">
                                 {ptasks.filter((t) => !t.done).length} 件残り
-                                {p.endDate ? ` · ${endDateLabel(p.endDate)}` : ''}
+                                {p.endDate && <span className="project-due"> · {endDateLabel(p.endDate)}</span>}
                               </div>
                             </div>
                           </div>

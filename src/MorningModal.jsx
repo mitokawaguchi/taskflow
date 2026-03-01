@@ -12,7 +12,7 @@ export default function MorningModal({ tasks, projects, onClose }) {
   return (
     <div className="morning-overlay">
       <div className="morning-header">
-        <div style={{ fontSize:'13px', color:'var(--text-muted)', letterSpacing:'2px', marginBottom:'8px', textTransform:'uppercase', fontFamily:'Syne,sans-serif' }}>GOOD MORNING</div>
+        <div style={{ fontSize:'13px', color:'var(--text-muted)', letterSpacing:'2px', marginBottom:'8px', textTransform:'uppercase', fontFamily:'Sora,sans-serif' }}>GOOD MORNING</div>
         <h1>{greeting} <span className="accent-glow-text">☀️</span></h1>
         <div className="date">{dateStr} — 今日のタスク確認</div>
       </div>
@@ -28,11 +28,11 @@ export default function MorningModal({ tasks, projects, onClose }) {
               <div style={{ flex: 1 }}>
                 <div className="morning-task-title">{t.title}</div>
                 <div className="morning-task-meta">
-                  {proj && <span style={{ marginRight: '8px' }}>{proj.icon} {proj.name}</span>}
-                  {t.due && <span style={{ color: isOverdue(t.due) ? 'var(--critical)' : 'var(--text-muted)' }}>{formatDate(t.due)}</span>}
+                  {proj && <span className="morning-task-proj">{proj.icon} {proj.name}</span>}
+                  {t.due && <span className={`morning-task-due ${isOverdue(t.due) ? 'overdue' : isToday(t.due) ? 'today' : ''}`}>📅 {formatDate(t.due)}</span>}
                 </div>
               </div>
-              <div style={{ fontSize:'11px', background:`${PRIORITY[t.priority].color}20`, color:PRIORITY[t.priority].color, padding:'2px 8px', borderRadius:'4px', fontFamily:'Syne,sans-serif', fontWeight:'700' }}>
+              <div style={{ fontSize:'11px', background:`${PRIORITY[t.priority].color}20`, color:PRIORITY[t.priority].color, padding:'2px 8px', borderRadius:'4px', fontFamily:'Sora,sans-serif', fontWeight:'700' }}>
                 {PRIORITY[t.priority].label}
               </div>
             </div>

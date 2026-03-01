@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { PRIORITY } from './constants'
+import { formatDate } from './utils'
 import CalendarPicker from './CalendarPicker'
 
 export default function TaskForm({ task, projects, templates, onSave, onClose }) {
@@ -48,7 +49,12 @@ export default function TaskForm({ task, projects, templates, onSave, onClose })
           </select>
         </div>
         <div className="form-group">
-          <label className="form-label">期限</label>
+          <label className="form-label form-label--emphasis">期限</label>
+          {form.due && (
+            <div className="form-due-display">
+              📅 {form.due}（{formatDate(form.due)}）
+            </div>
+          )}
           <CalendarPicker
             value={form.due}
             onChange={(v) => set('due', v)}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import CalendarPicker from './CalendarPicker'
 
 const ICONS   = ['📁','🏢','🤝','⚡','🎯','💡','🔬','🎨','🚀','📊','🏗','💼']
 const COLORS  = ['#2d6b3f','#ff4560','#ff8c42','#ffd166','#06d6a0','#00b4d8','#e040fb']
@@ -53,13 +54,16 @@ export default function ProjectForm({ project, onSave, onClose }) {
         </div>
 
         <div className="form-group">
-          <label className="form-label">終了日（任意）</label>
-          <input
-            type="date"
-            className="form-input"
+          <label className="form-label form-label--emphasis">終了日（任意）</label>
+          {endDate && (
+            <div className="form-due-display">
+              📅 {endDate}
+            </div>
+          )}
+          <CalendarPicker
             value={endDate}
-            onChange={e => setEndDate(e.target.value)}
-            placeholder="未設定の場合は空欄"
+            onChange={setEndDate}
+            onClear={() => setEndDate('')}
           />
           <div style={{ fontSize:'11px', color:'var(--text-muted)', marginTop:'4px' }}>設定すると「残り○日」で表示されます</div>
         </div>
