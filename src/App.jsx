@@ -591,8 +591,15 @@ export default function App() {
                       return (
                         <div
                           key={c.id}
-                          className="task-card medium"
-                          style={{ cursor: 'default', display: 'flex', flexDirection: 'column', minHeight: '140px' }}
+                          className="task-card"
+                          style={{
+                            cursor: 'default',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            minHeight: '140px',
+                            background: `${c.color}28`,
+                            borderColor: `${c.color}60`,
+                          }}
                         >
                           <div
                             className="card-project-banner"

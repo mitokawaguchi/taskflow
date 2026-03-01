@@ -3,6 +3,12 @@ export const save = (k, v) => localStorage.setItem(k, JSON.stringify(v))
 
 export const today    = () => new Date().toISOString().slice(0, 10)
 export const isToday  = (d) => d === today()
+export const isTomorrow = (d) => {
+  if (!d) return false
+  const t = new Date(today())
+  t.setDate(t.getDate() + 1)
+  return d === t.toISOString().slice(0, 10)
+}
 export const isOverdue = (d) => d && d < today()
 
 export function formatDate(d) {

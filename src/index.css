@@ -247,7 +247,8 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
   letter-spacing: 0.02em;
 }
 .due-badge.overdue { color: var(--critical); font-weight: 700; }
-.due-badge.today { color: var(--high); font-weight: 700; }
+.due-badge.today,
+.due-badge.today-or-tomorrow { color: var(--critical); font-weight: 700; }
 
 .overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.7);
@@ -278,6 +279,7 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 .form-label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.8px; }
 .form-label--emphasis { font-size: 14px; text-transform: none; letter-spacing: 0; color: var(--text); }
 .form-due-display { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+.form-due-display--urgent { color: var(--critical); font-weight: 700; }
 .form-input, .form-select, .form-textarea {
   width: 100%; padding: 10px 14px;
   background: var(--surface2); border: 1px solid var(--border);
@@ -436,7 +438,8 @@ select { appearance: none; }
 .morning-task-proj { margin-right: 0; }
 .morning-task-due { font-weight: 600; color: var(--text); }
 .morning-task-due.overdue { color: var(--critical); }
-.morning-task-due.today { color: var(--high); }
+.morning-task-due.today,
+.morning-task-due.today-or-tomorrow { color: var(--critical); font-weight: 700; }
 .morning-empty { color: var(--text-muted); text-align: center; font-size: 15px; padding: 20px; }
 .accent-glow-text { color: var(--accent); text-shadow: 0 0 20px var(--accent-glow); }
 

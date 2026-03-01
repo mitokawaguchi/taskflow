@@ -57,7 +57,7 @@ export default function ProjectForm({ project, onSave, onClose }) {
           <label className="form-label form-label--emphasis">終了日（任意）</label>
           {endDate && (
             <div className="form-due-display">
-              📅 {endDate}
+              {endDate}
             </div>
           )}
           <CalendarPicker

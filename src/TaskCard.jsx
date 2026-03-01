@@ -1,10 +1,11 @@
 import { PRIORITY } from './constants'
-import { isOverdue, isToday, formatDate } from './utils'
+import { isOverdue, isToday, isTomorrow, formatDate } from './utils'
 
 export default function TaskCard({ task, projects, onToggle, onClick }) {
   const proj = projects.find(p => p.id === task.projectId)
   const over = isOverdue(task.due)
   const tod  = isToday(task.due)
+  const tom  = isTomorrow(task.due)
 
   return (
     <div className={`task-card ${task.priority} ${task.done ? 'done' : ''}`} onClick={onClick}>
@@ -25,8 +26,8 @@ export default function TaskCard({ task, projects, onToggle, onClick }) {
       <div className="card-footer">
         <span className={`priority-badge ${task.priority}`}>{PRIORITY[task.priority].label}</span>
         {task.due && (
-          <span className={`due-badge ${over ? 'overdue' : tod ? 'today' : ''}`} style={{ marginLeft: 'auto' }}>
-            📅 {formatDate(task.due)}
+          <span className={`due-badge ${over ? 'overdue' : tod || tom ? 'today-or-tomorrow' : ''}`} style={{ marginLeft: 'auto' }}>
+            {formatDate(task.due)}
           </span>
         )}
       </div>

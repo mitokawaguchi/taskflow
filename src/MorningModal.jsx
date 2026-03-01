@@ -1,5 +1,5 @@
 import { PRIORITY } from './constants'
-import { isToday, isOverdue, formatDate } from './utils'
+import { isToday, isTomorrow, isOverdue, formatDate } from './utils'
 
 export default function MorningModal({ tasks, projects, onClose }) {
   const todayTasks = tasks.filter(t => !t.done && (isToday(t.due) || isOverdue(t.due)))
@@ -29,7 +29,7 @@ export default function MorningModal({ tasks, projects, onClose }) {
                 <div className="morning-task-title">{t.title}</div>
                 <div className="morning-task-meta">
                   {proj && <span className="morning-task-proj">{proj.icon} {proj.name}</span>}
-                  {t.due && <span className={`morning-task-due ${isOverdue(t.due) ? 'overdue' : isToday(t.due) ? 'today' : ''}`}>📅 {formatDate(t.due)}</span>}
+                  {t.due && <span className={`morning-task-due ${isOverdue(t.due) ? 'overdue' : isToday(t.due) || isTomorrow(t.due) ? 'today-or-tomorrow' : ''}`}>{formatDate(t.due)}</span>}
                 </div>
               </div>
               <div style={{ fontSize:'11px', background:`${PRIORITY[t.priority].color}20`, color:PRIORITY[t.priority].color, padding:'2px 8px', borderRadius:'4px', fontFamily:'Sora,sans-serif', fontWeight:'700' }}>
