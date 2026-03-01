@@ -24,7 +24,14 @@ function taskFromRow(row) {
 
 function projectFromRow(row) {
   if (!row) return null
-  return { id: row.id, name: row.name, color: row.color ?? '#2d6b3f', icon: row.icon ?? '📁' }
+  return {
+    id: row.id,
+    name: row.name,
+    color: row.color ?? '#2d6b3f',
+    icon: row.icon ?? '📁',
+    endDate: row.end_date ?? '',
+    sortOrder: row.sort_order ?? 0,
+  }
 }
 
 function templateFromRow(row) {
@@ -50,7 +57,7 @@ function rememberFromRow(row) {
 // ── 取得 ─────────────────────────────────────────────────────
 export async function fetchProjects() {
   requireSupabase()
-  const { data, error } = await supabase.from('tf_projects').select('*').order('id')
+  const { data, error } = await supabase.from('tf_projects').select('*').order('sort_order').order('id')
   if (error) throw error
   return (data ?? []).map(projectFromRow)
 }
@@ -69,11 +76,31 @@ export async function fetchTemplates() {
   return (data ?? []).map(templateFromRow)
 }
 
-// ── プロジェクト追加 ─────────────────────────────────────────
+// ── プロジェクト追加・更新 ─────────────────────────────────────
 export async function insertProject(project) {
   requireSupabase()
-  const row = { id: project.id, name: project.name, color: project.color, icon: project.icon }
+  const row = {
+    id: project.id,
+    name: project.name,
+    color: project.color,
+    icon: project.icon,
+    end_date: project.endDate || null,
+    sort_order: project.sortOrder ?? 0,
+  }
   const { data, error } = await supabase.from('tf_projects').insert(row).select().single()
+  if (error) throw error
+  return projectFromRow(data)
+}
+
+export async function updateProject(id, patch) {
+  requireSupabase()
+  const row = {}
+  if (patch.name !== undefined) row.name = patch.name
+  if (patch.color !== undefined) row.color = patch.color
+  if (patch.icon !== undefined) row.icon = patch.icon
+  if (patch.endDate !== undefined) row.end_date = patch.endDate || null
+  if (patch.sortOrder !== undefined) row.sort_order = patch.sortOrder
+  const { data, error } = await supabase.from('tf_projects').update(row).eq('id', id).select().single()
   if (error) throw error
   return projectFromRow(data)
 }

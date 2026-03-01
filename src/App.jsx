@@ -1,7 +1,16 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import { arrayMove, SortableContext, useSortable, rectSortingStrategy } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { PRIORITY, SORT_OPTIONS, priorityOrder } from './constants'
-import { today, isToday, isOverdue } from './utils'
-import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, insertProject, insertTask, updateTask, insertTemplate, insertRemember, updateRemember, deleteRemember, insertClient } from './api'
+import { today, isToday, isOverdue, formatTodayDisplay, endDateLabel } from './utils'
+import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, insertProject, updateProject, insertTask, updateTask, insertTemplate, insertRemember, updateRemember, deleteRemember, insertClient } from './api'
 import MorningModal from './MorningModal'
 import TaskCard from './TaskCard'
 import TaskForm from './TaskForm'
@@ -20,6 +29,71 @@ const SIDEBAR_MENU_ITEMS = [
   { key: 'today', icon: '☀️', label: '今日', badgeKey: 'todayCount' },
   { key: 'overdue', icon: '🚨', label: '期限超過', badgeKey: 'overdueCount' },
 ]
+
+function SortableProjectCard({ item, setView, toggleTask, openTaskFormForProject }) {
+  const { project: p, ptasks, pct } = item
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: p.id,
+  })
+  const style = { transform: CSS.Transform.toString(transform), transition }
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        ...style,
+        background: `${p.color}18`,
+        border: `1px solid ${p.color}50`,
+      }}
+      className={`project-card ${isDragging ? 'project-card-dragging' : ''}`}
+      {...attributes}
+      {...listeners}
+    >
+      <button
+        type="button"
+        className="project-card-header project-card-clickable"
+        onClick={() => setView(`p:${p.id}`)}
+      >
+        <span className="project-card-drag-handle" aria-hidden>⋮⋮</span>
+        <div className="project-icon" style={{ background: `${p.color}20` }}>{p.icon}</div>
+        <div>
+          <div className="project-name">{p.name}</div>
+          <div className="project-count">
+            {ptasks.filter((t) => !t.done).length} 件残り
+            {p.endDate ? ` · ${endDateLabel(p.endDate)}` : ''}
+          </div>
+        </div>
+      </button>
+      <div className="project-progress" onClick={() => setView(`p:${p.id}`)}>
+        <div className="project-progress-fill" style={{ width: `${pct}%`, background: p.color }} />
+      </div>
+      <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '6px' }}>{pct}% 完了</div>
+      <ul className="project-card-tasks" aria-label={`${p.name}のタスク`}>
+        {ptasks.map((t) => (
+          <li key={t.id} className="project-task-row">
+            <input
+              type="checkbox"
+              className="project-task-check"
+              checked={!!t.done}
+              onChange={() => toggleTask(t.id)}
+              aria-label={`${t.title}を${t.done ? '未完了に' : '完了に'}`}
+            />
+            <span className={`project-task-title ${t.done ? 'done' : ''}`}>{t.title}</span>
+          </li>
+        ))}
+      </ul>
+      <button
+        type="button"
+        className="btn btn-ghost btn-sm project-card-add-task"
+        onClick={(e) => {
+          e.stopPropagation()
+          openTaskFormForProject(p.id)
+        }}
+      >
+        ＋ タスクを追加
+      </button>
+    </div>
+  )
+}
 
 export default function App() {
   const [tasks, setTasks] = useState([])
@@ -139,13 +213,24 @@ export default function App() {
 
   const saveProject = useCallback(async (form) => {
     try {
-      const project = { ...form, id: 'p' + Date.now() }
+      const nextOrder = projects.length ? Math.max(...projects.map(p => p.sortOrder ?? 0), -1) + 1 : 0
+      const project = { ...form, id: 'p' + Date.now(), endDate: form.endDate ?? '', sortOrder: nextOrder }
       const created = await insertProject(project)
       setProjects(ps => [...ps, created])
       setShowProjForm(false)
       addToast('📁', 'プロジェクト作成', form.name)
     } catch (e) {
       addToast('❌', '作成できませんでした', e?.message ?? '')
+    }
+  }, [addToast, projects])
+
+  const updateProjectEndDate = useCallback(async (projectId, endDate) => {
+    try {
+      const updated = await updateProject(projectId, { endDate: endDate || '' })
+      setProjects(ps => ps.map(p => (p.id === projectId ? updated : p)))
+      addToast('📅', '終了日を更新しました', '')
+    } catch (e) {
+      addToast('❌', '更新できませんでした', e?.message ?? '')
     }
   }, [addToast])
 
@@ -259,12 +344,16 @@ export default function App() {
   }, [projects, tasks])
 
   const renderProjectCard = useCallback(({ project: p, ptasks, pct }) => (
-    <div key={p.id} className="project-card">
+    <div
+      key={p.id}
+      className="project-card"
+      style={{ background: `${p.color}18`, border: `1px solid ${p.color}50` }}
+    >
       <button type="button" className="project-card-header project-card-clickable" onClick={() => setView(`p:${p.id}`)}>
         <div className="project-icon" style={{ background: `${p.color}20` }}>{p.icon}</div>
         <div>
           <div className="project-name">{p.name}</div>
-          <div className="project-count">{ptasks.filter(t => !t.done).length} 件残り</div>
+          <div className="project-count">{ptasks.filter(t => !t.done).length} 件残り{p.endDate ? ` · ${endDateLabel(p.endDate)}` : ''}</div>
         </div>
       </button>
       <div className="project-progress" onClick={() => setView(`p:${p.id}`)}>
@@ -294,6 +383,33 @@ export default function App() {
       </button>
     </div>
   ), [toggleTask, openTaskFormForProject])
+
+  const handleProjectDragEnd = useCallback(
+    async (event) => {
+      const { active, over } = event
+      if (!over || active.id === over.id) return
+      const oldIndex = activeProjects.findIndex((x) => x.project.id === active.id)
+      const newIndex = activeProjects.findIndex((x) => x.project.id === over.id)
+      if (oldIndex === -1 || newIndex === -1) return
+      const reordered = arrayMove(activeProjects, oldIndex, newIndex)
+      const newProjects = [
+        ...reordered.map((x) => x.project),
+        ...completedProjects.map((x) => x.project),
+      ].map((p, i) => ({ ...p, sortOrder: i }))
+      setProjects(newProjects)
+      try {
+        await Promise.all(newProjects.map((p, i) => updateProject(p.id, { sortOrder: i })))
+        addToast('📁', '並び順を更新しました', '')
+      } catch (e) {
+        addToast('❌', '並び順の保存に失敗しました', e?.message ?? '')
+      }
+    },
+    [activeProjects, completedProjects, addToast]
+  )
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  )
 
   const isProjectView = view.startsWith('p:')
   const currentProject = isProjectView ? projects.find(p => p.id === view.slice(2)) : null
@@ -327,7 +443,8 @@ export default function App() {
         <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
           <div className="sidebar-header">
             <div className="logo">Task<span>Flow</span></div>
-            <div style={{ fontSize:'12px', color:'var(--text-muted)', marginTop:'4px' }}>{tasks.filter(t => !t.done).length} 件のタスク</div>
+            <div style={{ fontSize:'13px', color:'var(--text-muted)', marginTop:'4px' }}>{formatTodayDisplay()}</div>
+            <div style={{ fontSize:'12px', color:'var(--text-muted)', marginTop:'2px' }}>{tasks.filter(t => !t.done).length} 件のタスク</div>
           </div>
 
           {!notifGranted && (
@@ -416,6 +533,7 @@ export default function App() {
                 onToggle={toggleTask}
                 onEditTask={setEditTask}
                 onAddTask={() => setShowTaskForm(true)}
+                onUpdateProjectEndDate={updateProjectEndDate}
                 sort={sort}
                 setSort={setSort}
                 showDone={showDone}
@@ -515,9 +633,28 @@ export default function App() {
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
                   <button className="btn btn-primary" onClick={() => setShowProjForm(true)}>+ プロジェクト追加</button>
                 </div>
-                <div className="projects-grid">
-                  {activeProjects.map(renderProjectCard)}
-                </div>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleProjectDragEnd}
+                >
+                  <SortableContext
+                    items={activeProjects.map((x) => x.project.id)}
+                    strategy={rectSortingStrategy}
+                  >
+                    <div className="projects-grid">
+                      {activeProjects.map((item) => (
+                        <SortableProjectCard
+                          key={item.project.id}
+                          item={item}
+                          setView={setView}
+                          toggleTask={toggleTask}
+                          openTaskFormForProject={openTaskFormForProject}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
                 {completedProjects.length > 0 && (
                   <div className="projects-completed-section">
                     <h2 className="projects-completed-title">完了したプロジェクト</h2>

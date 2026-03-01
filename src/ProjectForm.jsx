@@ -4,9 +4,10 @@ const ICONS   = ['📁','🏢','🤝','⚡','🎯','💡','🔬','🎨','🚀','
 const COLORS  = ['#2d6b3f','#ff4560','#ff8c42','#ffd166','#06d6a0','#00b4d8','#e040fb']
 
 export default function ProjectForm({ onSave, onClose }) {
-  const [name,  setName]  = useState('')
-  const [icon,  setIcon]  = useState('📁')
+  const [name, setName] = useState('')
+  const [icon, setIcon] = useState('📁')
   const [color, setColor] = useState(COLORS[0])
+  const [endDate, setEndDate] = useState('')
 
   return (
     <div className="overlay" onClick={e => e.target === e.currentTarget && onClose()}>
@@ -40,9 +41,21 @@ export default function ProjectForm({ onSave, onClose }) {
           </div>
         </div>
 
+        <div className="form-group">
+          <label className="form-label">終了日（任意）</label>
+          <input
+            type="date"
+            className="form-input"
+            value={endDate}
+            onChange={e => setEndDate(e.target.value)}
+            placeholder="未設定の場合は空欄"
+          />
+          <div style={{ fontSize:'11px', color:'var(--text-muted)', marginTop:'4px' }}>設定すると「残り○日」で表示されます</div>
+        </div>
+
         <div className="modal-actions">
           <button className="btn btn-ghost" onClick={onClose}>キャンセル</button>
-          <button className="btn btn-primary" onClick={() => { if (name.trim()) onSave({ name, icon, color }) }} disabled={!name.trim()}>作成</button>
+          <button className="btn btn-primary" onClick={() => { if (name.trim()) onSave({ name, icon, color, endDate: endDate || '' }) }} disabled={!name.trim()}>作成</button>
         </div>
       </div>
     </div>

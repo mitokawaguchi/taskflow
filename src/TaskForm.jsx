@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { PRIORITY } from './constants'
+import CalendarPicker from './CalendarPicker'
 
 export default function TaskForm({ task, projects, templates, onSave, onClose }) {
   const [form, setForm] = useState(
@@ -40,17 +41,19 @@ export default function TaskForm({ task, projects, templates, onSave, onClose })
           <label className="form-label">詳細</label>
           <textarea className="form-textarea" value={form.desc} onChange={e => set('desc', e.target.value)} placeholder="詳細メモ（任意）" />
         </div>
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px' }}>
-          <div className="form-group">
-            <label className="form-label">重要度</label>
-            <select className="form-select" value={form.priority} onChange={e => set('priority', e.target.value)}>
-              {Object.entries(PRIORITY).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
-            </select>
-          </div>
-          <div className="form-group">
-            <label className="form-label">期限</label>
-            <input type="date" className="form-input" value={form.due} onChange={e => set('due', e.target.value)} />
-          </div>
+        <div className="form-group">
+          <label className="form-label">重要度</label>
+          <select className="form-select" value={form.priority} onChange={e => set('priority', e.target.value)}>
+            {Object.entries(PRIORITY).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+          </select>
+        </div>
+        <div className="form-group">
+          <label className="form-label">期限</label>
+          <CalendarPicker
+            value={form.due}
+            onChange={(v) => set('due', v)}
+            onClear={() => set('due', '')}
+          />
         </div>
         <div className="form-group">
           <label className="form-label">プロジェクト</label>
