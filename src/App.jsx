@@ -66,10 +66,10 @@ function SortableProjectCard({ item, setView, toggleTask, openTaskFormForProject
       <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '6px' }}>{pct}% 完了</div>
       <ul className="project-card-tasks" aria-label={`${p.name}のタスク`}>
         {ptasks.map((t) => (
-          <li key={t.id} className="project-task-row">
+          <li key={t.id} className={`project-task-row project-task-row--${t.priority}`}>
             <input
               type="checkbox"
-              className={`project-task-check project-task-check--${t.priority}`}
+              className="project-task-check"
               checked={!!t.done}
               onChange={() => toggleTask(t.id)}
               aria-label={`${t.title}を${t.done ? '未完了に' : '完了に'}`}
@@ -373,10 +373,10 @@ export default function App() {
       <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '6px' }}>{pct}% 完了</div>
       <ul className="project-card-tasks" aria-label={`${p.name}のタスク`}>
         {ptasks.map(t => (
-          <li key={t.id} className="project-task-row">
+          <li key={t.id} className={`project-task-row project-task-row--${t.priority}`}>
             <input
               type="checkbox"
-              className={`project-task-check project-task-check--${t.priority}`}
+              className="project-task-check"
               checked={!!t.done}
               onChange={() => toggleTask(t.id)}
               aria-label={`${t.title}を${t.done ? '未完了に' : '完了に'}`}
@@ -482,11 +482,17 @@ export default function App() {
             <div className="sidebar-label">メニュー</div>
             {SIDEBAR_MENU_ITEMS.map(item => {
               const badge = item.badgeKey === 'todayCount' ? todayCount : item.badgeKey === 'overdueCount' ? overdueCount : 0
+              const allTaskCount = item.key === 'all' ? tasks.filter(t => !t.done).length : null
               return (
                 <button key={item.key} className={`sidebar-item ${view === item.key ? 'active' : ''}`}
                   onClick={() => { setView(item.key); setSidebarOpen(false) }}>
                   <span className="icon">{item.icon}</span>
                   {item.label}
+                  {item.key === 'all' && (
+                    <span className="sidebar-item-count" style={{ marginLeft: 'auto', fontSize: '11px', color: 'var(--text-muted)' }}>
+                      {allTaskCount}
+                    </span>
+                  )}
                   {badge > 0 && <span className="badge">{badge}</span>}
                 </button>
               )
@@ -602,22 +608,20 @@ export default function App() {
                           }}
                         >
                           <div
-                            className="card-project-banner"
-                            style={{ background: `${c.color}28`, color: c.color, border: `1px solid ${c.color}55`, marginBottom: '10px' }}
+                            className="remember-client-label"
+                            style={{ background: `${c.color}22`, color: c.color, border: `2px solid ${c.color}66` }}
                           >
-                            <span>{c.icon}</span>
-                            <span>{c.name}</span>
-                          </div>
-                          <div className="card-header" style={{ marginBottom: '8px' }}>
-                            <div className="card-title" style={{ fontSize: '14px' }}>覚えておくこと</div>
+                            <span className="remember-client-icon">{c.icon}</span>
+                            <span className="remember-client-name">{c.name}</span>
                           </div>
                           {clientRemembers.length === 0 ? (
-                            <p style={{ fontSize: '13px', color: 'var(--text-muted)', flex: 1, margin: 0 }}>まだありません</p>
+                            <p className="remember-empty">まだありません</p>
                           ) : (
-                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, flex: 1, fontSize: '13px' }}>
+                            <ul className="remember-list">
                               {clientRemembers.map(r => (
-                                <li key={r.id} style={{ padding: '6px 0', borderBottom: '1px solid var(--border)' }}>
-                                  {r.body}
+                                <li key={r.id} className="remember-item" style={{ borderLeftColor: c.color }}>
+                                  <span className="remember-icon" aria-hidden>📌</span>
+                                  <span className="remember-body">{r.body}</span>
                                 </li>
                               ))}
                             </ul>

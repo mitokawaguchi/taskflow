@@ -30,9 +30,6 @@ export default function ClientDetail({
         </div>
         <div>
           <h2 style={{ fontSize: '18px', fontWeight: 600, margin: 0 }}>{client.name}</h2>
-          <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '4px 0 0' }}>
-            今後に向けて覚えておくこと（このクライアント用）
-          </p>
         </div>
       </div>
 
@@ -66,19 +63,14 @@ export default function ClientDetail({
       </div>
 
       {remembers.length === 0 ? (
-        <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>まだありません。上の欄で追加できます。</p>
+        <p className="remember-empty-detail">まだありません。上の欄で追加できます。</p>
       ) : (
-        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+        <ul className="remember-list remember-list--detail">
           {remembers.map(r => (
             <li
               key={r.id}
-              style={{
-                padding: '10px 12px',
-                background: 'var(--surface2)',
-                border: '1px solid var(--border)',
-                borderRadius: '8px',
-                marginBottom: '8px',
-              }}
+              className="remember-item remember-item--editable"
+              style={{ borderLeftColor: client.color }}
             >
               {editingId === r.id ? (
                 <>
@@ -112,23 +104,25 @@ export default function ClientDetail({
                 </>
               ) : (
                 <>
-                  <div style={{ fontSize: '14px', marginBottom: '6px' }}>{r.body}</div>
-                  <div style={{ display: 'flex', gap: '8px', fontSize: '12px' }}>
-                    <button
-                      type="button"
-                      className="btn btn-ghost btn-sm"
-                      onClick={() => { setEditingId(r.id); setEditingBody(r.body) }}
-                    >
-                      編集
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-ghost btn-sm"
-                      style={{ color: 'var(--critical)' }}
-                      onClick={() => onDeleteRemember(r.id)}
-                    >
-                      削除
-                    </button>
+                  <span className="remember-icon" aria-hidden>📌</span>
+                  <div className="remember-item-content">
+                    <div className="remember-body remember-body--strong">{r.body}</div>
+                    <div className="remember-actions">
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-sm"
+                        onClick={() => { setEditingId(r.id); setEditingBody(r.body) }}
+                      >
+                        編集
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-sm remember-delete"
+                        onClick={() => onDeleteRemember(r.id)}
+                      >
+                        削除
+                      </button>
+                    </div>
                   </div>
                 </>
               )}
