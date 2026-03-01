@@ -69,7 +69,7 @@ function SortableProjectCard({ item, setView, toggleTask, openTaskFormForProject
           <li key={t.id} className="project-task-row">
             <input
               type="checkbox"
-              className="project-task-check"
+              className={`project-task-check project-task-check--${t.priority}`}
               checked={!!t.done}
               onChange={() => toggleTask(t.id)}
               aria-label={`${t.title}を${t.done ? '未完了に' : '完了に'}`}
@@ -376,7 +376,7 @@ export default function App() {
           <li key={t.id} className="project-task-row">
             <input
               type="checkbox"
-              className="project-task-check"
+              className={`project-task-check project-task-check--${t.priority}`}
               checked={!!t.done}
               onChange={() => toggleTask(t.id)}
               aria-label={`${t.title}を${t.done ? '未完了に' : '完了に'}`}
