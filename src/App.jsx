@@ -111,6 +111,7 @@ export default function App() {
   const [filterPriorityFrom, setFilterPriorityFrom] = useState('')
   const [filterPriorityTo, setFilterPriorityTo] = useState('')
   const [filterOpen, setFilterOpen] = useState(false)
+  const [sidebarProjectsOpen, setSidebarProjectsOpen] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [showTaskForm, setShowTaskForm] = useState(false)
   const [editTask, setEditTask] = useState(null)
@@ -524,11 +525,18 @@ export default function App() {
           </div>
 
           <div className="sidebar-section">
-            <div className="sidebar-label" style={{ display:'flex', alignItems:'center', justifyContent:'space-between', paddingRight:'8px' }}>
-              プロジェクト
-              <button onClick={() => { setEditProject(null); setShowProjForm(true) }} style={{ background:'none', border:'none', color:'var(--accent)', cursor:'pointer', fontSize:'16px', lineHeight:1 }}>+</button>
+            <div className="sidebar-label sidebar-label--with-toggle" style={{ display:'flex', alignItems:'center', justifyContent:'space-between', paddingRight:'8px' }}>
+              <button
+                type="button"
+                className="sidebar-project-toggle"
+                onClick={() => setSidebarProjectsOpen(o => !o)}
+                aria-expanded={sidebarProjectsOpen}
+              >
+                {sidebarProjectsOpen ? 'プロジェクト ▲' : 'プロジェクト ▼'}
+              </button>
+              <button type="button" className="sidebar-add-proj" onClick={() => { setEditProject(null); setShowProjForm(true) }} aria-label="プロジェクト追加">+</button>
             </div>
-            {projects.map(p => (
+            {sidebarProjectsOpen && projects.map(p => (
               <button key={p.id} className={`sidebar-item ${view===`p:${p.id}`?'active':''}`}
                 onClick={() => { setView(`p:${p.id}`); setSidebarOpen(false) }}>
                 <span className="project-dot" style={{ background: p.color }} />
