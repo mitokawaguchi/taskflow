@@ -1,5 +1,12 @@
 import { supabase } from './supabase'
 
+const CONFIG_MSG =
+  'Supabase の設定がありません。.env に VITE_SUPABASE_URL と VITE_SUPABASE_ANON_KEY を設定するか、Vercel の環境変数を確認してください。'
+
+function requireSupabase() {
+  if (!supabase) throw new Error(CONFIG_MSG)
+}
+
 // DB の行 → アプリで使う形に変換
 function taskFromRow(row) {
   if (!row) return null
@@ -27,18 +34,21 @@ function templateFromRow(row) {
 
 // ── 取得 ─────────────────────────────────────────────────────
 export async function fetchProjects() {
+  requireSupabase()
   const { data, error } = await supabase.from('tf_projects').select('*').order('id')
   if (error) throw error
   return (data ?? []).map(projectFromRow)
 }
 
 export async function fetchTasks() {
+  requireSupabase()
   const { data, error } = await supabase.from('tf_tasks').select('*').order('created', { ascending: false })
   if (error) throw error
   return (data ?? []).map(taskFromRow)
 }
 
 export async function fetchTemplates() {
+  requireSupabase()
   const { data, error } = await supabase.from('tf_templates').select('*').order('id')
   if (error) throw error
   return (data ?? []).map(templateFromRow)
@@ -46,6 +56,7 @@ export async function fetchTemplates() {
 
 // ── プロジェクト追加 ─────────────────────────────────────────
 export async function insertProject(project) {
+  requireSupabase()
   const row = { id: project.id, name: project.name, color: project.color, icon: project.icon }
   const { data, error } = await supabase.from('tf_projects').insert(row).select().single()
   if (error) throw error
@@ -54,6 +65,7 @@ export async function insertProject(project) {
 
 // ── タスク追加・更新 ─────────────────────────────────────────
 export async function insertTask(task) {
+  requireSupabase()
   const row = {
     id: task.id,
     project_id: task.projectId,
@@ -70,6 +82,7 @@ export async function insertTask(task) {
 }
 
 export async function updateTask(id, patch) {
+  requireSupabase()
   const row = {}
   if (patch.title !== undefined) row.title = patch.title
   if (patch.desc !== undefined) row.desc = patch.desc
@@ -84,6 +97,7 @@ export async function updateTask(id, patch) {
 
 // ── テンプレート追加 ─────────────────────────────────────────
 export async function insertTemplate(template) {
+  requireSupabase()
   const row = {
     id: template.id,
     title: template.title,
