@@ -1,13 +1,15 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { PRIORITY, SORT_OPTIONS, priorityOrder } from './constants'
 import { today, isToday, isOverdue } from './utils'
-import { fetchProjects, fetchTasks, fetchTemplates, insertProject, insertTask, updateTask, insertTemplate } from './api'
+import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, insertProject, insertTask, updateTask, insertTemplate, insertRemember, updateRemember, deleteRemember, insertClient } from './api'
 import MorningModal from './MorningModal'
 import TaskCard from './TaskCard'
 import TaskForm from './TaskForm'
 import ProjectForm from './ProjectForm'
 import TemplateForm from './TemplateForm'
 import ProjectDetail from './ProjectDetail'
+import ClientForm from './ClientForm'
+import ClientDetail from './ClientDetail'
 import Toast from './Toast'
 
 const DUE_TODAY_CHECK_DELAY_MS = 2000
@@ -23,7 +25,10 @@ export default function App() {
   const [tasks, setTasks] = useState([])
   const [projects, setProjects] = useState([])
   const [templates, setTemplates] = useState([])
+  const [clients, setClients] = useState([])
+  const [remembers, setRemembers] = useState([])
   const [loading, setLoading] = useState(true)
+  const [showClientForm, setShowClientForm] = useState(false)
   const [view, setView] = useState('projects')
   const [sort, setSort] = useState('priority')
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -47,11 +52,13 @@ export default function App() {
     let cancelled = false
     async function load() {
       try {
-        const [projs, ts, tpls] = await Promise.all([fetchProjects(), fetchTasks(), fetchTemplates()])
+        const [projs, ts, tpls, clis, rems] = await Promise.all([fetchProjects(), fetchTasks(), fetchTemplates(), fetchClients(), fetchRemember()])
         if (!cancelled) {
           setProjects(projs)
           setTasks(ts)
           setTemplates(tpls)
+          setClients(clis)
+          setRemembers(rems)
         }
       } catch (e) {
         if (!cancelled) addToast('❌', '読み込みエラー', e?.message ?? 'データを取得できませんでした')
@@ -154,6 +161,51 @@ export default function App() {
     }
   }, [addToast])
 
+  const addRemember = useCallback(async (clientId, body) => {
+    if (!body?.trim()) return
+    try {
+      const item = { id: 'rem' + Date.now(), clientId, body: body.trim(), created: Date.now() }
+      const created = await insertRemember(item)
+      setRemembers(prev => [created, ...prev])
+      addToast('📌', '覚えておくことを追加しました', '')
+    } catch (e) {
+      addToast('❌', '追加できませんでした', e?.message ?? '')
+    }
+  }, [addToast])
+
+  const addClient = useCallback(async (form) => {
+    try {
+      const client = { ...form, id: 'c' + Date.now() }
+      const created = await insertClient(client)
+      setClients(prev => [...prev, created])
+      setShowClientForm(false)
+      addToast('🤝', 'クライアントを追加しました', form.name)
+    } catch (e) {
+      addToast('❌', '追加できませんでした', e?.message ?? '')
+    }
+  }, [addToast])
+
+  const updateRememberItem = useCallback(async (id, body) => {
+    if (!body?.trim()) return
+    try {
+      const updated = await updateRemember(id, { body: body.trim() })
+      setRemembers(prev => prev.map(r => (r.id === id ? updated : r)))
+      addToast('✏️', '更新しました', '')
+    } catch (e) {
+      addToast('❌', '更新できませんでした', e?.message ?? '')
+    }
+  }, [addToast])
+
+  const removeRemember = useCallback(async (id) => {
+    try {
+      await deleteRemember(id)
+      setRemembers(prev => prev.filter(r => r.id !== id))
+      addToast('🗑️', '削除しました', '')
+    } catch (e) {
+      addToast('❌', '削除できませんでした', e?.message ?? '')
+    }
+  }, [addToast])
+
   // ── Filtered & sorted tasks ──────────────────────────────
   const filteredTasks = tasks.filter(t => {
     if (!showDone && t.done) return false
@@ -180,9 +232,11 @@ export default function App() {
     if (view === 'overdue') return '期限超過'
     if (view === 'projects') return 'プロジェクト'
     if (view === 'templates') return 'テンプレート'
+    if (view === 'clients') return '覚えておくこと'
+    if (view.startsWith('c:')) return clients.find(c => c.id === view.slice(2))?.name ?? 'クライアント'
     if (view.startsWith('p:')) return projects.find(p => p.id === view.slice(2))?.name ?? ''
     return ''
-  }, [view, projects])
+  }, [view, projects, clients])
 
   const openTaskFormForProject = useCallback((projectId) => {
     setTaskFormProjectId(projectId)
@@ -321,6 +375,9 @@ export default function App() {
             <button className={`sidebar-item ${view==='templates'?'active':''}`} onClick={() => { setView('templates'); setSidebarOpen(false) }}>
               <span className="icon">📋</span>テンプレート
             </button>
+            <button className={`sidebar-item ${view==='clients'||view.startsWith('c:')?'active':''}`} onClick={() => { setView('clients'); setSidebarOpen(false) }}>
+              <span className="icon">📌</span>覚えておくこと
+            </button>
           </div>
 
           <div style={{ padding:'12px', marginTop:'auto' }}>
@@ -331,17 +388,19 @@ export default function App() {
         {/* ── MAIN ── */}
         <div className="main">
           <div className="topbar">
-            {isProjectView && (
-              <button type="button" className="btn btn-ghost btn-sm" onClick={() => setView('projects')} aria-label="プロジェクト一覧に戻る">
+            {(isProjectView || view.startsWith('c:')) && (
+              <button type="button" className="btn btn-ghost btn-sm" onClick={() => setView(isProjectView ? 'projects' : 'clients')} aria-label="一覧に戻る">
                 ← 戻る
               </button>
             )}
             <button className="hamburger" onClick={() => setSidebarOpen(true)}>☰</button>
             <div className="topbar-title">{viewTitle()}</div>
-            <button className="btn btn-ghost btn-sm" onClick={() => setShowDone(!showDone)}>
-              {showDone ? '完了を非表示' : '完了を表示'}
-            </button>
-            {!isProjectView && view !== 'projects' && view !== 'templates' && (
+            {view !== 'clients' && !view.startsWith('c:') && (
+              <button className="btn btn-ghost btn-sm" onClick={() => setShowDone(!showDone)}>
+                {showDone ? '完了を非表示' : '完了を表示'}
+              </button>
+            )}
+            {!isProjectView && view !== 'projects' && view !== 'templates' && view !== 'clients' && !view.startsWith('c:') && (
               <button className="btn btn-primary" onClick={() => setShowTaskForm(true)}>+ 追加</button>
             )}
           </div>
@@ -362,6 +421,67 @@ export default function App() {
                 showDone={showDone}
               />
             )}
+
+            {/* 覚えておくこと（クライアントごと・プロジェクトと別） */}
+            {view === 'clients' && (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+                  <button type="button" className="btn btn-primary" onClick={() => setShowClientForm(true)}>
+                    + クライアント追加
+                  </button>
+                </div>
+                {clients.length === 0 ? (
+                  <div className="empty-state">
+                    <div className="empty-icon">🤝</div>
+                    <p>クライアントがありません</p>
+                    <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '8px' }}>
+                      取引先・担当先を追加すると、そのクライアントごとに「今後に向けて覚えておくこと」をメモできます。プロジェクトとは別で残ります。
+                    </p>
+                    <button type="button" className="btn btn-primary" onClick={() => setShowClientForm(true)}>
+                      最初のクライアントを追加
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {clients.map(c => (
+                      <button
+                        key={c.id}
+                        type="button"
+                        className="sidebar-item"
+                        style={{ textAlign: 'left', justifyContent: 'flex-start', padding: '14px 16px' }}
+                        onClick={() => { setView('c:' + c.id); setSidebarOpen(false) }}
+                      >
+                        <span style={{ background: `${c.color}30`, padding: '6px 10px', borderRadius: '8px', marginRight: '12px' }}>{c.icon}</span>
+                        {c.name}
+                        <span style={{ marginLeft: 'auto', fontSize: '12px', color: 'var(--text-muted)' }}>
+                          {remembers.filter(r => r.clientId === c.id).length} 件
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+
+            {view.startsWith('c:') && (() => {
+              const clientId = view.slice(2)
+              const client = clients.find(c => c.id === clientId)
+              if (!client) return null
+              return (
+                <>
+                  <button type="button" className="btn btn-ghost btn-sm" style={{ marginBottom: '16px' }} onClick={() => setView('clients')}>
+                    ← クライアント一覧
+                  </button>
+                  <ClientDetail
+                    client={client}
+                    remembers={remembers.filter(r => r.clientId === client.id)}
+                    onAddRemember={addRemember}
+                    onUpdateRemember={updateRememberItem}
+                    onDeleteRemember={removeRemember}
+                  />
+                </>
+              )
+            })()}
 
             {/* PROJECTS OVERVIEW */}
             {view === 'projects' && (
@@ -452,6 +572,7 @@ export default function App() {
       )}
       {showProjForm && <ProjectForm onSave={saveProject} onClose={() => setShowProjForm(false)} />}
       {showTplForm  && <TemplateForm onSave={saveTemplate} onClose={() => setShowTplForm(false)} />}
+      {showClientForm && <ClientForm onSave={addClient} onClose={() => setShowClientForm(false)} />}
 
       <Toast toasts={toasts} />
     </>

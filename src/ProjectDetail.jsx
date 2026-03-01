@@ -1,5 +1,5 @@
 import { SORT_OPTIONS, priorityOrder } from './constants'
-import { isOverdue, isToday } from './utils'
+import { isOverdue } from './utils'
 import TaskCard from './TaskCard'
 
 export default function ProjectDetail({ project, tasks, projects, onToggle, onEditTask, onAddTask, sort, setSort, showDone }) {

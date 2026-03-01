@@ -32,6 +32,21 @@ function templateFromRow(row) {
   return { id: row.id, title: row.title, desc: row.desc ?? '', priority: row.priority ?? 'medium' }
 }
 
+function clientFromRow(row) {
+  if (!row) return null
+  return { id: row.id, name: row.name, color: row.color ?? '#2d6b3f', icon: row.icon ?? '🤝' }
+}
+
+function rememberFromRow(row) {
+  if (!row) return null
+  return {
+    id: row.id,
+    clientId: row.client_id,
+    body: row.body ?? '',
+    created: typeof row.created === 'number' ? row.created : Number(row.created) || 0,
+  }
+}
+
 // ── 取得 ─────────────────────────────────────────────────────
 export async function fetchProjects() {
   requireSupabase()
@@ -107,4 +122,56 @@ export async function insertTemplate(template) {
   const { data, error } = await supabase.from('tf_templates').insert(row).select().single()
   if (error) throw error
   return templateFromRow(data)
+}
+
+// ── クライアント（プロジェクトと別。取引先単位で覚えておくことを管理）────
+export async function fetchClients() {
+  requireSupabase()
+  const { data, error } = await supabase.from('tf_clients').select('*').order('id')
+  if (error) throw error
+  return (data ?? []).map(clientFromRow)
+}
+
+export async function insertClient(client) {
+  requireSupabase()
+  const row = { id: client.id, name: client.name, color: client.color, icon: client.icon }
+  const { data, error } = await supabase.from('tf_clients').insert(row).select().single()
+  if (error) throw error
+  return clientFromRow(data)
+}
+
+// ── 覚えておくこと（クライアントごと）────────────────────────────
+export async function fetchRemember() {
+  requireSupabase()
+  const { data, error } = await supabase.from('tf_remember').select('*').order('created', { ascending: false })
+  if (error) throw error
+  return (data ?? []).map(rememberFromRow)
+}
+
+export async function insertRemember(item) {
+  requireSupabase()
+  const row = {
+    id: item.id,
+    client_id: item.clientId,
+    body: item.body,
+    created: item.created,
+  }
+  const { data, error } = await supabase.from('tf_remember').insert(row).select().single()
+  if (error) throw error
+  return rememberFromRow(data)
+}
+
+export async function updateRemember(id, patch) {
+  requireSupabase()
+  const row = {}
+  if (patch.body !== undefined) row.body = patch.body
+  const { data, error } = await supabase.from('tf_remember').update(row).eq('id', id).select().single()
+  if (error) throw error
+  return rememberFromRow(data)
+}
+
+export async function deleteRemember(id) {
+  requireSupabase()
+  const { error } = await supabase.from('tf_remember').delete().eq('id', id)
+  if (error) throw error
 }
