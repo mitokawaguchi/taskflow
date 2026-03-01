@@ -539,7 +539,7 @@ export default function App() {
           </div>
 
           <div className="content">
-
+            <div key={view} className="content-view">
             {/* PROJECT DETAIL */}
             {isProjectView && currentProject && (
               <ProjectDetail
@@ -767,6 +767,7 @@ export default function App() {
               </>
             )}
 
+            </div>
           </div>
         </div>
       </div>
