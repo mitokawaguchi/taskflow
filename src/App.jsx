@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { PRIORITY, SORT_OPTIONS, priorityOrder, DEFAULT_PROJECTS, DEFAULT_TASKS } from './constants'
-import { load, save, today, isToday, isOverdue } from './utils'
+import { PRIORITY, SORT_OPTIONS, priorityOrder } from './constants'
+import { today, isToday, isOverdue } from './utils'
+import { fetchProjects, fetchTasks, fetchTemplates, insertProject, insertTask, updateTask, insertTemplate } from './api'
 import MorningModal from './MorningModal'
 import TaskCard from './TaskCard'
 import TaskForm from './TaskForm'
@@ -19,9 +20,10 @@ const SIDEBAR_MENU_ITEMS = [
 ]
 
 export default function App() {
-  const [tasks, setTasks] = useState(() => load('tf_tasks', DEFAULT_TASKS))
-  const [projects, setProjects] = useState(() => load('tf_projects', DEFAULT_PROJECTS))
-  const [templates, setTemplates] = useState(() => load('tf_templates', []))
+  const [tasks, setTasks] = useState([])
+  const [projects, setProjects] = useState([])
+  const [templates, setTemplates] = useState([])
+  const [loading, setLoading] = useState(true)
   const [view, setView] = useState('projects')
   const [sort, setSort] = useState('priority')
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -35,20 +37,36 @@ export default function App() {
   const [notifGranted, setNotifGranted] = useState(false)
   const [showMorning, setShowMorning] = useState(() => localStorage.getItem('tf_morning') !== today())
 
-  useEffect(() => { save('tf_tasks', tasks) }, [tasks])
-  useEffect(() => { save('tf_projects', projects) }, [projects])
-  useEffect(() => { save('tf_templates', templates) }, [templates])
+  const addToast = useCallback((icon, title, msg) => {
+    const id = Date.now()
+    setToasts(prev => [...prev, { id, icon, title, msg }])
+    setTimeout(() => setToasts(prev => prev.filter(x => x.id !== id)), TOAST_DURATION_MS)
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    async function load() {
+      try {
+        const [projs, ts, tpls] = await Promise.all([fetchProjects(), fetchTasks(), fetchTemplates()])
+        if (!cancelled) {
+          setProjects(projs)
+          setTasks(ts)
+          setTemplates(tpls)
+        }
+      } catch (e) {
+        if (!cancelled) addToast('❌', '読み込みエラー', e?.message ?? 'データを取得できませんでした')
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    load()
+    return () => { cancelled = true }
+  }, [addToast])
 
   useEffect(() => {
     if (typeof globalThis.window !== 'undefined' && 'Notification' in globalThis && globalThis.Notification.permission === 'granted') {
       setNotifGranted(true)
     }
-  }, [])
-
-  const addToast = useCallback((icon, title, msg) => {
-    const id = Date.now()
-    setToasts(prev => [...prev, { id, icon, title, msg }])
-    setTimeout(() => setToasts(prev => prev.filter(x => x.id !== id)), TOAST_DURATION_MS)
   }, [])
 
   useEffect(() => {
@@ -81,36 +99,60 @@ export default function App() {
     setTaskFormProjectId(null)
   }, [])
 
-  const saveTask = useCallback((form) => {
-    if (editTask?.id) {
-      setTasks(ts => ts.map(t => (t.id === editTask.id ? { ...t, ...form } : t)))
-      addToast('✏️', 'タスクを更新しました', form.title)
-    } else {
-      const newTask = { ...form, id: 't' + Date.now(), done: false, created: Date.now() }
-      setTasks(ts => [newTask, ...ts])
-      addToast('✅', 'タスクを追加しました', form.title)
+  const saveTask = useCallback(async (form) => {
+    try {
+      if (editTask?.id) {
+        const updated = await updateTask(editTask.id, form)
+        setTasks(ts => ts.map(t => (t.id === updated.id ? updated : t)))
+        addToast('✏️', 'タスクを更新しました', form.title)
+      } else {
+        const newTask = { ...form, id: 't' + Date.now(), done: false, created: Date.now() }
+        const created = await insertTask(newTask)
+        setTasks(ts => [created, ...ts])
+        addToast('✅', 'タスクを追加しました', form.title)
+      }
+      closeTaskForm()
+    } catch (e) {
+      addToast('❌', '保存できませんでした', e?.message ?? '')
     }
-    closeTaskForm()
   }, [editTask?.id, addToast, closeTaskForm])
 
-  const toggleTask = useCallback((id) => {
+  const toggleTask = useCallback(async (id) => {
     const task = tasks.find(t => t.id === id)
-    const willComplete = task && !task.done
-    setTasks(ts => ts.map(t => (t.id !== id ? t : { ...t, done: !t.done })))
-    if (willComplete) addToast('🎉', '完了！', task.title)
+    if (!task) return
+    const willComplete = !task.done
+    try {
+      const updated = await updateTask(id, { done: willComplete })
+      setTasks(ts => ts.map(t => (t.id === id ? updated : t)))
+      if (willComplete) addToast('🎉', '完了！', task.title)
+    } catch (e) {
+      addToast('❌', '更新できませんでした', e?.message ?? '')
+    }
   }, [tasks, addToast])
 
-  const saveProject = (form) => {
-    setProjects(ps => [...ps, { ...form, id: 'p' + Date.now() }])
-    setShowProjForm(false)
-    addToast('📁', 'プロジェクト作成', form.name)
-  }
+  const saveProject = useCallback(async (form) => {
+    try {
+      const project = { ...form, id: 'p' + Date.now() }
+      const created = await insertProject(project)
+      setProjects(ps => [...ps, created])
+      setShowProjForm(false)
+      addToast('📁', 'プロジェクト作成', form.name)
+    } catch (e) {
+      addToast('❌', '作成できませんでした', e?.message ?? '')
+    }
+  }, [addToast])
 
-  const saveTemplate = (form) => {
-    setTemplates(ts => [...ts, { ...form, id: 'tpl' + Date.now() }])
-    setShowTplForm(false)
-    addToast('📋', 'テンプレート保存', form.title)
-  }
+  const saveTemplate = useCallback(async (form) => {
+    try {
+      const template = { ...form, id: 'tpl' + Date.now() }
+      const created = await insertTemplate(template)
+      setTemplates(ts => [...ts, created])
+      setShowTplForm(false)
+      addToast('📋', 'テンプレート保存', form.title)
+    } catch (e) {
+      addToast('❌', '保存できませんでした', e?.message ?? '')
+    }
+  }, [addToast])
 
   // ── Filtered & sorted tasks ──────────────────────────────
   const filteredTasks = tasks.filter(t => {
@@ -209,6 +251,14 @@ export default function App() {
   }, [editTask, taskFormProjectId, isProjectView, view])
 
   // ── Render ───────────────────────────────────────────────
+  if (loading) {
+    return (
+      <div className="app" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+        <p style={{ color: 'var(--text-muted)' }}>読み込み中...</p>
+      </div>
+    )
+  }
+
   return (
     <>
       {showMorning && (

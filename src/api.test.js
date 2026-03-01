@@ -1,0 +1,169 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+
+vi.mock('./supabase', () => ({
+  supabase: {
+    from: vi.fn(),
+  },
+}))
+
+function mockSelectOrder(data) {
+  return {
+    select: () => ({
+      order: () => Promise.resolve({ data: data ?? [], error: null }),
+    }),
+  }
+}
+
+function mockInsertSingle(data) {
+  return {
+    insert: () => ({
+      select: () => ({
+        single: () => Promise.resolve({ data, error: null }),
+      }),
+    }),
+  }
+}
+
+function mockUpdateSingle(data) {
+  return {
+    update: () => ({
+      eq: () => ({
+        select: () => ({
+          single: () => Promise.resolve({ data, error: null }),
+        }),
+      }),
+    }),
+  }
+}
+
+describe('api', () => {
+  beforeEach(async () => {
+    vi.resetModules()
+    const { supabase } = await import('./supabase')
+    supabase.from.mockReturnValue(mockSelectOrder([]))
+  })
+
+  describe('fetchProjects', () => {
+    it('returns empty array when no data', async () => {
+      const { fetchProjects } = await import('./api')
+      const result = await fetchProjects()
+      expect(result).toEqual([])
+    })
+    it('maps rows to app shape', async () => {
+      const { supabase } = await import('./supabase')
+      const { fetchProjects } = await import('./api')
+      supabase.from.mockReturnValue(
+        mockSelectOrder([{ id: 'p1', name: 'Test', color: '#fff', icon: '📁' }])
+      )
+      const result = await fetchProjects()
+      expect(result).toEqual([{ id: 'p1', name: 'Test', color: '#fff', icon: '📁' }])
+    })
+  })
+
+  describe('fetchTasks', () => {
+    it('returns empty array when no data', async () => {
+      const { fetchTasks } = await import('./api')
+      const result = await fetchTasks()
+      expect(result).toEqual([])
+    })
+    it('maps project_id to projectId and created to number', async () => {
+      const { supabase } = await import('./supabase')
+      const { fetchTasks } = await import('./api')
+      const row = {
+        id: 't1',
+        project_id: 'p1',
+        title: 'Task',
+        desc: 'd',
+        priority: 'high',
+        due: '2025-03-20',
+        done: false,
+        created: '12345',
+      }
+      supabase.from.mockReturnValue(mockSelectOrder([row]))
+      const result = await fetchTasks()
+      expect(result[0].projectId).toBe('p1')
+      expect(result[0].title).toBe('Task')
+      expect(result[0].created).toBe(12345)
+    })
+  })
+
+  describe('fetchTemplates', () => {
+    it('returns empty array when no data', async () => {
+      const { fetchTemplates } = await import('./api')
+      const result = await fetchTemplates()
+      expect(result).toEqual([])
+    })
+  })
+
+  describe('insertProject', () => {
+    it('returns project in app shape', async () => {
+      const { supabase } = await import('./supabase')
+      const { insertProject } = await import('./api')
+      const project = { id: 'p99', name: 'N', color: '#000', icon: '📂' }
+      supabase.from.mockReturnValue(mockInsertSingle(project))
+      const result = await insertProject(project)
+      expect(result).toEqual(project)
+    })
+  })
+
+  describe('insertTask', () => {
+    it('returns task with projectId', async () => {
+      const { supabase } = await import('./supabase')
+      const { insertTask } = await import('./api')
+      const row = {
+        id: 't1',
+        project_id: 'p1',
+        title: 'T',
+        desc: '',
+        priority: 'medium',
+        due: null,
+        done: false,
+        created: 999,
+      }
+      supabase.from.mockReturnValue(mockInsertSingle(row))
+      const result = await insertTask({
+        id: 't1',
+        projectId: 'p1',
+        title: 'T',
+        desc: '',
+        priority: 'medium',
+        due: null,
+        done: false,
+        created: 999,
+      })
+      expect(result.projectId).toBe('p1')
+    })
+  })
+
+  describe('updateTask', () => {
+    it('returns updated task in app shape', async () => {
+      const { supabase } = await import('./supabase')
+      const { updateTask } = await import('./api')
+      const updated = {
+        id: 't1',
+        project_id: 'p2',
+        title: 'Updated',
+        desc: '',
+        priority: 'medium',
+        due: null,
+        done: true,
+        created: 111,
+      }
+      supabase.from.mockReturnValue(mockUpdateSingle(updated))
+      const result = await updateTask('t1', { done: true })
+      expect(result.projectId).toBe('p2')
+      expect(result.done).toBe(true)
+    })
+  })
+
+  describe('insertTemplate', () => {
+    it('returns template in app shape', async () => {
+      const { supabase } = await import('./supabase')
+      const { insertTemplate } = await import('./api')
+      const template = { id: 'tpl1', title: 'Tpl', desc: '', priority: 'low' }
+      supabase.from.mockReturnValue(mockInsertSingle(template))
+      const result = await insertTemplate(template)
+      expect(result).toEqual(template)
+    })
+  })
+})
