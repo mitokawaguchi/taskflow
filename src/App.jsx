@@ -11,6 +11,11 @@ import { arrayMove, SortableContext, useSortable, rectSortingStrategy } from '@d
 import { CSS } from '@dnd-kit/utilities'
 import { PRIORITY, SORT_OPTIONS, priorityOrder } from './constants'
 import { today, isToday, isOverdue, formatTodayDisplay, endDateLabel } from './utils'
+
+const FILTER_PRIORITY_OPTIONS = [
+  { key: '', label: 'すべて' },
+  ...Object.entries(PRIORITY).map(([key, { label }]) => ({ key, label })),
+]
 import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, insertProject, updateProject, insertTask, updateTask, insertTemplate, insertRemember, updateRemember, deleteRemember, insertClient } from './api'
 import MorningModal from './MorningModal'
 import TaskCard from './TaskCard'
@@ -102,6 +107,8 @@ export default function App() {
   const [showClientForm, setShowClientForm] = useState(false)
   const [view, setView] = useState('projects')
   const [sort, setSort] = useState('priority')
+  const [filterProjectId, setFilterProjectId] = useState('')
+  const [filterPriority, setFilterPriority] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [showTaskForm, setShowTaskForm] = useState(false)
   const [editTask, setEditTask] = useState(null)
@@ -305,9 +312,15 @@ export default function App() {
   // ── Filtered & sorted tasks ──────────────────────────────
   const filteredTasks = tasks.filter(t => {
     if (!showDone && t.done) return false
-    if (view === 'all')     return true
-    if (view === 'today')   return isToday(t.due) || isOverdue(t.due)
-    if (view === 'overdue') return isOverdue(t.due) && !t.done
+    if (view === 'all')     { /* continue */ }
+    else if (view === 'today')   { if (!isToday(t.due) && !isOverdue(t.due)) return false }
+    else if (view === 'overdue') { if (!isOverdue(t.due) || t.done) return false }
+    else return true
+    // 絞り込み（すべてのタスク・今日・期限超過で共通）
+    if ((view === 'all' || view === 'today' || view === 'overdue')) {
+      if (filterProjectId && t.projectId !== filterProjectId) return false
+      if (filterPriority && t.priority !== filterPriority) return false
+    }
     return true
   })
 
@@ -764,8 +777,45 @@ export default function App() {
             {/* ALL / TODAY / OVERDUE TASKS */}
             {(view === 'all' || view === 'today' || view === 'overdue') && (
               <>
+                <div className="filter-bar">
+                  <span className="sort-label">絞り込み</span>
+                  <div className="filter-group">
+                    <span className="filter-group-label">プロジェクト:</span>
+                    <button
+                      type="button"
+                      className={`sort-chip ${filterProjectId === '' ? 'active' : ''}`}
+                      onClick={() => setFilterProjectId('')}
+                    >
+                      すべて
+                    </button>
+                    {projects.map(p => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        className={`sort-chip ${filterProjectId === p.id ? 'active' : ''}`}
+                        onClick={() => setFilterProjectId(filterProjectId === p.id ? '' : p.id)}
+                        title={p.name}
+                      >
+                        {p.icon} {p.name}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="filter-group">
+                    <span className="filter-group-label">優先度:</span>
+                    {FILTER_PRIORITY_OPTIONS.map(opt => (
+                      <button
+                        key={opt.key || '_all'}
+                        type="button"
+                        className={`sort-chip ${filterPriority === opt.key ? 'active' : ''}`}
+                        onClick={() => setFilterPriority(opt.key)}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 <div className="sort-bar">
-                  <span className="sort-label">並び替え:</span>
+                  <span className="sort-label">ソート:</span>
                   {SORT_OPTIONS.map(s => (
                     <button key={s.key} className={`sort-chip ${sort===s.key?'active':''}`} onClick={() => setSort(s.key)}>{s.label}</button>
                   ))}
@@ -773,8 +823,14 @@ export default function App() {
                 {sortedTasks.length === 0 ? (
                   <div className="empty-state">
                     <div className="empty-icon">✨</div>
-                    <p>タスクがありません</p>
-                    <button className="btn btn-primary" onClick={() => setShowTaskForm(true)}>タスクを追加</button>
+                    <p>{(filterProjectId || filterPriority) ? '条件に合うタスクがありません' : 'タスクがありません'}</p>
+                    {(filterProjectId || filterPriority) ? (
+                      <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setFilterProjectId(''); setFilterPriority('') }}>
+                        絞り込みを解除
+                      </button>
+                    ) : (
+                      <button className="btn btn-primary" onClick={() => setShowTaskForm(true)}>タスクを追加</button>
+                    )}
                   </div>
                 ) : (
                   <div className="cards-grid cards-grid--compact">

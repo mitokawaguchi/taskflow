@@ -98,7 +98,7 @@ export default function ProjectDetail({ project, tasks, projects, onToggle, onEd
       </div>
 
       <div className="sort-bar">
-        <span className="sort-label">並び替え:</span>
+        <span className="sort-label">ソート:</span>
         {SORT_OPTIONS.map(s => (
           <button key={s.key} className={`sort-chip ${sort===s.key?'active':''}`} onClick={() => setSort(s.key)}>{s.label}</button>
         ))}

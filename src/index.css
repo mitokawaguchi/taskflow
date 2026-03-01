@@ -136,6 +136,11 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 
 .content { padding: 24px 28px; flex: 1; }
 
+.filter-bar { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+.filter-bar .sort-label { margin-right: 8px; }
+.filter-group { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.filter-group-label { color: var(--text-muted); font-size: 11px; margin-right: 6px; flex-shrink: 0; }
+
 .sort-bar { display: flex; gap: 8px; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
 .sort-label { color: var(--text-muted); font-size: 12px; margin-right: 4px; }
 .sort-chip {
