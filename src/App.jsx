@@ -9,13 +9,10 @@ import {
 } from '@dnd-kit/core'
 import { arrayMove, SortableContext, useSortable, rectSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { PRIORITY, SORT_OPTIONS, priorityOrder } from './constants'
+import { PRIORITY, SORT_OPTIONS, priorityOrder, PRIORITY_KEYS } from './constants'
 import { today, isToday, isOverdue, formatTodayDisplay, endDateLabel } from './utils'
 
-const FILTER_PRIORITY_OPTIONS = [
-  { key: '', label: 'すべて' },
-  ...Object.entries(PRIORITY).map(([key, { label }]) => ({ key, label })),
-]
+const PRIORITY_OPTIONS = Object.entries(PRIORITY).map(([key, { label }]) => ({ key, label }))
 import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, insertProject, updateProject, insertTask, updateTask, insertTemplate, insertRemember, updateRemember, deleteRemember, insertClient } from './api'
 import MorningModal from './MorningModal'
 import TaskCard from './TaskCard'
@@ -107,8 +104,12 @@ export default function App() {
   const [showClientForm, setShowClientForm] = useState(false)
   const [view, setView] = useState('projects')
   const [sort, setSort] = useState('priority')
-  const [filterProjectId, setFilterProjectId] = useState('')
-  const [filterPriority, setFilterPriority] = useState('')
+  const [filterProjectIds, setFilterProjectIds] = useState([])
+  const [filterPriorities, setFilterPriorities] = useState([])
+  const [filterDueFrom, setFilterDueFrom] = useState('')
+  const [filterDueTo, setFilterDueTo] = useState('')
+  const [filterPriorityFrom, setFilterPriorityFrom] = useState('')
+  const [filterPriorityTo, setFilterPriorityTo] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [showTaskForm, setShowTaskForm] = useState(false)
   const [editTask, setEditTask] = useState(null)
@@ -310,16 +311,25 @@ export default function App() {
   }, [addToast])
 
   // ── Filtered & sorted tasks ──────────────────────────────
+  const hasAnyFilter = filterProjectIds.length > 0 || filterPriorities.length > 0 ||
+    filterDueFrom || filterDueTo || filterPriorityFrom || filterPriorityTo
+
   const filteredTasks = tasks.filter(t => {
     if (!showDone && t.done) return false
     if (view === 'all')     { /* continue */ }
     else if (view === 'today')   { if (!isToday(t.due) && !isOverdue(t.due)) return false }
     else if (view === 'overdue') { if (!isOverdue(t.due) || t.done) return false }
     else return true
-    // 絞り込み（すべてのタスク・今日・期限超過で共通）
-    if ((view === 'all' || view === 'today' || view === 'overdue')) {
-      if (filterProjectId && t.projectId !== filterProjectId) return false
-      if (filterPriority && t.priority !== filterPriority) return false
+    if (view !== 'all' && view !== 'today' && view !== 'overdue') return true
+    if (filterProjectIds.length > 0 && !filterProjectIds.includes(t.projectId)) return false
+    if (filterPriorities.length > 0 && !filterPriorities.includes(t.priority)) return false
+    if (filterDueFrom && (!t.due || t.due < filterDueFrom)) return false
+    if (filterDueTo && (!t.due || t.due > filterDueTo)) return false
+    if (filterPriorityFrom !== '' || filterPriorityTo !== '') {
+      const from = filterPriorityFrom === '' ? 0 : (priorityOrder[filterPriorityFrom] ?? 0)
+      const to = filterPriorityTo === '' ? 3 : (priorityOrder[filterPriorityTo] ?? 3)
+      const o = priorityOrder[t.priority] ?? 2
+      if (o < from || o > to) return false
     }
     return true
   })
@@ -783,35 +793,48 @@ export default function App() {
                     <span className="filter-group-label">プロジェクト:</span>
                     <button
                       type="button"
-                      className={`sort-chip ${filterProjectId === '' ? 'active' : ''}`}
-                      onClick={() => setFilterProjectId('')}
+                      className={`sort-chip ${filterProjectIds.length === 0 ? 'active' : ''}`}
+                      onClick={() => setFilterProjectIds([])}
                     >
                       すべて
                     </button>
-                    {projects.map(p => (
-                      <button
-                        key={p.id}
-                        type="button"
-                        className={`sort-chip ${filterProjectId === p.id ? 'active' : ''}`}
-                        onClick={() => setFilterProjectId(filterProjectId === p.id ? '' : p.id)}
-                        title={p.name}
-                      >
-                        {p.icon} {p.name}
-                      </button>
-                    ))}
+                    {projects.map(p => {
+                      const on = filterProjectIds.includes(p.id)
+                      return (
+                        <button
+                          key={p.id}
+                          type="button"
+                          className={`sort-chip ${on ? 'active' : ''}`}
+                          onClick={() => setFilterProjectIds(prev => on ? prev.filter(id => id !== p.id) : [...prev, p.id])}
+                          title={p.name}
+                        >
+                          {p.icon} {p.name}
+                        </button>
+                      )
+                    })}
                   </div>
                   <div className="filter-group">
                     <span className="filter-group-label">優先度:</span>
-                    {FILTER_PRIORITY_OPTIONS.map(opt => (
-                      <button
-                        key={opt.key || '_all'}
-                        type="button"
-                        className={`sort-chip ${filterPriority === opt.key ? 'active' : ''}`}
-                        onClick={() => setFilterPriority(opt.key)}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
+                    <button
+                      type="button"
+                      className={`sort-chip ${filterPriorities.length === 0 ? 'active' : ''}`}
+                      onClick={() => setFilterPriorities([])}
+                    >
+                      すべて
+                    </button>
+                    {PRIORITY_OPTIONS.map(opt => {
+                      const on = filterPriorities.includes(opt.key)
+                      return (
+                        <button
+                          key={opt.key}
+                          type="button"
+                          className={`sort-chip ${on ? 'active' : ''}`}
+                          onClick={() => setFilterPriorities(prev => on ? prev.filter(k => k !== opt.key) : [...prev, opt.key])}
+                        >
+                          {opt.label}
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
                 <div className="sort-bar">
@@ -820,12 +843,66 @@ export default function App() {
                     <button key={s.key} className={`sort-chip ${sort===s.key?'active':''}`} onClick={() => setSort(s.key)}>{s.label}</button>
                   ))}
                 </div>
+                {/* ソートに連動した絞り込み: 期限＝いつから〜いつまで、重要度＝ランクから〜ランクまで */}
+                {(sort === 'due' || sort === 'priority') && (
+                <div className="filter-bar sort-filter-bar">
+                  {sort === 'due' && (
+                    <div className="filter-group">
+                      <span className="filter-group-label">期限:</span>
+                      <label className="filter-range-label">
+                        いつから
+                        <input type="date" className="form-input filter-date" value={filterDueFrom} onChange={e => setFilterDueFrom(e.target.value)} />
+                      </label>
+                      <span className="filter-range-sep">〜</span>
+                      <label className="filter-range-label">
+                        いつまで
+                        <input type="date" className="form-input filter-date" value={filterDueTo} onChange={e => setFilterDueTo(e.target.value)} />
+                      </label>
+                    </div>
+                  )}
+                  {sort === 'priority' && (
+                    <div className="filter-group">
+                      <span className="filter-group-label">重要度ランク:</span>
+                      <label className="filter-range-label">
+                        から
+                        <select className="form-input filter-select" value={filterPriorityFrom} onChange={e => setFilterPriorityFrom(e.target.value)}>
+                          <option value="">指定なし</option>
+                          {PRIORITY_KEYS.map(k => (
+                            <option key={k} value={k}>{PRIORITY[k].label}</option>
+                          ))}
+                        </select>
+                      </label>
+                      <span className="filter-range-sep">〜</span>
+                      <label className="filter-range-label">
+                        まで
+                        <select className="form-input filter-select" value={filterPriorityTo} onChange={e => setFilterPriorityTo(e.target.value)}>
+                          <option value="">指定なし</option>
+                          {PRIORITY_KEYS.map(k => (
+                            <option key={k} value={k}>{PRIORITY[k].label}</option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                  )}
+                </div>
+                )}
                 {sortedTasks.length === 0 ? (
                   <div className="empty-state">
                     <div className="empty-icon">✨</div>
-                    <p>{(filterProjectId || filterPriority) ? '条件に合うタスクがありません' : 'タスクがありません'}</p>
-                    {(filterProjectId || filterPriority) ? (
-                      <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setFilterProjectId(''); setFilterPriority('') }}>
+                    <p>{hasAnyFilter ? '条件に合うタスクがありません' : 'タスクがありません'}</p>
+                    {hasAnyFilter ? (
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-sm"
+                        onClick={() => {
+                          setFilterProjectIds([])
+                          setFilterPriorities([])
+                          setFilterDueFrom('')
+                          setFilterDueTo('')
+                          setFilterPriorityFrom('')
+                          setFilterPriorityTo('')
+                        }}
+                      >
                         絞り込みを解除
                       </button>
                     ) : (

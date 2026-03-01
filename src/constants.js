@@ -13,6 +13,8 @@ export const SORT_OPTIONS = [
 ]
 
 export const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 }
+/** 重要度の範囲絞り込み用（緊急→低の順） */
+export const PRIORITY_KEYS = ['critical', 'high', 'medium', 'low']
 
 export const DEFAULT_PROJECTS = [
   { id: 'p1', name: '個人',          color: '#2d6b3f', icon: '👤' },
