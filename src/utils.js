@@ -1,13 +1,23 @@
 export const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d } catch { return d } }
 export const save = (k, v) => localStorage.setItem(k, JSON.stringify(v))
 
-export const today    = () => new Date().toISOString().slice(0, 10)
-export const isToday  = (d) => d === today()
+/** ローカル日付の「今日」を YYYY-MM-DD で返す（タイムゾーンずれを防ぐ） */
+export const today = () => {
+  const d = new Date()
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+export const isToday = (d) => d && d === today()
 export const isTomorrow = (d) => {
   if (!d) return false
-  const t = new Date(today())
+  const t = new Date()
   t.setDate(t.getDate() + 1)
-  return d === t.toISOString().slice(0, 10)
+  const y = t.getFullYear()
+  const m = String(t.getMonth() + 1).padStart(2, '0')
+  const day = String(t.getDate()).padStart(2, '0')
+  return d === `${y}-${m}-${day}`
 }
 export const isOverdue = (d) => d && d < today()
 

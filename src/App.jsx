@@ -628,7 +628,7 @@ export default function App() {
                     </button>
                   </div>
                 ) : (
-                  <div className="projects-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
+                  <div className="projects-grid clients-grid">
                     {clients.map(c => {
                       const clientRemembers = remembers.filter(r => r.clientId === c.id)
                       return (

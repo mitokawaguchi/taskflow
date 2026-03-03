@@ -117,8 +117,8 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 }
 .project-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
-.main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
-.content { position: relative; }
+.main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-width: 0; overflow-x: hidden; }
+.clients-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
 /* 画面切り替え時：メインエリアのコンテンツが右からスライドイン（全遷移で共通） */
 .content-view {
   animation: contentViewIn 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -147,7 +147,7 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 .btn-ghost:hover { color: var(--text); border-color: var(--text-muted); }
 .btn-sm { padding: 5px 12px; font-size: 12px; }
 
-.content { padding: 24px 28px; flex: 1; }
+.content { position: relative; min-width: 0; padding: 24px 28px; flex: 1; }
 
 .filter-toggle {
   display: inline-flex; align-items: center; gap: 8px;
@@ -654,11 +654,70 @@ select { appearance: none; }
   }
   .sidebar.open { transform: translateX(0); }
   .sidebar-backdrop { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 49; }
-  .hamburger { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface2); cursor: pointer; font-size: 18px; color: var(--text); margin-right: 8px; }
-  .topbar { padding: 14px 16px; }
-  .content { padding: 16px; }
+  .hamburger { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface2); cursor: pointer; font-size: 18px; color: var(--text); margin-right: 8px; flex-shrink: 0; }
+  .topbar {
+    padding: 12px 14px;
+    padding-left: max(14px, env(safe-area-inset-left));
+    padding-right: max(14px, env(safe-area-inset-right));
+    padding-top: max(12px, env(safe-area-inset-top));
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .topbar-title {
+    order: 0;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 16px;
+  }
+  .topbar .btn,
+  .topbar .btn-sm {
+    flex-shrink: 0;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  .topbar .btn-ghost:not([aria-label]) {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .content {
+    padding: 14px 12px;
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+  }
   .cards-grid { grid-template-columns: 1fr; }
-  .projects-grid { grid-template-columns: 1fr 1fr; }
-  .proj-detail-stats { grid-template-columns: repeat(2,1fr); }
-  .proj-detail-title { flex-wrap: wrap; }
+  .cards-grid.cards-grid--compact { gap: 8px; }
+  .projects-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .clients-grid { grid-template-columns: 1fr !important; }
+  .proj-detail-stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .proj-detail-title { flex-wrap: wrap; gap: 10px; }
+  .proj-detail-title .proj-detail-name { font-size: 18px; }
+  .proj-detail-header { padding: 16px; margin-bottom: 16px; }
+  .proj-detail-title > div:last-of-type { flex-basis: 100%; margin-left: 0; margin-top: 4px; }
+  .filter-group { gap: 6px; }
+  .filter-group .sort-chip { width: 72px; min-width: 0; padding: 6px 4px; font-size: 11px; }
+  .filter-group--project .sort-chip { width: 100px; max-width: 140px; }
+  .filter-date,
+  .filter-select { min-width: 0; width: 100%; max-width: 160px; padding: 6px 8px; font-size: 12px; }
+  .filter-bar .filter-group { flex-wrap: wrap; }
+  .sort-bar { flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .sort-bar .sort-chip { flex: 1 1 auto; min-width: 0; max-width: none; }
+  .filter-toggle { padding: 6px 10px; font-size: 12px; }
+  .overlay { padding: 12px; align-items: flex-start; overflow-y: auto; }
+  .modal { max-width: none; width: 100%; margin: 0; max-height: none; min-height: 0; padding: 20px; }
+  .morning-overlay { padding: 16px; }
+  .morning-tasks { max-height: 50vh; }
+  .morning-header h1 { font-size: clamp(22px, 5vw, 32px); }
+}
+@media (max-width: 480px) {
+  .topbar { padding: 10px 12px; }
+  .topbar-title { font-size: 15px; }
+  .projects-grid { grid-template-columns: 1fr; }
+  .project-card { padding: 14px; }
+  .project-name { font-size: 14px; }
+  .project-card-tasks { max-height: 120px; }
 }
