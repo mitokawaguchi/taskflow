@@ -48,14 +48,24 @@ function SortableProjectCard({ item, setView, toggleTask, openTaskFormForProject
     opacity: isDragging ? 0.4 : 1,
   }
   return (
-    <div ref={setNodeRef} style={style} className={`project-card ${isDragging ? 'project-card-dragging' : ''}`} {...attributes} {...listeners}>
-      <button
-        type="button"
-        className="project-card-header project-card-clickable"
-        onClick={() => setView(`p:${p.id}`)}
-      >
-        <span className="project-card-drag-handle" aria-hidden>⋮⋮</span>
-        <div className="project-icon" style={{ background: `${p.color}20` }}>{p.icon}</div>
+    <div ref={setNodeRef} style={style} className={`project-card ${isDragging ? 'project-card-dragging' : ''}`}>
+      <div className="project-card-header">
+        <span
+          className="project-card-drag-handle"
+          {...attributes}
+          {...listeners}
+          aria-label="並び順を変える"
+          title="ドラッグで並び替え"
+        >
+          ⋮⋮
+        </span>
+        <button
+          type="button"
+          className="project-card-clickable"
+          onClick={() => setView(`p:${p.id}`)}
+          style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '10px', border: 'none', background: 'none', padding: 0, font: 'inherit', color: 'inherit', cursor: 'pointer', textAlign: 'left', minWidth: 0 }}
+        >
+          <div className="project-icon" style={{ background: `${p.color}20` }}>{p.icon}</div>
         <div>
           <div className="project-name">{p.name}</div>
           <div className="project-count">
@@ -63,7 +73,8 @@ function SortableProjectCard({ item, setView, toggleTask, openTaskFormForProject
             {p.endDate && <span className="project-due"> · {endDateLabel(p.endDate)}</span>}
           </div>
         </div>
-      </button>
+        </button>
+      </div>
       <div className="project-progress" onClick={() => setView(`p:${p.id}`)}>
         <div className="project-progress-fill" style={{ width: `${pct}%`, background: p.color }} />
       </div>
@@ -451,7 +462,7 @@ export default function App() {
 
   const [dragActiveId, setDragActiveId] = useState(null)
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 4 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   )
 
   const isProjectView = view.startsWith('p:')

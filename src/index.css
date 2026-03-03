@@ -40,7 +40,7 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-.app { display: flex; height: 100vh; overflow: hidden; }
+.app { display: flex; height: 100vh; height: 100dvh; overflow: hidden; }
 .sidebar {
   width: 240px; min-width: 240px;
   background: var(--surface);
@@ -548,11 +548,9 @@ select { appearance: none; }
   border-radius: 12px; padding: 20px;
   transition: all 0.18s;
 }
-.project-card-header.project-card-clickable {
-  cursor: pointer; border: none; background: none; width: 100%; text-align: left; padding: 0; font: inherit; color: inherit;
-}
-.project-card-clickable:hover + .project-progress { background: var(--surface2); }
 .project-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.project-card-clickable { cursor: pointer; border: none; background: none; width: 100%; text-align: left; padding: 0; font: inherit; color: inherit; }
+.project-card-header:has(.project-card-clickable:hover) + .project-progress { background: var(--surface2); }
 .project-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
 .project-name { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; }
 .project-count { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
@@ -584,8 +582,13 @@ select { appearance: none; }
 .project-card-add-task { width: 100%; margin-top: 8px; justify-content: center; font-size: 11px; }
 .project-card-dragging { opacity: 0.4; transition: none; }
 .project-card-overlay { transition: none; cursor: grabbing; box-shadow: 0 12px 32px rgba(0,0,0,0.35); }
-.project-card-drag-handle { margin-right: 6px; color: var(--text-muted); cursor: grab; font-size: 14px; user-select: none; }
-.project-card:active .project-card-drag-handle { cursor: grabbing; }
+.project-card-drag-handle {
+  margin-right: 6px; color: var(--text-muted); cursor: grab; font-size: 14px; user-select: none;
+  flex-shrink: 0;
+  padding: 8px; margin: -8px 6px -8px -8px; /* タッチで掴みやすく */
+  touch-action: none;
+}
+.project-card-drag-handle:active { cursor: grabbing; }
 
 .proj-detail-header {
   background: var(--surface); border-radius: 16px;
@@ -688,6 +691,8 @@ select { appearance: none; }
     padding: 14px 12px;
     padding-left: max(12px, env(safe-area-inset-left));
     padding-right: max(12px, env(safe-area-inset-right));
+    /* 最下部がChrome等のブラウザUIに隠れないよう余白を確保 */
+    padding-bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 64px));
   }
   .cards-grid { grid-template-columns: 1fr; }
   .cards-grid.cards-grid--compact { gap: 8px; }
@@ -707,9 +712,21 @@ select { appearance: none; }
   .sort-bar { flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
   .sort-bar .sort-chip { flex: 1 1 auto; min-width: 0; max-width: none; }
   .filter-toggle { padding: 6px 10px; font-size: 12px; }
-  .overlay { padding: 12px; align-items: flex-start; overflow-y: auto; }
-  .modal { max-width: none; width: 100%; margin: 0; max-height: none; min-height: 0; padding: 20px; }
-  .morning-overlay { padding: 16px; }
+  .overlay {
+    padding: 12px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom) + 48px);
+    align-items: flex-start;
+    overflow-y: auto;
+  }
+  .modal {
+    max-width: none; width: 100%; margin: 0; max-height: none; min-height: 0;
+    padding: 20px;
+    padding-bottom: max(20px, env(safe-area-inset-bottom) + 32px);
+  }
+  .morning-overlay {
+    padding: 16px;
+    padding-bottom: max(16px, env(safe-area-inset-bottom) + 56px);
+  }
   .morning-tasks { max-height: 50vh; }
   .morning-header h1 { font-size: clamp(22px, 5vw, 32px); }
 }
