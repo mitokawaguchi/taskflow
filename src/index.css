@@ -503,12 +503,25 @@ select { appearance: none; }
   border-radius: 12px; padding: 14px 18px;
   display: flex; align-items: center; gap: 14px;
 }
+.morning-task--overdue {
+  background: var(--critical-bg);
+  border: 2px solid var(--critical);
+  box-shadow: 0 0 0 1px var(--critical-border);
+}
+.morning-task--overdue .morning-task-title { color: var(--critical); font-weight: 700; }
+.morning-task--overdue .morning-task-meta { color: var(--critical); }
+.morning-task-overdue-badge {
+  font-size: 11px; font-weight: 700; font-family: 'Sora', sans-serif;
+  background: var(--critical); color: #fff;
+  padding: 4px 10px; border-radius: 6px;
+  white-space: nowrap;
+}
 .morning-task .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink:0; }
 .morning-task-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 600; }
 .morning-task-meta { font-size: 14px; color: var(--text-muted); margin-top: 6px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .morning-task-proj { margin-right: 0; }
 .morning-task-due { font-weight: 600; color: var(--text); }
-.morning-task-due.overdue { color: var(--critical); }
+.morning-task-due.overdue { color: var(--critical); font-weight: 700; }
 .morning-task-due.today,
 .morning-task-due.today-or-tomorrow { color: var(--critical); font-weight: 700; }
 .morning-empty { color: var(--text-muted); text-align: center; font-size: 15px; padding: 20px; }

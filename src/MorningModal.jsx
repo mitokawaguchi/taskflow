@@ -2,8 +2,7 @@ import { PRIORITY } from './constants'
 import { isToday, isTomorrow, isOverdue, formatDate } from './utils'
 
 export default function MorningModal({ tasks, projects, onClose }) {
-  const todayTasks = tasks.filter(t => !t.done && (isToday(t.due) || isOverdue(t.due)))
-  const show = todayTasks.length > 0 ? todayTasks : tasks.filter(t => !t.done).slice(0, 5)
+  const show = tasks.filter(t => !t.done && (isToday(t.due) || isOverdue(t.due)))
 
   const now = new Date()
   const greeting = now.getHours() < 12 ? 'おはようございます' : 'こんにちは'
@@ -23,18 +22,26 @@ export default function MorningModal({ tasks, projects, onClose }) {
         ) : show.map(t => {
           const proj = projects.find(p => p.id === t.projectId)
           return (
-            <div key={t.id} className="morning-task">
-              <div className="dot" style={{ background: PRIORITY[t.priority].color }} />
+            <div key={t.id} className={`morning-task ${isOverdue(t.due) ? 'morning-task--overdue' : ''}`}>
+              <div className="dot" style={{ background: isOverdue(t.due) ? 'var(--critical)' : PRIORITY[t.priority].color }} />
               <div style={{ flex: 1 }}>
                 <div className="morning-task-title">{t.title}</div>
                 <div className="morning-task-meta">
                   {proj && <span className="morning-task-proj">{proj.icon} {proj.name}</span>}
-                  {t.due && <span className={`morning-task-due ${isOverdue(t.due) ? 'overdue' : isToday(t.due) || isTomorrow(t.due) ? 'today-or-tomorrow' : ''}`}>{formatDate(t.due)}</span>}
+                  {t.due && (
+                    <span className={`morning-task-due ${isOverdue(t.due) ? 'overdue' : isToday(t.due) || isTomorrow(t.due) ? 'today-or-tomorrow' : ''}`}>
+                      {isOverdue(t.due) ? '🚨 期限超過 ' : ''}{formatDate(t.due)}
+                    </span>
+                  )}
                 </div>
               </div>
-              <div style={{ fontSize:'11px', background:`${PRIORITY[t.priority].color}20`, color:PRIORITY[t.priority].color, padding:'2px 8px', borderRadius:'4px', fontFamily:'Sora,sans-serif', fontWeight:'700' }}>
-                {PRIORITY[t.priority].label}
-              </div>
+              {isOverdue(t.due) ? (
+                <span className="morning-task-overdue-badge">期限超過</span>
+              ) : (
+                <div style={{ fontSize:'11px', background:`${PRIORITY[t.priority].color}20`, color:PRIORITY[t.priority].color, padding:'2px 8px', borderRadius:'4px', fontFamily:'Sora,sans-serif', fontWeight:'700' }}>
+                  {PRIORITY[t.priority].label}
+                </div>
+              )}
             </div>
           )
         })}

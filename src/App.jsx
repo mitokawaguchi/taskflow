@@ -25,6 +25,8 @@ import ClientDetail from './ClientDetail'
 import Toast from './Toast'
 
 const DUE_TODAY_CHECK_DELAY_MS = 2000
+const DUE_TODAY_NOTIFY_THROTTLE_MS = 60 * 60 * 1000 // 1時間に1回まで
+const DUE_TODAY_NOTIFY_STORAGE_KEY = 'taskflow_due_today_notified_at'
 const TOAST_DURATION_MS = 4000
 const SIDEBAR_MENU_ITEMS = [
   { key: 'projects', icon: '📁', label: 'プロジェクト' },
@@ -161,12 +163,15 @@ export default function App() {
   useEffect(() => {
     const checkDueToday = () => {
       const dueToday = tasks.filter(t => !t.done && isToday(t.due))
-      if (dueToday.length > 0) {
-        addToast('⚠️', `今日が期限: ${dueToday.length}件`, dueToday.map(t => t.title).join('、'))
-        if (notifGranted) {
-          new globalThis.Notification('TaskFlow — 今日の期限', { body: dueToday.map(t => t.title).join('\n') })
-          if ('vibrate' in navigator) navigator.vibrate([200, 100, 200, 100, 400])
-        }
+      if (dueToday.length === 0) return
+      const now = Date.now()
+      const lastAt = parseInt(localStorage.getItem(DUE_TODAY_NOTIFY_STORAGE_KEY) ?? '0', 10)
+      if (now - lastAt < DUE_TODAY_NOTIFY_THROTTLE_MS) return
+      localStorage.setItem(DUE_TODAY_NOTIFY_STORAGE_KEY, String(now))
+      addToast('⚠️', `今日が期限: ${dueToday.length}件`, dueToday.map(t => t.title).join('、'))
+      if (notifGranted) {
+        new globalThis.Notification('TaskFlow — 今日の期限', { body: dueToday.map(t => t.title).join('\n') })
+        if ('vibrate' in navigator) navigator.vibrate([200, 100, 200, 100, 400])
       }
     }
     const timer = setTimeout(checkDueToday, DUE_TODAY_CHECK_DELAY_MS)
