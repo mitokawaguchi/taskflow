@@ -172,6 +172,16 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    if (typeof document === 'undefined') return
+    if (sidebarOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [sidebarOpen])
+
+  useEffect(() => {
     const checkDueToday = () => {
       const dueToday = tasks.filter(t => !t.done && isToday(t.due))
       if (dueToday.length === 0) return
@@ -491,8 +501,8 @@ export default function App() {
         }} />
       )}
 
-      <div className="app">
-        {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />}
+      <div className={`app ${sidebarOpen ? 'sidebar-open' : ''}`}>
+        {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} aria-hidden="true" />}
 
         <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
           <div className="sidebar-header">
@@ -515,6 +525,9 @@ export default function App() {
           {!notifGranted && (
             <div style={{ padding:'12px', margin:'8px 12px', background:'var(--accent-glow)', border:'1px solid var(--accent)', borderRadius:'8px' }}>
               <div style={{ fontSize:'12px', fontWeight:'600', marginBottom:'4px' }}>🔔 通知を有効化</div>
+              <p style={{ fontSize:'11px', color:'var(--text-muted)', marginBottom:'8px', lineHeight:1.4 }}>
+                アプリを開いたときに「今日が期限」のタスクがあれば通知します。スマホではバックグラウンド通知には未対応です。
+              </p>
               <button className="btn btn-primary btn-sm" style={{ width:'100%' }} onClick={requestNotif}>許可する</button>
             </div>
           )}

@@ -656,7 +656,12 @@ select { appearance: none; }
     z-index: 50; transform: translateX(-100%);
   }
   .sidebar.open { transform: translateX(0); }
-  .sidebar-backdrop { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 49; }
+  .sidebar-backdrop {
+    display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 49;
+    touch-action: none;
+    overflow: hidden;
+  }
+  .app.sidebar-open .main { overflow: hidden; touch-action: none; }
   .hamburger { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface2); cursor: pointer; font-size: 18px; color: var(--text); margin-right: 8px; flex-shrink: 0; }
   .topbar {
     padding: 12px 14px;
