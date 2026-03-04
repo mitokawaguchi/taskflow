@@ -345,7 +345,7 @@ export default function App() {
   const filteredTasks = tasks.filter(t => {
     if (!showDone && t.done) return false
     if (view === 'all')     { /* continue */ }
-    else if (view === 'today')   { if (!isToday(t.due) && !isOverdue(t.due)) return false }
+    else if (view === 'today')   { if (!isToday(t.due)) return false }
     else if (view === 'overdue') { if (!isOverdue(t.due) || t.done) return false }
     else return true
     if (view !== 'all' && view !== 'today' && view !== 'overdue') return true
@@ -370,7 +370,7 @@ export default function App() {
     return 0
   })
 
-  const todayCount   = tasks.filter(t => !t.done && (isToday(t.due) || isOverdue(t.due))).length
+  const todayCount   = tasks.filter(t => !t.done && isToday(t.due)).length
   const overdueCount = tasks.filter(t => !t.done && isOverdue(t.due)).length
 
   const viewTitle = useCallback(() => {
