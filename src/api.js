@@ -13,6 +13,7 @@ const TASK_STATUS_KEYS = ['todo', 'in_progress', 'review', 'done']
 function taskFromRow(row) {
   if (!row) return null
   const status = TASK_STATUS_KEYS.includes(row.status) ? row.status : (row.done ? 'done' : 'todo')
+  const progress = row.progress != null && row.progress >= 0 && row.progress <= 100 ? row.progress : null
   return {
     id: row.id,
     title: row.title,
@@ -22,6 +23,8 @@ function taskFromRow(row) {
     due: row.due ?? '',
     done: status === 'done' || Boolean(row.done),
     status,
+    startDate: row.start_date ?? '',
+    progress,
     created: typeof row.created === 'number' ? row.created : Number(row.created) || 0,
   }
 }
@@ -122,6 +125,8 @@ export async function insertTask(task) {
     due: task.due || null,
     done: status === 'done',
     status,
+    start_date: task.startDate || null,
+    progress: task.progress != null && task.progress >= 0 && task.progress <= 100 ? task.progress : null,
     created: task.created,
   }
   const { data, error } = await supabase.from('tf_tasks').insert(row).select().single()
@@ -144,6 +149,8 @@ export async function updateTask(id, patch) {
   } else if (patch.done !== undefined) {
     row.status = patch.done ? 'done' : 'todo'
   }
+  if (patch.startDate !== undefined) row.start_date = patch.startDate || null
+  if (patch.progress !== undefined) row.progress = (patch.progress >= 0 && patch.progress <= 100) ? patch.progress : null
   const { data, error } = await supabase.from('tf_tasks').update(row).eq('id', id).select().single()
   if (error) throw error
   return taskFromRow(data)

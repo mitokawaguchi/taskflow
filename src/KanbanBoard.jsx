@@ -11,7 +11,7 @@ import { formatDate, isOverdue } from './utils'
 
 function KanbanCard({ task, projects, onClick, isOverlay }) {
   const proj = projects.find(p => p.id === task.projectId)
-  const progress = progressFromStatus(task.status)
+  const progress = task.progress != null ? task.progress : progressFromStatus(task.status)
   const over = isOverdue(task.due)
 
   const cardBody = (
@@ -61,7 +61,7 @@ function DraggableKanbanCard({ task, projects, onClick }) {
     data: { task },
   })
   const proj = projects.find(p => p.id === task.projectId)
-  const progress = progressFromStatus(task.status)
+  const progress = task.progress != null ? task.progress : progressFromStatus(task.status)
   const over = isOverdue(task.due)
 
   return (
