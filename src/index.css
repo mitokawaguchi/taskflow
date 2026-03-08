@@ -710,6 +710,20 @@ select { appearance: none; }
 .kanban-card:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 .kanban-card--dragging { opacity: 0.5; }
 .kanban-card--overlay { cursor: grabbing; box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+.kanban-card--draggable { display: flex; align-items: flex-start; gap: 4px; }
+.kanban-card__drag-handle {
+  flex-shrink: 0;
+  cursor: grab;
+  touch-action: none;
+  padding: 6px 4px;
+  margin: -6px 0 -6px -4px;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1;
+  user-select: none;
+}
+.kanban-card__drag-handle:active { cursor: grabbing; }
+.kanban-card__clickable { flex: 1; min-width: 0; position: relative; cursor: pointer; }
 .kanban-card__bar {
   position: absolute;
   left: 0;

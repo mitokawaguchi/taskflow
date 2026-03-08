@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import {
   DndContext,
   DragOverlay,
@@ -69,31 +69,43 @@ function DraggableKanbanCard({ task, projects, onClick }) {
       ref={setNodeRef}
       className={`kanban-card kanban-card--draggable ${isDragging ? 'kanban-card--dragging' : ''}`}
       style={transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` } : undefined}
-      {...listeners}
-      {...attributes}
-      onClick={e => { e.stopPropagation(); onClick(task) }}
-      role="button"
-      tabIndex={0}
     >
-      <div className={`kanban-card__bar kanban-card__bar--${task.priority}`} />
-      <div className="kanban-card__body">
-        <div className="kanban-card__title">{task.title}</div>
-        {proj && (
-          <div className="kanban-card__meta" style={{ color: proj.color }}>
-            {proj.icon} {proj.name}
-          </div>
-        )}
-        <div className="kanban-card__progress">
-          <div className="kanban-card__progress-bar" style={{ width: `${progress}%` }} />
-          <span className="kanban-card__progress-text">{progress}%</span>
-        </div>
-        <div className="kanban-card__footer">
-          {task.due && (
-            <span className={`kanban-card__due ${over ? 'overdue' : ''}`}>
-              📅 {formatDate(task.due)}
-            </span>
+      <span
+        className="kanban-card__drag-handle"
+        {...listeners}
+        {...attributes}
+        aria-label="ドラッグで列を移動"
+        title="ドラッグで移動"
+      >
+        ⋮⋮
+      </span>
+      <div
+        className="kanban-card__clickable"
+        onClick={e => { e.stopPropagation(); onClick(task) }}
+        onKeyDown={e => e.key === 'Enter' && onClick(task)}
+        role="button"
+        tabIndex={0}
+      >
+        <div className={`kanban-card__bar kanban-card__bar--${task.priority}`} />
+        <div className="kanban-card__body">
+          <div className="kanban-card__title">{task.title}</div>
+          {proj && (
+            <div className="kanban-card__meta" style={{ color: proj.color }}>
+              {proj.icon} {proj.name}
+            </div>
           )}
-          <span className={`priority-badge ${task.priority}`}>{PRIORITY[task.priority].label}</span>
+          <div className="kanban-card__progress">
+            <div className="kanban-card__progress-bar" style={{ width: `${progress}%` }} />
+            <span className="kanban-card__progress-text">{progress}%</span>
+          </div>
+          <div className="kanban-card__footer">
+            {task.due && (
+              <span className={`kanban-card__due ${over ? 'overdue' : ''}`}>
+                📅 {formatDate(task.due)}
+              </span>
+            )}
+            <span className={`priority-badge ${task.priority}`}>{PRIORITY[task.priority].label}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -127,6 +139,8 @@ function DroppableColumn({ id, title, count, children, onAddTask }) {
 }
 
 export default function KanbanBoard({ tasks, projects, onMoveTask, onEditTask, onAddTask }) {
+  const dragProcessedRef = useRef(null)
+
   const byStatus = useCallback(() => {
     const map = { todo: [], in_progress: [], review: [], done: [] }
     for (const t of tasks) {
@@ -139,8 +153,16 @@ export default function KanbanBoard({ tasks, projects, onMoveTask, onEditTask, o
   const handleDragEnd = useCallback(
     event => {
       const { active, over } = event
-      if (!over) return
+      if (!over) {
+        dragProcessedRef.current = null
+        return
+      }
       const taskId = active.id
+      // 同一ドラッグで onMoveTask が二重に呼ばれて重複更新されないよう1回だけ処理
+      if (dragProcessedRef.current === taskId) return
+      dragProcessedRef.current = taskId
+      setTimeout(() => { dragProcessedRef.current = null }, 300)
+
       let targetStatus = null
       if (TASK_STATUS_KEYS.includes(over.id)) {
         targetStatus = over.id
