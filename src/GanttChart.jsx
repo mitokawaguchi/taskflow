@@ -4,7 +4,7 @@ import { today, formatDate } from './utils'
 const ROW_HEIGHT = 36
 const DAY_WIDTH = 28
 
-export default function GanttChart({ tasks, projects }) {
+export default function GanttChart({ tasks, projects, onEditTask }) {
   const [range, setRange] = useState('week') // 'day' | 'week' | 'month'
 
   const { startDate, endDate, days } = useMemo(() => {
@@ -42,7 +42,7 @@ export default function GanttChart({ tasks, projects }) {
   const tasksWithDue = useMemo(() => {
     return tasks
       .filter(t => t.due && t.due >= startDate && t.due <= endDate)
-      .slice(0, 30)
+      .slice(0, 50)
   }, [tasks, startDate, endDate])
 
   return (
@@ -74,18 +74,33 @@ export default function GanttChart({ tasks, projects }) {
           ))}
           {tasksWithDue.flatMap(t => {
             const proj = projects.find(p => p.id === t.projectId)
+            const handleOpen = () => onEditTask?.(t)
             return [
-              <div key={`${t.id}-l`} className="gantt-cell gantt-cell--label">
+              <div
+                key={`${t.id}-l`}
+                className="gantt-cell gantt-cell--label gantt-cell--clickable"
+                onClick={handleOpen}
+                onKeyDown={e => e.key === 'Enter' && handleOpen()}
+                role="button"
+                tabIndex={0}
+                title="クリックでタスクを編集"
+              >
                 <span className="gantt-cell__title">{t.title}</span>
                 {proj && <span className="gantt-cell__proj" style={{ color: proj.color }}>{proj.icon}</span>}
               </div>,
               ...days.map(d => (
-                <div key={`${t.id}-${d}`} className={`gantt-cell ${d === todayStr ? 'today' : ''}`}>
+                <div
+                  key={`${t.id}-${d}`}
+                  className={`gantt-cell ${d === todayStr ? 'today' : ''}`}
+                  onClick={handleOpen}
+                  role="button"
+                  tabIndex={0}
+                >
                   {t.due === d && (
                     <div
                       className="gantt-bar"
                       style={{ background: proj?.color || 'var(--accent)' }}
-                      title={`${t.title} — ${formatDate(t.due)}`}
+                      title={`${t.title} — ${formatDate(t.due)}（クリックで編集）`}
                     />
                   )}
                 </div>

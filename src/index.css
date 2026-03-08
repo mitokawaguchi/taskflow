@@ -806,7 +806,7 @@ select { appearance: none; }
   border: 1px solid var(--border);
 }
 .gantt-head--label { border-right: none; }
-.gantt-head.today { background: var(--critical-bg); color: var(--critical); }
+.gantt-head.today { background: var(--critical-bg); color: var(--critical); border-left: 2px dashed var(--critical); }
 .gantt-cell {
   padding: 4px;
   border: 1px solid var(--border);
@@ -816,7 +816,9 @@ select { appearance: none; }
 .gantt-cell--label { border-right: none; font-size: 12px; }
 .gantt-cell__title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
 .gantt-cell__proj { margin-left: 4px; }
-.gantt-cell.today { background: rgba(255,69,96,0.06); }
+.gantt-cell.today { background: rgba(255,69,96,0.06); border-left: 2px dashed var(--critical); }
+.gantt-cell--clickable { cursor: pointer; }
+.gantt-cell--clickable:hover { background: var(--surface2); }
 .gantt-bar { height: 20px; border-radius: 4px; margin: 4px 0; }
 
 .hamburger { display: none; }

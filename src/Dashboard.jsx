@@ -17,7 +17,7 @@ export default function Dashboard({ tasks, projects }) {
       const done = ptasks.filter(t => t.done).length
       const pct = ptasks.length ? Math.round((done / ptasks.length) * 100) : 0
       return { project: p, total: ptasks.length, done, pct }
-    }).filter(x => x.total > 0)
+    })
   }, [tasks, projects])
 
   const recentTasks = useMemo(() => {
@@ -54,8 +54,8 @@ export default function Dashboard({ tasks, projects }) {
       <div className="dashboard-section">
         <h2 className="dashboard-section__title">プロジェクト別進捗</h2>
         <div className="dashboard-projects">
-          {projectProgress.length === 0 ? (
-            <p className="dashboard-empty">タスクがありません</p>
+          {projects.length === 0 ? (
+            <p className="dashboard-empty">プロジェクトがありません</p>
           ) : (
             projectProgress.map(({ project, total, done, pct }) => (
               <div key={project.id} className="dashboard-proj">

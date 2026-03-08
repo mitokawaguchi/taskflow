@@ -858,7 +858,7 @@ export default function App() {
                 tasks={tasks}
                 projects={projects}
                 onMoveTask={moveTaskStatus}
-                onEditTask={setEditTask}
+                onEditTask={(task) => { setEditTask(task); setShowTaskForm(true) }}
                 onAddTask={openTaskFormForKanbanColumn}
               />
             )}
@@ -868,7 +868,11 @@ export default function App() {
             )}
 
             {view === 'gantt' && (
-              <GanttChart tasks={tasks} projects={projects} />
+              <GanttChart
+                tasks={tasks}
+                projects={projects}
+                onEditTask={(task) => { setEditTask(task); setShowTaskForm(true) }}
+              />
             )}
 
             {(view === 'all' || view === 'today' || view === 'overdue') && (
