@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import { PRIORITY } from './constants'
+import { PRIORITY, TASK_STATUS, TASK_STATUS_KEYS } from './constants'
 import { formatDate, isToday, isTomorrow } from './utils'
 import CalendarPicker from './CalendarPicker'
 
 export default function TaskForm({ task, projects, templates, onSave, onClose }) {
   const [form, setForm] = useState(
     task
-      ? { title:'', desc:'', priority:'medium', projectId: projects[0]?.id || '', due:'', done:false, ...task }
-      : { title:'', desc:'', priority:'medium', projectId: projects[0]?.id || '', due:'', done:false }
+      ? { title:'', desc:'', priority:'medium', projectId: projects[0]?.id || '', due:'', done:false, status:'todo', ...task }
+      : { title:'', desc:'', priority:'medium', projectId: task?.projectId ?? projects[0]?.id ?? '', due:'', done:false, status: task?.status ?? 'todo' }
   )
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
@@ -65,6 +65,14 @@ export default function TaskForm({ task, projects, templates, onSave, onClose })
           <label className="form-label">プロジェクト</label>
           <select className="form-select" value={form.projectId} onChange={e => set('projectId', e.target.value)}>
             {projects.map(p => <option key={p.id} value={p.id}>{p.icon} {p.name}</option>)}
+          </select>
+        </div>
+        <div className="form-group">
+          <label className="form-label">状態</label>
+          <select className="form-select" value={form.status || 'todo'} onChange={e => set('status', e.target.value)}>
+            {TASK_STATUS_KEYS.map(k => (
+              <option key={k} value={k}>{TASK_STATUS[k].label}</option>
+            ))}
           </select>
         </div>
         <div className="modal-actions">

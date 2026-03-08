@@ -7,9 +7,12 @@ function requireSupabase() {
   if (!supabase) throw new Error(CONFIG_MSG)
 }
 
+const TASK_STATUS_KEYS = ['todo', 'in_progress', 'review', 'done']
+
 // DB の行 → アプリで使う形に変換
 function taskFromRow(row) {
   if (!row) return null
+  const status = TASK_STATUS_KEYS.includes(row.status) ? row.status : (row.done ? 'done' : 'todo')
   return {
     id: row.id,
     title: row.title,
@@ -17,7 +20,8 @@ function taskFromRow(row) {
     priority: row.priority ?? 'medium',
     projectId: row.project_id,
     due: row.due ?? '',
-    done: Boolean(row.done),
+    done: status === 'done' || Boolean(row.done),
+    status,
     created: typeof row.created === 'number' ? row.created : Number(row.created) || 0,
   }
 }
@@ -108,6 +112,7 @@ export async function updateProject(id, patch) {
 // ── タスク追加・更新 ─────────────────────────────────────────
 export async function insertTask(task) {
   requireSupabase()
+  const status = task.status && TASK_STATUS_KEYS.includes(task.status) ? task.status : (task.done ? 'done' : 'todo')
   const row = {
     id: task.id,
     project_id: task.projectId,
@@ -115,7 +120,8 @@ export async function insertTask(task) {
     desc: task.desc ?? '',
     priority: task.priority ?? 'medium',
     due: task.due || null,
-    done: Boolean(task.done),
+    done: status === 'done',
+    status,
     created: task.created,
   }
   const { data, error } = await supabase.from('tf_tasks').insert(row).select().single()
@@ -132,6 +138,12 @@ export async function updateTask(id, patch) {
   if (patch.projectId !== undefined) row.project_id = patch.projectId
   if (patch.due !== undefined) row.due = patch.due || null
   if (patch.done !== undefined) row.done = patch.done
+  if (patch.status !== undefined) {
+    row.status = TASK_STATUS_KEYS.includes(patch.status) ? patch.status : (patch.done ? 'done' : 'todo')
+    row.done = row.status === 'done'
+  } else if (patch.done !== undefined) {
+    row.status = patch.done ? 'done' : 'todo'
+  }
   const { data, error } = await supabase.from('tf_tasks').update(row).eq('id', id).select().single()
   if (error) throw error
   return taskFromRow(data)

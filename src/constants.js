@@ -5,6 +5,21 @@ export const PRIORITY = {
   low:      { label: '低',   color: '#06d6a0' },
 }
 
+/** カンバン用タスク状態 */
+export const TASK_STATUS = {
+  todo:        { key: 'todo',        label: '未着手' },
+  in_progress: { key: 'in_progress', label: '進行中' },
+  review:      { key: 'review',      label: 'レビュー中' },
+  done:        { key: 'done',        label: '完了' },
+}
+export const TASK_STATUS_KEYS = ['todo', 'in_progress', 'review', 'done']
+
+/** 状態から進捗率を算出（%）。未指定時用 */
+export function progressFromStatus(status) {
+  const map = { todo: 0, in_progress: 50, review: 80, done: 100 }
+  return map[status] ?? 0
+}
+
 export const SORT_OPTIONS = [
   { key: 'priority', label: '重要度' },
   { key: 'due',      label: '期限' },

@@ -23,6 +23,9 @@ import ProjectDetail from './ProjectDetail'
 import ClientForm from './ClientForm'
 import ClientDetail from './ClientDetail'
 import Toast from './Toast'
+import KanbanBoard from './KanbanBoard'
+import Dashboard from './Dashboard'
+import GanttChart from './GanttChart'
 
 const DUE_TODAY_CHECK_DELAY_MS = 2000
 const DUE_TODAY_NOTIFY_THROTTLE_MS = 60 * 60 * 1000 // 1時間に1回まで
@@ -33,6 +36,9 @@ const SIDEBAR_MENU_ITEMS = [
   { key: 'all', icon: '📋', label: 'すべてのタスク' },
   { key: 'today', icon: '☀️', label: '今日', badgeKey: 'todayCount' },
   { key: 'overdue', icon: '🚨', label: '期限超過', badgeKey: 'overdueCount' },
+  { key: 'kanban', icon: '📌', label: 'カンバン' },
+  { key: 'dashboard', icon: '📊', label: 'ダッシュボード' },
+  { key: 'gantt', icon: '📅', label: 'ガント' },
 ]
 
 function SortableProjectCard({ item, setView, toggleTask, openTaskFormForProject }) {
@@ -208,10 +214,13 @@ export default function App() {
     }
   }, [addToast])
 
+  const [kanbanAddStatus, setKanbanAddStatus] = useState(null)
+
   const closeTaskForm = useCallback(() => {
     setShowTaskForm(false)
     setEditTask(null)
     setTaskFormProjectId(null)
+    setKanbanAddStatus(null)
   }, [])
 
   const saveTask = useCallback(async (form) => {
@@ -221,7 +230,8 @@ export default function App() {
         setTasks(ts => ts.map(t => (t.id === updated.id ? updated : t)))
         addToast('✏️', 'タスクを更新しました', form.title)
       } else {
-        const newTask = { ...form, id: 't' + Date.now(), done: false, created: Date.now() }
+        const status = form.status || 'todo'
+        const newTask = { ...form, id: 't' + Date.now(), done: status === 'done', status, created: Date.now() }
         const created = await insertTask(newTask)
         setTasks(ts => [created, ...ts])
         addToast('✅', 'タスクを追加しました', form.title)
@@ -237,13 +247,29 @@ export default function App() {
     if (!task) return
     const willComplete = !task.done
     try {
-      const updated = await updateTask(id, { done: willComplete })
+      const updated = await updateTask(id, { done: willComplete, status: willComplete ? 'done' : 'todo' })
       setTasks(ts => ts.map(t => (t.id === id ? updated : t)))
       if (willComplete) addToast('🎉', '完了！', task.title)
     } catch (e) {
       addToast('❌', '更新できませんでした', e?.message ?? '')
     }
   }, [tasks, addToast])
+
+  const moveTaskStatus = useCallback(async (taskId, newStatus) => {
+    try {
+      const updated = await updateTask(taskId, { status: newStatus, done: newStatus === 'done' })
+      setTasks(ts => ts.map(t => (t.id === taskId ? updated : t)))
+    } catch (e) {
+      addToast('❌', '状態の更新に失敗しました', e?.message ?? '')
+    }
+  }, [addToast])
+
+  const openTaskFormForKanbanColumn = useCallback((columnStatus) => {
+    setKanbanAddStatus(columnStatus)
+    setEditTask(null)
+    setTaskFormProjectId(null)
+    setShowTaskForm(true)
+  }, [])
 
   const saveProject = useCallback(async (form) => {
     try {
@@ -377,6 +403,9 @@ export default function App() {
     if (view === 'all') return 'すべてのタスク'
     if (view === 'today') return '今日のタスク'
     if (view === 'overdue') return '期限超過'
+    if (view === 'kanban') return 'カンバン'
+    if (view === 'dashboard') return 'ダッシュボード'
+    if (view === 'gantt') return 'ガントチャート'
     if (view === 'projects') return 'プロジェクト'
     if (view === 'templates') return 'テンプレート'
     if (view === 'clients') return '覚えておくこと'
@@ -481,8 +510,9 @@ export default function App() {
   const taskFormInitialTask = useMemo(() => {
     if (editTask) return editTask
     const projectId = taskFormProjectId ?? (isProjectView ? view.slice(2) : null)
-    return projectId ? { projectId } : null
-  }, [editTask, taskFormProjectId, isProjectView, view])
+    const status = kanbanAddStatus ?? null
+    return (projectId || status) ? { projectId: projectId || null, status } : null
+  }, [editTask, taskFormProjectId, isProjectView, view, kanbanAddStatus])
 
   // ── Render ───────────────────────────────────────────────
   if (loading) {
@@ -823,6 +853,24 @@ export default function App() {
             )}
 
             {/* ALL / TODAY / OVERDUE TASKS */}
+            {view === 'kanban' && (
+              <KanbanBoard
+                tasks={tasks}
+                projects={projects}
+                onMoveTask={moveTaskStatus}
+                onEditTask={setEditTask}
+                onAddTask={openTaskFormForKanbanColumn}
+              />
+            )}
+
+            {view === 'dashboard' && (
+              <Dashboard tasks={tasks} projects={projects} />
+            )}
+
+            {view === 'gantt' && (
+              <GanttChart tasks={tasks} projects={projects} />
+            )}
+
             {(view === 'all' || view === 'today' || view === 'overdue') && (
               <>
                 <button

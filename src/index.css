@@ -647,6 +647,178 @@ select { appearance: none; }
 .remember-actions { display: flex; gap: 8px; font-size: 12px; }
 .remember-delete { color: var(--critical); }
 
+/* カンバンボード */
+.kanban-board {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  min-height: 400px;
+}
+.kanban-column {
+  flex: 0 0 280px;
+  min-width: 280px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  transition: background 0.15s, border-color 0.15s;
+}
+.kanban-column--over { border-color: var(--accent); background: var(--accent-glow); }
+.kanban-column__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.kanban-column__title { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); }
+.kanban-column__badge {
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--surface3);
+  color: var(--text-muted);
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+.kanban-column__cards { flex: 1; display: flex; flex-direction: column; gap: 8px; min-height: 60px; }
+.kanban-column__add {
+  margin-top: 12px;
+  padding: 8px 0;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+.kanban-column__add:hover { text-decoration: underline; }
+.kanban-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: box-shadow 0.15s, border-color 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.kanban-card:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+.kanban-card--dragging { opacity: 0.5; }
+.kanban-card--overlay { cursor: grabbing; box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+.kanban-card__bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  border-radius: 8px 0 0 8px;
+}
+.kanban-card__bar--critical { background: var(--critical); }
+.kanban-card__bar--high { background: var(--high); }
+.kanban-card__bar--medium { background: var(--medium); }
+.kanban-card__bar--low { background: var(--low); }
+.kanban-card__body { padding-left: 10px; }
+.kanban-card__title { font-size: 13px; font-weight: 600; margin-bottom: 6px; line-height: 1.3; }
+.kanban-card__meta { font-size: 11px; margin-bottom: 6px; }
+.kanban-card__progress {
+  height: 6px;
+  background: var(--surface3);
+  border-radius: 3px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  position: relative;
+}
+.kanban-card__progress-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+.kanban-card__progress-text { font-size: 10px; color: var(--text-muted); }
+.kanban-card__footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.kanban-card__due { font-size: 12px; color: var(--text-muted); }
+.kanban-card__due.overdue { color: var(--critical); font-weight: 700; }
+
+/* ダッシュボード */
+.dashboard { display: flex; flex-direction: column; gap: 24px; }
+.dashboard-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.dashboard-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+.dashboard-card--critical .dashboard-card__val { color: var(--critical); }
+.dashboard-card__icon { font-size: 24px; margin-bottom: 8px; }
+.dashboard-card__val { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 800; }
+.dashboard-card__label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+.dashboard-section__title { font-size: 14px; font-weight: 700; color: var(--text-muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+.dashboard-projects { display: flex; flex-direction: column; gap: 12px; }
+.dashboard-proj { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+.dashboard-proj__head { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.dashboard-proj__name { font-weight: 600; }
+.dashboard-proj__pct { font-family: 'Sora', sans-serif; font-weight: 700; color: var(--accent); }
+.dashboard-proj__bar { height: 8px; background: var(--surface3); border-radius: 4px; overflow: hidden; }
+.dashboard-proj__fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+.dashboard-proj__meta { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+.dashboard-activity { list-style: none; padding: 0; margin: 0; }
+.dashboard-activity__item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.dashboard-activity__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.dashboard-activity__dot.done { background: var(--text-muted); }
+.dashboard-activity__title { flex: 1; }
+.dashboard-activity__meta { font-size: 11px; color: var(--text-muted); }
+.dashboard-empty { color: var(--text-muted); font-size: 13px; padding: 12px 0; }
+
+/* ガントチャート */
+.gantt { display: flex; flex-direction: column; gap: 12px; }
+.gantt-toolbar { display: flex; align-items: center; gap: 8px; }
+.gantt-toolbar__label { font-size: 12px; color: var(--text-muted); }
+.gantt-scroll { overflow-x: auto; }
+.gantt-grid {
+  display: grid;
+  gap: 0;
+  min-width: min-content;
+}
+.gantt-head {
+  padding: 8px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+}
+.gantt-head--label { border-right: none; }
+.gantt-head.today { background: var(--critical-bg); color: var(--critical); }
+.gantt-cell {
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-top: none;
+  min-height: 36px;
+}
+.gantt-cell--label { border-right: none; font-size: 12px; }
+.gantt-cell__title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+.gantt-cell__proj { margin-left: 4px; }
+.gantt-cell.today { background: rgba(255,69,96,0.06); }
+.gantt-bar { height: 20px; border-radius: 4px; margin: 4px 0; }
+
 .hamburger { display: none; }
 .sidebar-backdrop { display: none; }
 
@@ -702,6 +874,8 @@ select { appearance: none; }
   .cards-grid { grid-template-columns: 1fr; }
   .cards-grid.cards-grid--compact { gap: 8px; }
   .projects-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .dashboard-summary { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .dashboard-card__val { font-size: 22px; }
   .clients-grid { grid-template-columns: 1fr !important; }
   .proj-detail-stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .proj-detail-title { flex-wrap: wrap; gap: 10px; }
