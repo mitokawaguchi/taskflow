@@ -13,7 +13,7 @@ import { PRIORITY, SORT_OPTIONS, priorityOrder, PRIORITY_KEYS } from './constant
 import { today, isToday, isOverdue, formatTodayDisplay, endDateLabel } from './utils'
 
 const PRIORITY_OPTIONS = Object.entries(PRIORITY).map(([key, { label }]) => ({ key, label }))
-import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, insertProject, updateProject, insertTask, updateTask, insertTemplate, insertRemember, updateRemember, deleteRemember, insertClient } from './api'
+import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, fetchCategories, insertProject, updateProject, insertTask, updateTask, insertTemplate, insertRemember, updateRemember, deleteRemember, insertClient, insertCategory } from './api'
 import MorningModal from './MorningModal'
 import TaskCard from './TaskCard'
 import TaskForm from './TaskForm'
@@ -113,6 +113,120 @@ function SortableProjectCard({ item, setView, toggleTask, openTaskFormForProject
   )
 }
 
+const CATEGORY_COLOR_OPTIONS = [
+  { value: '#3b82f6', label: '青' },
+  { value: '#8b5cf6', label: '紫' },
+  { value: '#ef4444', label: '赤' },
+  { value: '#06b6d4', label: 'シアン' },
+  { value: '#6b7280', label: 'グレー' },
+  { value: '#ec4899', label: 'ピンク' },
+  { value: '#14b8a6', label: 'ティール' },
+  { value: '#f59e0b', label: 'オレンジ' },
+]
+
+function SettingsModal({ theme, setTheme, onClose, categories, setCategories, addToast }) {
+  const [newCatName, setNewCatName] = useState('')
+  const [newCatColor, setNewCatColor] = useState('#6b7280')
+  const [adding, setAdding] = useState(false)
+
+  const handleAddCategory = useCallback(async () => {
+    const name = newCatName.trim()
+    if (!name) return
+    setAdding(true)
+    try {
+      await insertCategory({
+        id: `cat${Date.now()}`,
+        name,
+        color: newCatColor,
+      })
+      const list = await fetchCategories()
+      setCategories(list)
+      setNewCatName('')
+      setNewCatColor('#6b7280')
+      addToast('✅', 'カテゴリを追加しました', name)
+    } catch (e) {
+      addToast('❌', '追加できませんでした', e?.message ?? 'Supabase の設定または tf_categories テーブルを確認してください')
+    } finally {
+      setAdding(false)
+    }
+  }, [newCatName, newCatColor, setCategories, addToast])
+
+  return (
+    <div className="overlay" onClick={onClose}>
+      <div className="modal settings-modal" onClick={e => e.stopPropagation()}>
+        <h2 className="modal-title">設定</h2>
+        <div className="form-group">
+          <span className="form-label">表示モード</span>
+          <div className="theme-toggle" style={{ marginTop: 8 }}>
+            <span className="theme-toggle__label">{theme === 'dark' ? 'ダーク' : 'ライト'}</span>
+            <button
+              type="button"
+              className="theme-toggle__switch"
+              aria-pressed={theme === 'dark'}
+              onClick={() => setTheme(t => (t === 'dark' ? 'light' : 'dark'))}
+            />
+          </div>
+        </div>
+
+        <div className="form-group" style={{ marginTop: 24 }}>
+          <span className="form-label">カテゴリ</span>
+          <p className="form-hint">タスクに付けるカテゴリを追加できます。</p>
+          <ul className="settings-category-list" aria-label="登録済みカテゴリ">
+            {categories.length === 0 ? (
+              <li className="settings-category-empty">Supabase でカテゴリを読み込んでいません（初期データを使用中）</li>
+            ) : (
+              categories.map(c => (
+                <li key={c.id} className="settings-category-item">
+                  <span
+                    className="settings-category-dot"
+                    style={{ background: c.color }}
+                    aria-hidden
+                  />
+                  <span>{c.name}</span>
+                </li>
+              ))
+            )}
+          </ul>
+          <div className="settings-category-add">
+            <input
+              type="text"
+              className="form-input"
+              placeholder="新しいカテゴリ名"
+              value={newCatName}
+              onChange={e => setNewCatName(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleAddCategory()}
+              aria-label="新しいカテゴリ名"
+            />
+            <select
+              className="form-select"
+              value={newCatColor}
+              onChange={e => setNewCatColor(e.target.value)}
+              aria-label="色"
+            >
+              {CATEGORY_COLOR_OPTIONS.map(opt => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={handleAddCategory}
+              disabled={adding || !newCatName.trim()}
+            >
+              {adding ? '追加中…' : '追加'}
+            </button>
+          </div>
+        </div>
+
+        <p style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 16 }}>通知・その他の設定は準備中です。</p>
+        <div className="modal-actions">
+          <button type="button" className="btn btn-primary" onClick={onClose}>閉じる</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function App() {
   const [tasks, setTasks] = useState([])
   const [projects, setProjects] = useState([])
@@ -142,6 +256,16 @@ export default function App() {
   const [showDone, setShowDone] = useState(false)
   const [notifGranted, setNotifGranted] = useState(false)
   const [showMorning, setShowMorning] = useState(() => localStorage.getItem('tf_morning') !== today())
+  const [theme, setTheme] = useState(() => localStorage.getItem('taskflow_theme') || 'light')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showSettings, setShowSettings] = useState(false)
+  const [categories, setCategories] = useState([])
+  const [showProfileModal, setShowProfileModal] = useState(false)
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark')
+    localStorage.setItem('taskflow_theme', theme)
+  }, [theme])
 
   const addToast = useCallback((icon, title, msg) => {
     const id = Date.now()
@@ -154,12 +278,19 @@ export default function App() {
     async function load() {
       try {
         const [projs, ts, tpls, clis, rems] = await Promise.all([fetchProjects(), fetchTasks(), fetchTemplates(), fetchClients(), fetchRemember()])
+        let cats = []
+        try {
+          cats = await fetchCategories()
+        } catch {
+          // tf_categories 未作成時はフォールバック用に空のまま
+        }
         if (!cancelled) {
           setProjects(projs)
           setTasks(ts)
           setTemplates(tpls)
           setClients(clis)
           setRemembers(rems)
+          setCategories(cats)
         }
       } catch (e) {
         if (!cancelled) addToast('❌', '読み込みエラー', e?.message ?? 'データを取得できませんでした')
@@ -370,6 +501,12 @@ export default function App() {
 
   const filteredTasks = tasks.filter(t => {
     if (!showDone && t.done) return false
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase()
+      const matchTitle = t.title && t.title.toLowerCase().includes(q)
+      const matchNotes = t.notes && String(t.notes).toLowerCase().includes(q)
+      if (!matchTitle && !matchNotes) return false
+    }
     if (view === 'all')     { /* continue */ }
     else if (view === 'today')   { if (!isToday(t.due)) return false }
     else if (view === 'overdue') { if (!isOverdue(t.due) || t.done) return false }
@@ -506,6 +643,22 @@ export default function App() {
 
   const isProjectView = view.startsWith('p:')
   const currentProject = isProjectView ? projects.find(p => p.id === view.slice(2)) : null
+  const isMainView = ['kanban', 'gantt', 'dashboard', 'all', 'today', 'overdue'].includes(view) || isProjectView
+  const viewTabs = [
+    { key: 'kanban', label: 'カンバン', icon: '📌' },
+    { key: 'gantt', label: 'タイムライン', icon: '📅' },
+    { key: 'dashboard', label: 'インサイト', icon: '📊' },
+  ]
+  const activeFilterCount = [filterProjectIds.length, filterPriorities.length, filterDueFrom, filterDueTo, filterPriorityFrom, filterPriorityTo].filter(Boolean).length
+  const tasksForBoard = useMemo(() => {
+    let list = tasks
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase()
+      list = list.filter(t => (t.title && t.title.toLowerCase().includes(q)) || (t.notes && String(t.notes).toLowerCase().includes(q)))
+    }
+    if (currentProject) list = list.filter(t => t.projectId === currentProject.id)
+    return list
+  }, [tasks, searchQuery, currentProject])
 
   const taskFormInitialTask = useMemo(() => {
     if (editTask) return editTask
@@ -618,6 +771,18 @@ export default function App() {
             </button>
           </div>
 
+          <div className="sidebar-footer">
+            <div className="sidebar-label">チーム</div>
+            <div className="sidebar-team-avatars" aria-label="チームメンバー">
+              <span className="sidebar-team-placeholder">担当者機能は準備中</span>
+            </div>
+            <button type="button" className="sidebar-item" onClick={() => { setShowSettings(true); setSidebarOpen(false) }}>
+              <span className="icon">⚙️</span>設定
+            </button>
+            <button type="button" className="sidebar-item sidebar-item--logout" onClick={() => { setShowProfileModal(true); setSidebarOpen(false) }}>
+              <span className="icon">🚪</span>ログアウト
+            </button>
+          </div>
           <div style={{ padding:'12px', marginTop:'auto' }}>
             <button className="btn btn-ghost btn-sm" style={{ width:'100%' }} onClick={() => setShowMorning(true)}>☀️ 朝の確認を表示</button>
           </div>
@@ -627,20 +792,97 @@ export default function App() {
         <div className="main">
           <div className="topbar">
             {(isProjectView || view.startsWith('c:')) && (
-              <button type="button" className="btn btn-ghost btn-sm" onClick={() => setView(isProjectView ? 'projects' : 'clients')} aria-label="一覧に戻る">
+              <button type="button" className="btn btn-ghost btn-sm topbar-back" onClick={() => setView(isProjectView ? 'projects' : 'clients')} aria-label="一覧に戻る">
                 ← 戻る
               </button>
             )}
-            <button className="hamburger" onClick={() => setSidebarOpen(true)}>☰</button>
+            <button type="button" className="hamburger" onClick={() => setSidebarOpen(true)} aria-label="メニュー">☰</button>
             <div className="topbar-title">{viewTitle()}</div>
-            {view !== 'clients' && !view.startsWith('c:') && (
-              <button className="btn btn-ghost btn-sm" onClick={() => setShowDone(!showDone)}>
-                {showDone ? '完了を非表示' : '完了を表示'}
-              </button>
+
+            {isMainView && (
+              <div className="topbar-tabs" role="tablist" aria-label="ビュー切替">
+                {viewTabs.map((tab) => (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    role="tab"
+                    aria-selected={view === tab.key}
+                    className={`topbar-tab ${view === tab.key ? 'topbar-tab--active' : ''}`}
+                    onClick={() => setView(tab.key)}
+                  >
+                    <span className="topbar-tab__icon">{tab.icon}</span>
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
             )}
-            {!isProjectView && view !== 'projects' && view !== 'templates' && view !== 'clients' && !view.startsWith('c:') && (
-              <button className="btn btn-primary" onClick={() => setShowTaskForm(true)}>+ 追加</button>
-            )}
+
+            <div className="topbar-right">
+              <div className="theme-toggle" role="group" aria-label="表示モード">
+                <span className="theme-toggle__label">{theme === 'dark' ? 'ダーク' : 'ライト'}</span>
+                <button
+                  type="button"
+                  className="theme-toggle__switch"
+                  aria-pressed={theme === 'dark'}
+                  aria-label={theme === 'dark' ? 'ダークモード（クリックでライトに）' : 'ライトモード（クリックでダークに）'}
+                  onClick={() => setTheme(t => (t === 'dark' ? 'light' : 'dark'))}
+                />
+              </div>
+              {view !== 'clients' && !view.startsWith('c:') && (
+                <>
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-sm topbar-filter-btn"
+                    onClick={() => {
+                      if (!['all', 'today', 'overdue'].includes(view)) setView('all')
+                      setFilterOpen(o => !o)
+                    }}
+                    aria-label="フィルター"
+                  >
+                    フィルター
+                    {activeFilterCount > 0 && <span className="topbar-filter-badge">{activeFilterCount}</span>}
+                  </button>
+                  <label className="topbar-search-wrap">
+                    <span className="topbar-search-icon" aria-hidden>🔍</span>
+                    <input
+                      type="search"
+                      className="topbar-search"
+                      placeholder="タスクを検索..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      aria-label="タスクを検索"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    className="topbar-icon-btn"
+                    onClick={() => setShowMorning(true)}
+                    aria-label="通知"
+                    title="今日のタスク・朝の確認"
+                  >
+                    🔔
+                    {(todayCount > 0 || overdueCount > 0) && <span className="topbar-icon-dot" />}
+                  </button>
+                  <button
+                    type="button"
+                    className="topbar-avatar"
+                    onClick={() => setShowProfileModal(true)}
+                    aria-label="プロフィール・設定"
+                    title="プロフィール"
+                  >
+                    👤
+                  </button>
+                </>
+              )}
+              {view !== 'clients' && !view.startsWith('c:') && (
+                <button className="btn btn-ghost btn-sm" onClick={() => setShowDone(!showDone)}>
+                  {showDone ? '完了を非表示' : '完了を表示'}
+                </button>
+              )}
+              {!isProjectView && view !== 'projects' && view !== 'templates' && view !== 'clients' && !view.startsWith('c:') && (
+                <button type="button" className="btn btn-primary" onClick={() => setShowTaskForm(true)}>+ 追加</button>
+              )}
+            </div>
           </div>
 
           <div className="content">
@@ -855,8 +1097,9 @@ export default function App() {
             {/* ALL / TODAY / OVERDUE TASKS */}
             {view === 'kanban' && (
               <KanbanBoard
-                tasks={tasks}
+                tasks={tasksForBoard}
                 projects={projects}
+                categories={categories}
                 onMoveTask={moveTaskStatus}
                 onEditTask={(task) => { setEditTask(task); setShowTaskForm(true) }}
                 onAddTask={openTaskFormForKanbanColumn}
@@ -864,12 +1107,12 @@ export default function App() {
             )}
 
             {view === 'dashboard' && (
-              <Dashboard tasks={tasks} projects={projects} />
+              <Dashboard tasks={tasksForBoard} projects={projects} />
             )}
 
             {view === 'gantt' && (
               <GanttChart
-                tasks={tasks}
+                tasks={tasksForBoard}
                 projects={projects}
                 onEditTask={(task) => { setEditTask(task); setShowTaskForm(true) }}
               />
@@ -1014,7 +1257,7 @@ export default function App() {
                 ) : (
                   <div className="cards-grid cards-grid--compact">
                     {sortedTasks.map(t => (
-                      <TaskCard key={t.id} task={t} projects={projects} onToggle={toggleTask} onClick={() => setEditTask(t)} />
+                      <TaskCard key={t.id} task={t} projects={projects} categories={categories} onToggle={toggleTask} onClick={() => setEditTask(t)} />
                     ))}
                   </div>
                 )}
@@ -1031,6 +1274,7 @@ export default function App() {
           task={taskFormInitialTask}
           projects={projects}
           templates={templates}
+          categories={categories}
           onSave={saveTask}
           onClose={closeTaskForm}
         />
@@ -1044,6 +1288,31 @@ export default function App() {
       )}
       {showTplForm  && <TemplateForm onSave={saveTemplate} onClose={() => setShowTplForm(false)} />}
       {showClientForm && <ClientForm onSave={addClient} onClose={() => setShowClientForm(false)} />}
+
+      {showSettings && (
+        <SettingsModal
+          theme={theme}
+          setTheme={setTheme}
+          onClose={() => setShowSettings(false)}
+          categories={categories}
+          setCategories={setCategories}
+          addToast={addToast}
+        />
+      )}
+
+      {showProfileModal && (
+        <div className="overlay" onClick={() => setShowProfileModal(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <h2 className="modal-title">プロフィール・ログイン</h2>
+            <p style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 20 }}>
+              ログイン機能は準備中です。利用可能になり次第、ここからサインイン・プロフィールの編集ができます。
+            </p>
+            <div className="modal-actions">
+              <button type="button" className="btn btn-primary" onClick={() => setShowProfileModal(false)}>閉じる</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Toast toasts={toasts} />
     </>

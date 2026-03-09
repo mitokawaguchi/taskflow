@@ -6,19 +6,31 @@ import {
   useDroppable,
   pointerWithin,
 } from '@dnd-kit/core'
-import { PRIORITY, TASK_STATUS, TASK_STATUS_KEYS, progressFromStatus } from './constants'
+import { PRIORITY, TASK_STATUS, TASK_STATUS_KEYS, progressFromStatus, getCategoryInfo } from './constants'
 import { formatDate, isOverdue } from './utils'
 
-function KanbanCard({ task, projects, onClick, isOverlay }) {
+function KanbanCard({ task, projects, categories = [], onClick, isOverlay }) {
   const proj = projects.find(p => p.id === task.projectId)
   const progress = task.progress != null ? task.progress : progressFromStatus(task.status)
   const over = isOverdue(task.due)
+  const categoryInfo = getCategoryInfo(task.category, categories)
 
   const cardBody = (
     <>
       <div className={`kanban-card__bar kanban-card__bar--${task.priority}`} />
       <div className="kanban-card__body">
         <div className="kanban-card__title">{task.title}</div>
+        {categoryInfo && (
+          <span
+            className="kanban-card__category"
+            style={{
+              background: `${categoryInfo.color}20`,
+              color: categoryInfo.color,
+            }}
+          >
+            {categoryInfo.label}
+          </span>
+        )}
         {proj && (
           <div className="kanban-card__meta" style={{ color: proj.color }}>
             {proj.icon} {proj.name}
@@ -55,7 +67,7 @@ function KanbanCard({ task, projects, onClick, isOverlay }) {
   )
 }
 
-function DraggableKanbanCard({ task, projects, onClick }) {
+function DraggableKanbanCard({ task, projects, categories = [], onClick }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: task.id,
     data: { task },
@@ -63,6 +75,7 @@ function DraggableKanbanCard({ task, projects, onClick }) {
   const proj = projects.find(p => p.id === task.projectId)
   const progress = task.progress != null ? task.progress : progressFromStatus(task.status)
   const over = isOverdue(task.due)
+  const categoryInfo = getCategoryInfo(task.category, categories)
 
   return (
     <div
@@ -89,6 +102,17 @@ function DraggableKanbanCard({ task, projects, onClick }) {
         <div className={`kanban-card__bar kanban-card__bar--${task.priority}`} />
         <div className="kanban-card__body">
           <div className="kanban-card__title">{task.title}</div>
+          {categoryInfo && (
+            <span
+              className="kanban-card__category"
+              style={{
+                background: `${categoryInfo.color}20`,
+                color: categoryInfo.color,
+              }}
+            >
+              {categoryInfo.label}
+            </span>
+          )}
           {proj && (
             <div className="kanban-card__meta" style={{ color: proj.color }}>
               {proj.icon} {proj.name}
@@ -138,7 +162,7 @@ function DroppableColumn({ id, title, count, children, onAddTask }) {
   )
 }
 
-export default function KanbanBoard({ tasks, projects, onMoveTask, onEditTask, onAddTask }) {
+export default function KanbanBoard({ tasks, projects, categories = [], onMoveTask, onEditTask, onAddTask }) {
   const dragProcessedRef = useRef(null)
 
   const byStatus = useCallback(() => {
@@ -201,6 +225,7 @@ export default function KanbanBoard({ tasks, projects, onMoveTask, onEditTask, o
                 key={t.id}
                 task={t}
                 projects={projects}
+                categories={categories}
                 onClick={onEditTask}
               />
             ))}
@@ -209,7 +234,7 @@ export default function KanbanBoard({ tasks, projects, onMoveTask, onEditTask, o
       </div>
       <DragOverlay dropAnimation={null}>
         {activeTask ? (
-          <KanbanCard task={activeTask} projects={projects} isOverlay />
+          <KanbanCard task={activeTask} projects={projects} categories={categories} isOverlay />
         ) : null}
       </DragOverlay>
     </DndContext>

@@ -1,13 +1,14 @@
 import { useState } from 'react'
-import { PRIORITY, TASK_STATUS, TASK_STATUS_KEYS } from './constants'
+import { PRIORITY, TASK_STATUS, TASK_STATUS_KEYS, categoriesToOptions } from './constants'
 import { formatDate, isToday, isTomorrow } from './utils'
 import CalendarPicker from './CalendarPicker'
 
-export default function TaskForm({ task, projects, templates, onSave, onClose }) {
+export default function TaskForm({ task, projects, templates, categories = [], onSave, onClose }) {
+  const categoryOptions = categoriesToOptions(categories)
   const [form, setForm] = useState(
     task
-      ? { title:'', desc:'', priority:'medium', projectId: projects[0]?.id || '', due:'', done:false, status:'todo', ...task }
-      : { title:'', desc:'', priority:'medium', projectId: task?.projectId ?? projects[0]?.id ?? '', due:'', done:false, status: task?.status ?? 'todo' }
+      ? { title:'', desc:'', priority:'medium', projectId: projects[0]?.id || '', due:'', done:false, status:'todo', category: '', ...task }
+      : { title:'', desc:'', priority:'medium', projectId: task?.projectId ?? projects[0]?.id ?? '', due:'', done:false, status: task?.status ?? 'todo', category: '' }
   )
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
@@ -68,6 +69,17 @@ export default function TaskForm({ task, projects, templates, onSave, onClose })
           </select>
         </div>
         <div className="form-group">
+          <label className="form-label">カテゴリ</label>
+          <select className="form-input" value={form.category ?? ''} onChange={e => set('category', e.target.value)}>
+            <option value="">なし</option>
+            {categoryOptions.map((opt) => (
+              <option key={opt.id} value={opt.id}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="form-group">
           <label className="form-label">状態</label>
           <select className="form-select" value={form.status || 'todo'} onChange={e => set('status', e.target.value)}>
             {TASK_STATUS_KEYS.map(k => (
@@ -77,7 +89,7 @@ export default function TaskForm({ task, projects, templates, onSave, onClose })
         </div>
         <div className="modal-actions">
           <button className="btn btn-ghost" onClick={onClose}>キャンセル</button>
-          <button className="btn btn-primary" onClick={() => { if (form.title.trim()) onSave(form) }} disabled={!form.title.trim()}>保存</button>
+          <button className="btn btn-primary" onClick={() => { if (form.title.trim()) onSave({ ...form, category: form.category || null }) }} disabled={!form.title.trim()}>保存</button>
         </div>
       </div>
     </div>

@@ -1,7 +1,8 @@
-import { PRIORITY } from './constants'
+import { PRIORITY, getCategoryInfo } from './constants'
 import { isOverdue, isToday, isTomorrow, formatDate } from './utils'
 
-export default function TaskCard({ task, projects, onToggle, onClick }) {
+export default function TaskCard({ task, projects, categories = [], onToggle, onClick }) {
+  const categoryInfo = getCategoryInfo(task.category, categories)
   const proj = projects.find(p => p.id === task.projectId)
   const over = isOverdue(task.due)
   const tod  = isToday(task.due)
@@ -24,6 +25,18 @@ export default function TaskCard({ task, projects, onToggle, onClick }) {
       </div>
       {task.desc && <div className="card-desc">{task.desc}</div>}
       <div className="card-footer">
+        {categoryInfo && (
+          <span
+            className="category-badge"
+            style={{
+              background: `${categoryInfo.color}20`,
+              color: categoryInfo.color,
+              border: `1px solid ${categoryInfo.color}40`,
+            }}
+          >
+            {categoryInfo.label}
+          </span>
+        )}
         <span className={`priority-badge ${task.priority}`}>{PRIORITY[task.priority].label}</span>
         {task.due && (
           <span className={`due-badge ${over ? 'overdue' : tod || tom ? 'today-or-tomorrow' : ''}`} style={{ marginLeft: 'auto' }}>

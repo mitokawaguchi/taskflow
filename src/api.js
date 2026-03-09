@@ -25,6 +25,7 @@ function taskFromRow(row) {
     status,
     startDate: row.start_date ?? '',
     progress,
+    category: row.category ?? null,
     created: typeof row.created === 'number' ? row.created : Number(row.created) || 0,
   }
 }
@@ -61,6 +62,15 @@ function rememberFromRow(row) {
   }
 }
 
+function categoryFromRow(row) {
+  if (!row) return null
+  return {
+    id: row.id,
+    name: row.name ?? '',
+    color: row.color ?? '#6b7280',
+  }
+}
+
 // ── 取得 ─────────────────────────────────────────────────────
 export async function fetchProjects() {
   requireSupabase()
@@ -81,6 +91,13 @@ export async function fetchTemplates() {
   const { data, error } = await supabase.from('tf_templates').select('*').order('id')
   if (error) throw error
   return (data ?? []).map(templateFromRow)
+}
+
+export async function fetchCategories() {
+  requireSupabase()
+  const { data, error } = await supabase.from('tf_categories').select('*').order('id')
+  if (error) throw error
+  return (data ?? []).map(categoryFromRow)
 }
 
 // ── プロジェクト追加・更新 ─────────────────────────────────────
@@ -127,6 +144,7 @@ export async function insertTask(task) {
     status,
     start_date: task.startDate || null,
     progress: task.progress != null && task.progress >= 0 && task.progress <= 100 ? task.progress : null,
+    category: task.category || null,
     created: task.created,
   }
   const { data, error } = await supabase.from('tf_tasks').insert(row).select().single()
@@ -151,9 +169,23 @@ export async function updateTask(id, patch) {
   }
   if (patch.startDate !== undefined) row.start_date = patch.startDate || null
   if (patch.progress !== undefined) row.progress = (patch.progress >= 0 && patch.progress <= 100) ? patch.progress : null
+  if (patch.category !== undefined) row.category = patch.category || null
   const { data, error } = await supabase.from('tf_tasks').update(row).eq('id', id).select().single()
   if (error) throw error
   return taskFromRow(data)
+}
+
+// ── カテゴリ追加 ─────────────────────────────────────────────
+export async function insertCategory(category) {
+  requireSupabase()
+  const row = {
+    id: category.id,
+    name: category.name,
+    color: category.color ?? '#6b7280',
+  }
+  const { data, error } = await supabase.from('tf_categories').insert(row).select().single()
+  if (error) throw error
+  return categoryFromRow(data)
 }
 
 // ── テンプレート追加 ─────────────────────────────────────────

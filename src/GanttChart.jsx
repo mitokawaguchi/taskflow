@@ -41,9 +41,16 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
   const todayStr = today()
   const tasksWithDue = useMemo(() => {
     return tasks
-      .filter(t => t.due && t.due >= startDate && t.due <= endDate)
+      .filter(t => {
+        const taskStart = t.startDate || t.due
+        const taskEnd = t.due
+        if (!taskEnd) return false
+        return taskStart <= endDate && taskEnd >= startDate
+      })
       .slice(0, 50)
   }, [tasks, startDate, endDate])
+
+  const [tooltip, setTooltip] = useState(null)
 
   return (
     <div className="gantt">
@@ -88,27 +95,73 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
                 <span className="gantt-cell__title">{t.title}</span>
                 {proj && <span className="gantt-cell__proj" style={{ color: proj.color }}>{proj.icon}</span>}
               </div>,
-              ...days.map(d => (
-                <div
-                  key={`${t.id}-${d}`}
-                  className={`gantt-cell ${d === todayStr ? 'today' : ''}`}
-                  onClick={handleOpen}
-                  role="button"
-                  tabIndex={0}
-                >
-                  {t.due === d && (
-                    <div
-                      className="gantt-bar"
-                      style={{ background: proj?.color || 'var(--accent)' }}
-                      title={`${t.title} — ${formatDate(t.due)}（クリックで編集）`}
-                    />
-                  )}
-                </div>
-              )),
+              ...days.map((d) => {
+                const taskStart = t.startDate || t.due
+                const taskEnd = t.due
+                const isInRange = taskStart && taskEnd && d >= taskStart && d <= taskEnd
+                const isStart = d === taskStart
+                const isEnd = d === taskEnd
+                return (
+                  <div
+                    key={`${t.id}-${d}`}
+                    className={`gantt-cell ${d === todayStr ? 'today' : ''}`}
+                    onClick={handleOpen}
+                    role="button"
+                    tabIndex={0}
+                    onMouseEnter={(e) => {
+                      if (isInRange) {
+                        setTooltip({
+                          title: t.title,
+                          startDate: taskStart,
+                          endDate: taskEnd,
+                          status: t.status,
+                          x: e.clientX,
+                          y: e.clientY,
+                        })
+                      }
+                    }}
+                    onMouseMove={(e) => {
+                      if (tooltip && tooltip.title === t.title) {
+                        setTooltip(prev => prev ? { ...prev, x: e.clientX, y: e.clientY } : null)
+                      }
+                    }}
+                    onMouseLeave={() => setTooltip(null)}
+                  >
+                    {isInRange && (
+                      <div
+                        className={`gantt-bar ${isStart ? 'gantt-bar--start' : ''} ${isEnd ? 'gantt-bar--end' : ''}`}
+                        style={{ background: proj?.color || 'var(--accent)' }}
+                        title={`${t.title} — ${taskStart !== taskEnd ? `${formatDate(taskStart)} 〜 ` : ''}${formatDate(taskEnd)}（クリックで編集）`}
+                      />
+                    )}
+                  </div>
+                )
+              }),
             ]
           })}
         </div>
+        {days.includes(todayStr) && (
+          <div
+            className="gantt-today-line"
+            style={{
+              left: `calc(200px + ${days.indexOf(todayStr) * DAY_WIDTH}px + ${DAY_WIDTH / 2}px)`,
+            }}
+          />
+        )}
       </div>
+      {tooltip && (
+        <div className="gantt-tooltip" style={{ left: tooltip.x, top: tooltip.y }}>
+          <div className="gantt-tooltip__title">{tooltip.title}</div>
+          <div className="gantt-tooltip__date">
+            {tooltip.startDate && tooltip.startDate !== tooltip.endDate
+              ? `${formatDate(tooltip.startDate)} 〜 ${formatDate(tooltip.endDate)}`
+              : formatDate(tooltip.endDate)}
+          </div>
+          {tooltip.status && (
+            <div className="gantt-tooltip__status">状態: {tooltip.status}</div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

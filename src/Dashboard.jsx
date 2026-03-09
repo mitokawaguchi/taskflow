@@ -1,14 +1,65 @@
 import { useMemo } from 'react'
 import { isToday, isOverdue } from './utils'
 
+function DonutChart({ percentage, color, size = 80 }) {
+  const strokeWidth = 8
+  const radius = (size - strokeWidth) / 2
+  const circumference = 2 * Math.PI * radius
+  const offset = circumference - (percentage / 100) * circumference
+
+  return (
+    <svg width={size} height={size} className="donut-chart">
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        fill="none"
+        stroke="var(--border)"
+        strokeWidth={strokeWidth}
+      />
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        fill="none"
+        stroke={color}
+        strokeWidth={strokeWidth}
+        strokeDasharray={circumference}
+        strokeDashoffset={offset}
+        strokeLinecap="round"
+        transform={`rotate(-90 ${size / 2} ${size / 2})`}
+      />
+      <text
+        x="50%"
+        y="50%"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        className="donut-chart__text"
+      >
+        {percentage}%
+      </text>
+    </svg>
+  )
+}
+
 export default function Dashboard({ tasks, projects }) {
   const stats = useMemo(() => {
     const all = tasks.length
     const done = tasks.filter(t => t.done).length
-    const inProgress = tasks.filter(t => t.status === 'in_progress' || t.status === 'review').length
+    const inProgress = tasks.filter(t => t.status === 'in_progress').length
+    const review = tasks.filter(t => t.status === 'review').length
+    const todo = tasks.filter(t => t.status === 'todo' || (!t.status && !t.done)).length
     const overdue = tasks.filter(t => !t.done && isOverdue(t.due)).length
     const todayCount = tasks.filter(t => !t.done && isToday(t.due)).length
-    return { all, done, inProgress, overdue, todayCount }
+
+    const statusBreakdown = [
+      { key: 'todo', label: '未着手', count: todo, color: 'var(--text-muted)' },
+      { key: 'in_progress', label: '進行中', count: inProgress, color: 'var(--accent)' },
+      { key: 'review', label: 'レビュー中', count: review, color: '#ff8c42' },
+      { key: 'done', label: '完了', count: done, color: '#06d6a0' },
+    ]
+
+    return { all, done, inProgress: inProgress + review, overdue, todayCount, statusBreakdown }
   }, [tasks])
 
   const projectProgress = useMemo(() => {
@@ -58,21 +109,36 @@ export default function Dashboard({ tasks, projects }) {
             <p className="dashboard-empty">プロジェクトがありません</p>
           ) : (
             projectProgress.map(({ project, total, done, pct }) => (
-              <div key={project.id} className="dashboard-proj">
-                <div className="dashboard-proj__head">
-                  <span className="dashboard-proj__name">{project.icon} {project.name}</span>
-                  <span className="dashboard-proj__pct">{pct}%</span>
+              <div key={project.id} className="dashboard-proj dashboard-proj--with-chart">
+                <DonutChart percentage={pct} color={project.color} size={64} />
+                <div className="dashboard-proj__info">
+                  <div className="dashboard-proj__name">{project.icon} {project.name}</div>
+                  <div className="dashboard-proj__meta">{done} / {total} 完了</div>
                 </div>
-                <div className="dashboard-proj__bar">
-                  <div
-                    className="dashboard-proj__fill"
-                    style={{ width: `${pct}%`, background: project.color }}
-                  />
-                </div>
-                <div className="dashboard-proj__meta">{done} / {total} 完了</div>
               </div>
             ))
           )}
+        </div>
+      </div>
+
+      <div className="dashboard-section">
+        <h2 className="dashboard-section__title">タスク状態の分布</h2>
+        <div className="dashboard-status-chart">
+          {stats.statusBreakdown.map(item => (
+            <div key={item.key} className="dashboard-status-row">
+              <span className="dashboard-status-label">{item.label}</span>
+              <div className="dashboard-status-bar-wrap">
+                <div
+                  className="dashboard-status-bar"
+                  style={{
+                    width: stats.all > 0 ? `${(item.count / stats.all) * 100}%` : '0%',
+                    background: item.color,
+                  }}
+                />
+              </div>
+              <span className="dashboard-status-count">{item.count}</span>
+            </div>
+          ))}
         </div>
       </div>
 

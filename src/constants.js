@@ -43,3 +43,33 @@ export const DEFAULT_TASKS = [
   { id: 't3', title: 'NotebookLM設定確認',               desc: 'YAMLプレゼン設定のテスト',         priority: 'medium',   projectId: 'p1', due: new Date(Date.now()+86400000*5).toISOString().slice(0,10), done: false, created: Date.now()-300000 },
   { id: 't4', title: '週次レビュー準備',                  desc: '',                                 priority: 'low',      projectId: 'p2', due: new Date(Date.now()+86400000*7).toISOString().slice(0,10), done: true,  created: Date.now()-400000 },
 ]
+
+/** タスクカテゴリ（DB未使用時のフォールバック） */
+export const TASK_CATEGORIES = {
+  design: { label: 'デザイン', color: '#3b82f6' },
+  dev: { label: '開発', color: '#8b5cf6' },
+  bug: { label: 'バグ修正', color: '#ef4444' },
+  docs: { label: 'ドキュメント', color: '#06b6d4' },
+  other: { label: 'その他', color: '#6b7280' },
+  event: { label: 'イベント', color: '#ec4899' },
+  routine: { label: '定例業務', color: '#14b8a6' },
+}
+
+export const CATEGORY_KEYS = ['design', 'dev', 'bug', 'docs', 'other', 'event', 'routine']
+
+/** カテゴリを { id, label, color } の配列として扱う際のヘルパー */
+export function categoriesToOptions(categories) {
+  if (!categories || categories.length === 0) {
+    return CATEGORY_KEYS.map((key) => ({ id: key, label: TASK_CATEGORIES[key].label, color: TASK_CATEGORIES[key].color }))
+  }
+  return categories.map((c) => ({ id: c.id, label: c.name, color: c.color ?? '#6b7280' }))
+}
+
+/** id からラベル・色を解決（categories または TASK_CATEGORIES を使用） */
+export function getCategoryInfo(categoryId, categoriesFromApi) {
+  if (categoriesFromApi?.length) {
+    const found = categoriesFromApi.find((c) => c.id === categoryId)
+    if (found) return { label: found.name, color: found.color ?? '#6b7280' }
+  }
+  return TASK_CATEGORIES[categoryId] ? { label: TASK_CATEGORIES[categoryId].label, color: TASK_CATEGORIES[categoryId].color } : null
+}
