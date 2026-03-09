@@ -21,8 +21,8 @@ describe('utils', () => {
   describe('isOverdue', () => {
     it('returns true when date is before today', () => {
       vi.useFakeTimers()
-      vi.setSystemTime(new Date('2025-03-15'))
-      expect(isOverdue('2025-03-14')).toBe(true)
+      vi.setSystemTime(new Date('2026-03-15'))
+      expect(isOverdue('2026-03-14')).toBe(true)
       vi.useRealTimers()
     })
     it('returns false when date is today or future', () => {
@@ -38,7 +38,7 @@ describe('utils', () => {
   describe('formatDate', () => {
     beforeEach(() => {
       vi.useFakeTimers()
-      vi.setSystemTime(new Date('2025-03-15'))
+      vi.setSystemTime(new Date('2026-03-15'))
     })
     afterEach(() => {
       vi.useRealTimers()
@@ -49,16 +49,16 @@ describe('utils', () => {
       expect(formatDate(null)).toBe('')
     })
     it('returns 今日 when date is today', () => {
-      expect(formatDate('2025-03-15')).toBe('今日')
+      expect(formatDate('2026-03-15')).toBe('今日')
     })
     it('returns 明日 when date is tomorrow', () => {
-      expect(formatDate('2025-03-16')).toBe('明日')
+      expect(formatDate('2026-03-16')).toBe('明日')
     })
     it('returns date and weekday for future', () => {
-      expect(formatDate('2025-03-20')).toBe('3/20(木)')
+      expect(formatDate('2026-03-20')).toBe('3/20(金)')
     })
     it('returns date and weekday for past', () => {
-      expect(formatDate('2025-03-10')).toBe('3/10(月)')
+      expect(formatDate('2026-03-10')).toBe('3/10(火)')
     })
   })
 

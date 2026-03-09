@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { PRIORITY, TASK_STATUS, TASK_STATUS_KEYS, categoriesToOptions } from './constants'
+import { PRIORITY, TASK_STATUS, TASK_STATUS_KEYS, VALIDATION, truncateToMax, categoriesToOptions } from './constants'
 import { formatDate, isToday, isTomorrow } from './utils'
 import CalendarPicker from './CalendarPicker'
 
@@ -187,7 +187,7 @@ export default function TaskForm({ task, projects, templates, categories = [], u
         </div>
         <div className="modal-actions">
           <button className="btn btn-ghost" onClick={onClose}>キャンセル</button>
-          <button className="btn btn-primary" onClick={() => { if (form.title.trim()) onSave({ ...form, startDate: form.startDate || null, category: form.category || null, assigneeId: form.assigneeId || null }) }} disabled={!form.title.trim()}>保存</button>
+          <button className="btn btn-primary" onClick={() => { if (form.title.trim()) onSave({ ...form, title: truncateToMax(form.title, VALIDATION.taskTitle), desc: truncateToMax(form.desc, VALIDATION.taskDesc), startDate: form.startDate || null, category: form.category || null, assigneeId: form.assigneeId || null }) }} disabled={!form.title.trim()}>保存</button>
         </div>
       </div>
     </div>

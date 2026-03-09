@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { PRIORITY } from './constants'
+import { PRIORITY, VALIDATION, truncateToMax } from './constants'
 
 const DEFAULT_FORM = { title: '', desc: '', priority: 'medium' }
 
@@ -12,7 +12,12 @@ export default function TemplateForm({ template, onSave, onDelete, onClose }) {
 
   const handleSave = () => {
     if (!form.title.trim()) return
-    onSave(isEdit ? { ...form, id: template.id } : form)
+    const payload = {
+      title: truncateToMax(form.title, VALIDATION.templateTitle),
+      desc: truncateToMax(form.desc, VALIDATION.templateDesc),
+      priority: form.priority,
+    }
+    onSave(isEdit ? { ...payload, id: template.id } : payload)
   }
 
   const handleDelete = () => {

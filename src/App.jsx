@@ -8,7 +8,7 @@ import {
   useSensors,
 } from '@dnd-kit/core'
 import { arrayMove, SortableContext, rectSortingStrategy } from '@dnd-kit/sortable'
-import { PRIORITY, SORT_OPTIONS, priorityOrder, PRIORITY_KEYS } from './constants'
+import { PRIORITY, SORT_OPTIONS, priorityOrder, PRIORITY_KEYS, VALIDATION, truncateToMax } from './constants'
 import { today, isToday, isOverdue, formatTodayDisplay, endDateLabel } from './utils'
 
 const PRIORITY_OPTIONS = Object.entries(PRIORITY).map(([key, { label }]) => ({ key, label }))
@@ -356,7 +356,7 @@ export default function App() {
   const addRemember = useCallback(async (clientId, body) => {
     if (!body?.trim()) return
     try {
-      const item = { id: `rem-${crypto.randomUUID()}`, clientId, body: body.trim(), created: Date.now() }
+      const item = { id: `rem-${crypto.randomUUID()}`, clientId, body: truncateToMax(body, VALIDATION.rememberBody), created: Date.now() }
       const created = await insertRemember(item)
       setRemembers(prev => [created, ...prev])
       addToast('📌', '覚えておくことを追加しました', '')
@@ -411,7 +411,7 @@ export default function App() {
   const updateRememberItem = useCallback(async (id, body) => {
     if (!body?.trim()) return
     try {
-      const updated = await updateRemember(id, { body: body.trim() })
+      const updated = await updateRemember(id, { body: truncateToMax(body, VALIDATION.rememberBody) })
       setRemembers(prev => prev.map(r => (r.id === id ? updated : r)))
       addToast('✏️', '更新しました', '')
     } catch (e) {

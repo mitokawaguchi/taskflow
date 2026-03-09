@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { VALIDATION, truncateToMax } from './constants'
 
 const ICONS = ['🤝', '🏢', '👤', '💼', '📊', '🎯', '⚡', '🔬', '🎨', '🚀', '📁', '💡']
 const COLORS = ['#2d6b3f', '#ff4560', '#ff8c42', '#ffd166', '#06d6a0', '#00b4d8', '#e040fb']
@@ -11,7 +12,8 @@ export default function ClientForm({ client, onSave, onDelete, onClose }) {
 
   const handleSave = () => {
     if (!name.trim()) return
-    onSave(isEdit ? { id: client.id, name: name.trim(), icon, color } : { name: name.trim(), icon, color })
+    const safeName = truncateToMax(name, VALIDATION.clientName)
+    onSave(isEdit ? { id: client.id, name: safeName, icon, color } : { name: safeName, icon, color })
   }
 
   const handleDelete = () => {

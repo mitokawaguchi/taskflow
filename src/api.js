@@ -358,18 +358,15 @@ export async function insertRemember(item) {
   return rememberFromRow(data)
 }
 
-/** 既存データ（owner_id が NULL の行）を現在のアカウントに紐づける */
+/**
+ * @deprecated SEC-002: owner_id IS NULL の行を無条件に自アカウントに紐づけるため、
+ * RLS 未設定時は他ユーザー分のデータを奪うリスクあり。所有権移譲は招待リンクや
+ * ワンタイムトークンで行うこと。本番では呼ばないこと。docs/CODE_REVIEW.md 参照。
+ */
 export async function claimExistingDataToAccount() {
-  requireSupabase()
-  const session = await getAuthSession()
-  if (!session?.user?.id) throw new Error('ログインしてください')
-  const uid = session.user.id
-  const tables = ['tf_projects', 'tf_tasks', 'tf_templates', 'tf_categories', 'tf_users', 'tf_clients', 'tf_remember']
-  for (const table of tables) {
-    const { error } = await supabase.from(table).update({ owner_id: uid }).is('owner_id', null)
-    if (error) throw error
-  }
-  return { ok: true }
+  throw new Error(
+    'claimExistingDataToAccount() は廃止されています (SEC-002)。RLS を有効にし、所有権移譲は招待・トークン方式で実装してください。'
+  )
 }
 
 export async function updateRemember(id, patch) {

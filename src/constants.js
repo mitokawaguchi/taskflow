@@ -14,6 +14,24 @@ export const TASK_STATUS = {
 }
 export const TASK_STATUS_KEYS = ['todo', 'in_progress', 'review', 'done']
 
+/** SEC-004: 入力バリデーション用の最大文字数（DB・UX 保護） */
+export const VALIDATION = {
+  taskTitle: 500,
+  taskDesc: 2000,
+  projectName: 200,
+  templateTitle: 200,
+  templateDesc: 2000,
+  clientName: 200,
+  rememberBody: 2000,
+}
+
+/** 文字列を最大長で切り詰め（trim 済みを想定） */
+export function truncateToMax(str, max) {
+  if (typeof str !== 'string') return ''
+  const t = str.trim()
+  return t.length > max ? t.slice(0, max) : t
+}
+
 /** 状態から進捗率を算出（%）。未指定時用 */
 export function progressFromStatus(status) {
   const map = { todo: 0, in_progress: 50, review: 80, done: 100 }

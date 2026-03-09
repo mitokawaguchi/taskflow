@@ -225,4 +225,11 @@ describe('api', () => {
       expect(result).toEqual(template)
     })
   })
+
+  describe('claimExistingDataToAccount', () => {
+    it('throws (deprecated SEC-002)', async () => {
+      const { claimExistingDataToAccount } = await import('./api')
+      await expect(claimExistingDataToAccount()).rejects.toThrow('廃止されています')
+    })
+  })
 })

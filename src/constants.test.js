@@ -5,6 +5,8 @@ import {
   priorityOrder,
   DEFAULT_PROJECTS,
   DEFAULT_TASKS,
+  VALIDATION,
+  truncateToMax,
 } from './constants'
 
 describe('constants', () => {
@@ -74,6 +76,32 @@ describe('constants', () => {
       DEFAULT_TASKS.forEach((t) => {
         expect(ids.has(t.projectId)).toBe(true)
       })
+    })
+  })
+
+  describe('VALIDATION', () => {
+    it('has max lengths for taskTitle, taskDesc, projectName, templateTitle, templateDesc, clientName, rememberBody', () => {
+      expect(VALIDATION.taskTitle).toBe(500)
+      expect(VALIDATION.taskDesc).toBe(2000)
+      expect(VALIDATION.projectName).toBe(200)
+      expect(VALIDATION.templateTitle).toBe(200)
+      expect(VALIDATION.templateDesc).toBe(2000)
+      expect(VALIDATION.clientName).toBe(200)
+      expect(VALIDATION.rememberBody).toBe(2000)
+    })
+  })
+
+  describe('truncateToMax', () => {
+    it('returns empty string for non-string', () => {
+      expect(truncateToMax(null, 10)).toBe('')
+      expect(truncateToMax(undefined, 10)).toBe('')
+    })
+    it('trims and returns as-is when within max', () => {
+      expect(truncateToMax('  hello  ', 10)).toBe('hello')
+      expect(truncateToMax('hi', 10)).toBe('hi')
+    })
+    it('trims and truncates when over max', () => {
+      expect(truncateToMax('  123456789012  ', 10)).toBe('1234567890')
     })
   })
 })

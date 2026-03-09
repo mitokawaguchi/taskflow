@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import CalendarPicker from './CalendarPicker'
+import { VALIDATION, truncateToMax } from './constants'
 
 const ICONS   = ['📁','🏢','🤝','⚡','🎯','💡','🔬','🎨','🚀','📊','🏗','💼']
 const COLORS  = ['#2d6b3f','#ff4560','#ff8c42','#ffd166','#06d6a0','#00b4d8','#e040fb']
@@ -70,7 +71,7 @@ export default function ProjectForm({ project, onSave, onClose }) {
 
         <div className="modal-actions">
           <button className="btn btn-ghost" onClick={onClose}>キャンセル</button>
-          <button className="btn btn-primary" onClick={() => { if (name.trim()) onSave({ name, icon, color, endDate: endDate || '' }) }} disabled={!name.trim()}>
+          <button className="btn btn-primary" onClick={() => { if (name.trim()) onSave({ name: truncateToMax(name, VALIDATION.projectName), icon, color, endDate: endDate || '' }) }} disabled={!name.trim()}>
             {isEdit ? '保存' : '作成'}
           </button>
         </div>
