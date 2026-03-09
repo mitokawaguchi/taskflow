@@ -781,8 +781,9 @@ select { appearance: none; }
 .project-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
 .project-card-clickable { cursor: pointer; border: none; background: none; width: 100%; text-align: left; padding: 0; font: inherit; color: inherit; }
 .project-card-header:has(.project-card-clickable:hover) + .project-progress { background: var(--surface3); }
-.project-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-.project-name { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; }
+.project-card-header > div { min-width: 0; flex: 1; }
+.project-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.project-name { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .project-count { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
 .project-due { font-weight: 600; color: var(--text); }
 .project-progress { background: var(--surface3); border-radius: 4px; height: 6px; margin-top: 12px; overflow: hidden; cursor: pointer; }
@@ -826,8 +827,10 @@ select { appearance: none; }
   border: 1px solid var(--border);
 }
 .proj-detail-title { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
-.proj-detail-icon { width: 52px; height: 52px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; }
-.proj-detail-name { font-size: 22px; font-weight: 800; margin-bottom: 2px; }
+.proj-detail-title > div { min-width: 0; }
+.proj-detail-title > div:not(:last-of-type) { flex: 1; }
+.proj-detail-icon { width: 52px; height: 52px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+.proj-detail-name { font-size: 22px; font-weight: 800; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .proj-detail-enddate-label { font-size: 14px; color: var(--text-muted); font-weight: 600; }
 .proj-detail-enddate-value { font-size: 16px; font-weight: 600; color: var(--text); }
 .proj-detail-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 4px; }
