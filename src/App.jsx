@@ -665,15 +665,6 @@ export default function App() {
     localStorage.setItem('taskflow_notify_reminder', notifyReminderEnabled ? 'true' : 'false')
   }, [notifyReminderEnabled])
 
-  useEffect(() => {
-    if (typeof document === 'undefined') return
-    if (sidebarOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
-    return () => { document.body.style.overflow = '' }
-  }, [sidebarOpen])
 
   useEffect(() => {
     const checkDueToday = () => {
