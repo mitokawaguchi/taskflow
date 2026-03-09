@@ -956,7 +956,7 @@ select { appearance: none; }
   display: flex; align-items: center; gap: 10px;
 }
 .project-card-header:has(.project-card-clickable:hover) + .project-progress { background: var(--surface3); }
-/* 名前エリアだけ伸ばす。アイコンは固定サイズで伸ばさない */
+/* 名前エリアをカード幅内に収める（アイコンは初期デザインの固定サイズのまま） */
 .project-card-clickable > div:not(.project-icon) {
   min-width: 0;
   flex: 1;
@@ -964,15 +964,15 @@ select { appearance: none; }
   max-width: 100%;
 }
 .project-icon {
-  flex: 0 0 auto;
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 18px;
   line-height: 1;
+  flex-shrink: 0;
 }
 .project-name {
   font-family: 'Sora', sans-serif;
