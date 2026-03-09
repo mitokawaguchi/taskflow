@@ -13,7 +13,7 @@ import { PRIORITY, SORT_OPTIONS, priorityOrder, PRIORITY_KEYS } from './constant
 import { today, isToday, isOverdue, formatTodayDisplay, endDateLabel } from './utils'
 
 const PRIORITY_OPTIONS = Object.entries(PRIORITY).map(([key, { label }]) => ({ key, label }))
-import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, fetchCategories, insertProject, updateProject, insertTask, updateTask, insertTemplate, insertRemember, updateRemember, deleteRemember, insertClient, insertCategory } from './api'
+import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, fetchCategories, fetchUsers, insertProject, updateProject, insertTask, updateTask, insertTemplate, insertRemember, updateRemember, deleteRemember, insertClient, insertCategory, insertUser, getAuthSession, signInWithPassword, signOut, subscribeAuth } from './api'
 import MorningModal from './MorningModal'
 import TaskCard from './TaskCard'
 import TaskForm from './TaskForm'
@@ -124,10 +124,80 @@ const CATEGORY_COLOR_OPTIONS = [
   { value: '#f59e0b', label: 'オレンジ' },
 ]
 
-function SettingsModal({ theme, setTheme, onClose, categories, setCategories, addToast }) {
+function ProfileLoginForm({ onSuccess, onError }) {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleSubmit = useCallback(async (e) => {
+    e.preventDefault()
+    if (!email.trim() || !password) {
+      setError('メールとパスワードを入力してください')
+      return
+    }
+    setError('')
+    setLoading(true)
+    try {
+      await signInWithPassword(email.trim(), password)
+      onSuccess()
+    } catch (e) {
+      const msg = e?.message ?? 'ログインに失敗しました'
+      setError(msg)
+      onError?.('❌', 'ログイン', msg)
+    } finally {
+      setLoading(false)
+    }
+  }, [email, password, onSuccess, onError])
+
+  return (
+    <form onSubmit={handleSubmit} className="form-group">
+      <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 16 }}>
+        Supabase Auth でサインインします。未設定の場合はログインできません。
+      </p>
+      <div className="form-group">
+        <label className="form-label" htmlFor="profile-login-email">メール</label>
+        <input
+          id="profile-login-email"
+          type="email"
+          className="form-input"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          placeholder="email@example.com"
+          autoComplete="email"
+          disabled={loading}
+        />
+      </div>
+      <div className="form-group">
+        <label className="form-label" htmlFor="profile-login-password">パスワード</label>
+        <input
+          id="profile-login-password"
+          type="password"
+          className="form-input"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          autoComplete="current-password"
+          disabled={loading}
+        />
+      </div>
+      {error && <p style={{ fontSize: 13, color: 'var(--critical)', marginBottom: 12 }}>{error}</p>}
+      <div className="modal-actions">
+        <button type="submit" className="btn btn-primary" disabled={loading}>
+          {loading ? 'ログイン中…' : 'ログイン'}
+        </button>
+        <button type="button" className="btn btn-ghost" onClick={() => onSuccess()}>キャンセル</button>
+      </div>
+    </form>
+  )
+}
+
+function SettingsModal({ theme, setTheme, onClose, categories, setCategories, users, setUsers, notifyReminderEnabled, setNotifyReminderEnabled, addToast }) {
   const [newCatName, setNewCatName] = useState('')
   const [newCatColor, setNewCatColor] = useState('#6b7280')
   const [adding, setAdding] = useState(false)
+  const [newUserName, setNewUserName] = useState('')
+  const [newUserEmail, setNewUserEmail] = useState('')
+  const [addingUser, setAddingUser] = useState(false)
 
   const handleAddCategory = useCallback(async () => {
     const name = newCatName.trim()
@@ -150,6 +220,30 @@ function SettingsModal({ theme, setTheme, onClose, categories, setCategories, ad
       setAdding(false)
     }
   }, [newCatName, newCatColor, setCategories, addToast])
+
+  const handleAddUser = useCallback(async () => {
+    const name = newUserName.trim()
+    if (!name) return
+    setAddingUser(true)
+    try {
+      await insertUser({
+        id: `u${Date.now()}`,
+        name,
+        email: newUserEmail.trim() || null,
+        avatarUrl: '',
+        created: Date.now(),
+      })
+      const list = await fetchUsers()
+      setUsers(list)
+      setNewUserName('')
+      setNewUserEmail('')
+      addToast('✅', 'メンバーを追加しました', name)
+    } catch (e) {
+      addToast('❌', '追加できませんでした', e?.message ?? 'tf_users テーブルを確認してください')
+    } finally {
+      setAddingUser(false)
+    }
+  }, [newUserName, newUserEmail, setUsers, addToast])
 
   return (
     <div className="overlay" onClick={onClose}>
@@ -218,7 +312,66 @@ function SettingsModal({ theme, setTheme, onClose, categories, setCategories, ad
           </div>
         </div>
 
-        <p style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 16 }}>通知・その他の設定は準備中です。</p>
+        <div className="form-group" style={{ marginTop: 24 }}>
+          <span className="form-label">チームメンバー</span>
+          <p className="form-hint">タスクの担当者として選べるメンバーを追加します。</p>
+          <ul className="settings-category-list" aria-label="チームメンバー">
+            {users.length === 0 ? (
+              <li className="settings-category-empty">メンバーがいません。追加するとタスクに担当者を割り当てられます。</li>
+            ) : (
+              users.map(u => (
+                <li key={u.id} className="settings-category-item">
+                  <span className="settings-user-avatar">
+                    {u.avatarUrl ? <img src={u.avatarUrl} alt="" width={24} height={24} style={{ borderRadius: '50%' }} /> : '👤'}
+                  </span>
+                  <span>{u.name}{u.email ? ` (${u.email})` : ''}</span>
+                </li>
+              ))
+            )}
+          </ul>
+          <div className="settings-category-add">
+            <input
+              type="text"
+              className="form-input"
+              placeholder="表示名"
+              value={newUserName}
+              onChange={e => setNewUserName(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleAddUser()}
+              aria-label="メンバー名"
+            />
+            <input
+              type="email"
+              className="form-input"
+              placeholder="メール（任意）"
+              value={newUserEmail}
+              onChange={e => setNewUserEmail(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleAddUser()}
+              aria-label="メール"
+            />
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={handleAddUser}
+              disabled={addingUser || !newUserName.trim()}
+            >
+              {addingUser ? '追加中…' : '追加'}
+            </button>
+          </div>
+        </div>
+
+        <div className="form-group" style={{ marginTop: 24 }}>
+          <span className="form-label">通知</span>
+          <div className="theme-toggle" style={{ marginTop: 8 }}>
+            <span className="theme-toggle__label">期限リマインダー（今日が期限のタスクをお知らせ）</span>
+            <button
+              type="button"
+              className="theme-toggle__switch"
+              aria-pressed={notifyReminderEnabled}
+              onClick={() => setNotifyReminderEnabled(v => !v)}
+            />
+          </div>
+        </div>
+
         <div className="modal-actions">
           <button type="button" className="btn btn-primary" onClick={onClose}>閉じる</button>
         </div>
@@ -260,6 +413,10 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('')
   const [showSettings, setShowSettings] = useState(false)
   const [categories, setCategories] = useState([])
+  const [users, setUsers] = useState([])
+  const [filterAssigneeId, setFilterAssigneeId] = useState('')
+  const [authUser, setAuthUser] = useState(null)
+  const [notifyReminderEnabled, setNotifyReminderEnabled] = useState(() => localStorage.getItem('taskflow_notify_reminder') !== 'false')
   const [showProfileModal, setShowProfileModal] = useState(false)
 
   useEffect(() => {
@@ -279,10 +436,16 @@ export default function App() {
       try {
         const [projs, ts, tpls, clis, rems] = await Promise.all([fetchProjects(), fetchTasks(), fetchTemplates(), fetchClients(), fetchRemember()])
         let cats = []
+        let usrs = []
         try {
           cats = await fetchCategories()
         } catch {
           // tf_categories 未作成時はフォールバック用に空のまま
+        }
+        try {
+          usrs = await fetchUsers()
+        } catch {
+          // tf_users 未作成時は空のまま
         }
         if (!cancelled) {
           setProjects(projs)
@@ -291,6 +454,7 @@ export default function App() {
           setClients(clis)
           setRemembers(rems)
           setCategories(cats)
+          setUsers(usrs)
         }
       } catch (e) {
         if (!cancelled) addToast('❌', '読み込みエラー', e?.message ?? 'データを取得できませんでした')
@@ -309,6 +473,19 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    let cancelled = false
+    getAuthSession().then(session => {
+      if (!cancelled) setAuthUser(session?.user ?? null)
+    })
+    const unsub = subscribeAuth(session => setAuthUser(session?.user ?? null))
+    return () => { cancelled = true; unsub() }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('taskflow_notify_reminder', notifyReminderEnabled ? 'true' : 'false')
+  }, [notifyReminderEnabled])
+
+  useEffect(() => {
     if (typeof document === 'undefined') return
     if (sidebarOpen) {
       document.body.style.overflow = 'hidden'
@@ -322,8 +499,9 @@ export default function App() {
     const checkDueToday = () => {
       const dueToday = tasks.filter(t => !t.done && isToday(t.due))
       if (dueToday.length === 0) return
+      if (!notifyReminderEnabled) return
       const now = Date.now()
-      const lastAt = parseInt(localStorage.getItem(DUE_TODAY_NOTIFY_STORAGE_KEY) ?? '0', 10)
+      const lastAt = Number.parseInt(localStorage.getItem(DUE_TODAY_NOTIFY_STORAGE_KEY) ?? '0', 10)
       if (now - lastAt < DUE_TODAY_NOTIFY_THROTTLE_MS) return
       localStorage.setItem(DUE_TODAY_NOTIFY_STORAGE_KEY, String(now))
       addToast('⚠️', `今日が期限: ${dueToday.length}件`, dueToday.map(t => t.title).join('、'))
@@ -334,7 +512,7 @@ export default function App() {
     }
     const timer = setTimeout(checkDueToday, DUE_TODAY_CHECK_DELAY_MS)
     return () => clearTimeout(timer)
-  }, [tasks, notifGranted, addToast])
+  }, [tasks, notifGranted, addToast, notifyReminderEnabled])
 
   const requestNotif = useCallback(async () => {
     if (typeof globalThis.Notification === 'undefined') return
@@ -497,7 +675,7 @@ export default function App() {
 
   // ── Filtered & sorted tasks ──────────────────────────────
   const hasAnyFilter = filterProjectIds.length > 0 || filterPriorities.length > 0 ||
-    filterDueFrom || filterDueTo || filterPriorityFrom || filterPriorityTo
+    filterDueFrom || filterDueTo || filterPriorityFrom || filterPriorityTo || filterAssigneeId
 
   const filteredTasks = tasks.filter(t => {
     if (!showDone && t.done) return false
@@ -514,6 +692,7 @@ export default function App() {
     if (view !== 'all' && view !== 'today' && view !== 'overdue') return true
     if (filterProjectIds.length > 0 && !filterProjectIds.includes(t.projectId)) return false
     if (filterPriorities.length > 0 && !filterPriorities.includes(t.priority)) return false
+    if (filterAssigneeId && t.assigneeId !== filterAssigneeId) return false
     if (filterDueFrom && (!t.due || t.due < filterDueFrom)) return false
     if (filterDueTo && (!t.due || t.due > filterDueTo)) return false
     if (filterPriorityFrom !== '' || filterPriorityTo !== '') {
@@ -649,7 +828,7 @@ export default function App() {
     { key: 'gantt', label: 'タイムライン', icon: '📅' },
     { key: 'dashboard', label: 'インサイト', icon: '📊' },
   ]
-  const activeFilterCount = [filterProjectIds.length, filterPriorities.length, filterDueFrom, filterDueTo, filterPriorityFrom, filterPriorityTo].filter(Boolean).length
+  const activeFilterCount = [filterProjectIds.length, filterPriorities.length, filterDueFrom, filterDueTo, filterPriorityFrom, filterPriorityTo, filterAssigneeId].filter(Boolean).length
   const tasksForBoard = useMemo(() => {
     let list = tasks
     if (searchQuery.trim()) {
@@ -774,7 +953,22 @@ export default function App() {
           <div className="sidebar-footer">
             <div className="sidebar-label">チーム</div>
             <div className="sidebar-team-avatars" aria-label="チームメンバー">
-              <span className="sidebar-team-placeholder">担当者機能は準備中</span>
+              {users.length === 0 ? (
+                <span className="sidebar-team-placeholder">設定でメンバーを追加</span>
+              ) : (
+                users.slice(0, 12).map(u => (
+                  <button
+                    key={u.id}
+                    type="button"
+                    className={`sidebar-team-avatar ${filterAssigneeId === u.id ? 'active' : ''}`}
+                    onClick={() => { setFilterAssigneeId(prev => (prev === u.id ? '' : u.id)); setView('all'); setFilterOpen(true); setSidebarOpen(false) }}
+                    title={`${u.name}で絞り込み`}
+                    aria-label={`${u.name}で絞り込み`}
+                  >
+                    {u.avatarUrl ? <img src={u.avatarUrl} alt="" /> : <span>👤</span>}
+                  </button>
+                ))
+              )}
             </div>
             <button type="button" className="sidebar-item" onClick={() => { setShowSettings(true); setSidebarOpen(false) }}>
               <span className="icon">⚙️</span>設定
@@ -893,6 +1087,8 @@ export default function App() {
                 project={currentProject}
                 tasks={tasks}
                 projects={projects}
+                categories={categories}
+                users={users}
                 onToggle={toggleTask}
                 onEditTask={setEditTask}
                 onAddTask={() => setShowTaskForm(true)}
@@ -1157,6 +1353,31 @@ export default function App() {
                           )
                         })}
                       </div>
+                      <div className="filter-group filter-group--project">
+                        <span className="filter-group-label">担当者:</span>
+                        <button
+                          type="button"
+                          className={`sort-chip ${!filterAssigneeId ? 'active' : ''}`}
+                          onClick={() => setFilterAssigneeId('')}
+                        >
+                          すべて
+                        </button>
+                        {users.map(u => {
+                          const on = filterAssigneeId === u.id
+                          return (
+                            <button
+                              key={u.id}
+                              type="button"
+                              className={`sort-chip ${on ? 'active' : ''}`}
+                              onClick={() => setFilterAssigneeId(prev => (prev === u.id ? '' : u.id))}
+                              title={u.name}
+                            >
+                              {u.avatarUrl ? <img src={u.avatarUrl} alt="" width={16} height={16} style={{ borderRadius: '50%', verticalAlign: 'middle', marginRight: 4 }} /> : '👤'}
+                              {u.name}
+                            </button>
+                          )
+                        })}
+                      </div>
                       <div className="filter-group">
                         <span className="filter-group-label">優先度:</span>
                         <button
@@ -1242,6 +1463,7 @@ export default function App() {
                         onClick={() => {
                           setFilterProjectIds([])
                           setFilterPriorities([])
+                          setFilterAssigneeId('')
                           setFilterDueFrom('')
                           setFilterDueTo('')
                           setFilterPriorityFrom('')
@@ -1257,7 +1479,7 @@ export default function App() {
                 ) : (
                   <div className="cards-grid cards-grid--compact">
                     {sortedTasks.map(t => (
-                      <TaskCard key={t.id} task={t} projects={projects} categories={categories} onToggle={toggleTask} onClick={() => setEditTask(t)} />
+                      <TaskCard key={t.id} task={t} projects={projects} categories={categories} users={users} onToggle={toggleTask} onClick={() => setEditTask(t)} />
                     ))}
                   </div>
                 )}
@@ -1275,6 +1497,7 @@ export default function App() {
           projects={projects}
           templates={templates}
           categories={categories}
+          users={users}
           onSave={saveTask}
           onClose={closeTaskForm}
         />
@@ -1296,6 +1519,10 @@ export default function App() {
           onClose={() => setShowSettings(false)}
           categories={categories}
           setCategories={setCategories}
+          users={users}
+          setUsers={setUsers}
+          notifyReminderEnabled={notifyReminderEnabled}
+          setNotifyReminderEnabled={setNotifyReminderEnabled}
           addToast={addToast}
         />
       )}
@@ -1304,12 +1531,36 @@ export default function App() {
         <div className="overlay" onClick={() => setShowProfileModal(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
             <h2 className="modal-title">プロフィール・ログイン</h2>
-            <p style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 20 }}>
-              ログイン機能は準備中です。利用可能になり次第、ここからサインイン・プロフィールの編集ができます。
-            </p>
-            <div className="modal-actions">
-              <button type="button" className="btn btn-primary" onClick={() => setShowProfileModal(false)}>閉じる</button>
-            </div>
+            {authUser ? (
+              <>
+                <p style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 12 }}>
+                  ログイン中: <strong>{authUser.email ?? authUser.id}</strong>
+                </p>
+                <div className="modal-actions">
+                  <button
+                    type="button"
+                    className="btn btn-ghost"
+                    onClick={async () => {
+                      try {
+                        await signOut()
+                        setAuthUser(null)
+                        setShowProfileModal(false)
+                      } catch (e) {
+                        addToast('❌', 'ログアウトに失敗しました', e?.message ?? '')
+                      }
+                    }}
+                  >
+                    ログアウト
+                  </button>
+                  <button type="button" className="btn btn-primary" onClick={() => setShowProfileModal(false)}>閉じる</button>
+                </div>
+              </>
+            ) : (
+              <ProfileLoginForm
+                onSuccess={() => setShowProfileModal(false)}
+                onError={addToast}
+              />
+            )}
           </div>
         </div>
       )}

@@ -3,12 +3,12 @@ import { PRIORITY, TASK_STATUS, TASK_STATUS_KEYS, categoriesToOptions } from './
 import { formatDate, isToday, isTomorrow } from './utils'
 import CalendarPicker from './CalendarPicker'
 
-export default function TaskForm({ task, projects, templates, categories = [], onSave, onClose }) {
+export default function TaskForm({ task, projects, templates, categories = [], users = [], onSave, onClose }) {
   const categoryOptions = categoriesToOptions(categories)
   const [form, setForm] = useState(
     task
-      ? { title:'', desc:'', priority:'medium', projectId: projects[0]?.id || '', due:'', done:false, status:'todo', category: '', ...task }
-      : { title:'', desc:'', priority:'medium', projectId: task?.projectId ?? projects[0]?.id ?? '', due:'', done:false, status: task?.status ?? 'todo', category: '' }
+      ? { title:'', desc:'', priority:'medium', projectId: projects[0]?.id || '', due:'', done:false, status:'todo', category: '', assigneeId: '', ...task }
+      : { title:'', desc:'', priority:'medium', projectId: task?.projectId ?? projects[0]?.id ?? '', due:'', done:false, status: task?.status ?? 'todo', category: '', assigneeId: task?.assigneeId ?? '' }
   )
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
@@ -80,6 +80,15 @@ export default function TaskForm({ task, projects, templates, categories = [], o
           </select>
         </div>
         <div className="form-group">
+          <label className="form-label">担当者</label>
+          <select className="form-select" value={form.assigneeId ?? ''} onChange={e => set('assigneeId', e.target.value)}>
+            <option value="">なし</option>
+            {users.map(u => (
+              <option key={u.id} value={u.id}>{u.name}</option>
+            ))}
+          </select>
+        </div>
+        <div className="form-group">
           <label className="form-label">状態</label>
           <select className="form-select" value={form.status || 'todo'} onChange={e => set('status', e.target.value)}>
             {TASK_STATUS_KEYS.map(k => (
@@ -89,7 +98,7 @@ export default function TaskForm({ task, projects, templates, categories = [], o
         </div>
         <div className="modal-actions">
           <button className="btn btn-ghost" onClick={onClose}>キャンセル</button>
-          <button className="btn btn-primary" onClick={() => { if (form.title.trim()) onSave({ ...form, category: form.category || null }) }} disabled={!form.title.trim()}>保存</button>
+          <button className="btn btn-primary" onClick={() => { if (form.title.trim()) onSave({ ...form, category: form.category || null, assigneeId: form.assigneeId || null }) }} disabled={!form.title.trim()}>保存</button>
         </div>
       </div>
     </div>

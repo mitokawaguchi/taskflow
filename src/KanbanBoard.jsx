@@ -9,11 +9,12 @@ import {
 import { PRIORITY, TASK_STATUS, TASK_STATUS_KEYS, progressFromStatus, getCategoryInfo } from './constants'
 import { formatDate, isOverdue } from './utils'
 
-function KanbanCard({ task, projects, categories = [], onClick, isOverlay }) {
+function KanbanCard({ task, projects, categories = [], users = [], onClick, isOverlay }) {
   const proj = projects.find(p => p.id === task.projectId)
   const progress = task.progress != null ? task.progress : progressFromStatus(task.status)
   const over = isOverdue(task.due)
   const categoryInfo = getCategoryInfo(task.category, categories)
+  const assignee = task.assigneeId ? users.find(u => u.id === task.assigneeId) : null
 
   const cardBody = (
     <>
@@ -34,6 +35,12 @@ function KanbanCard({ task, projects, categories = [], onClick, isOverlay }) {
         {proj && (
           <div className="kanban-card__meta" style={{ color: proj.color }}>
             {proj.icon} {proj.name}
+          </div>
+        )}
+        {assignee && (
+          <div className="kanban-card__assignee">
+            {assignee.avatarUrl ? <img src={assignee.avatarUrl} alt="" width={14} height={14} style={{ borderRadius: '50%' }} /> : '👤'}
+            <span>{assignee.name}</span>
           </div>
         )}
         <div className="kanban-card__progress">
@@ -67,7 +74,7 @@ function KanbanCard({ task, projects, categories = [], onClick, isOverlay }) {
   )
 }
 
-function DraggableKanbanCard({ task, projects, categories = [], onClick }) {
+function DraggableKanbanCard({ task, projects, categories = [], users = [], onClick }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: task.id,
     data: { task },
@@ -76,6 +83,7 @@ function DraggableKanbanCard({ task, projects, categories = [], onClick }) {
   const progress = task.progress != null ? task.progress : progressFromStatus(task.status)
   const over = isOverdue(task.due)
   const categoryInfo = getCategoryInfo(task.category, categories)
+  const assignee = task.assigneeId ? users.find(u => u.id === task.assigneeId) : null
 
   return (
     <div
@@ -116,6 +124,12 @@ function DraggableKanbanCard({ task, projects, categories = [], onClick }) {
           {proj && (
             <div className="kanban-card__meta" style={{ color: proj.color }}>
               {proj.icon} {proj.name}
+            </div>
+          )}
+          {assignee && (
+            <div className="kanban-card__assignee">
+              {assignee.avatarUrl ? <img src={assignee.avatarUrl} alt="" width={14} height={14} style={{ borderRadius: '50%' }} /> : '👤'}
+              <span>{assignee.name}</span>
             </div>
           )}
           <div className="kanban-card__progress">
@@ -226,6 +240,7 @@ export default function KanbanBoard({ tasks, projects, categories = [], onMoveTa
                 task={t}
                 projects={projects}
                 categories={categories}
+                users={users}
                 onClick={onEditTask}
               />
             ))}
@@ -234,7 +249,7 @@ export default function KanbanBoard({ tasks, projects, categories = [], onMoveTa
       </div>
       <DragOverlay dropAnimation={null}>
         {activeTask ? (
-          <KanbanCard task={activeTask} projects={projects} categories={categories} isOverlay />
+          <KanbanCard task={activeTask} projects={projects} categories={categories} users={users} isOverlay />
         ) : null}
       </DragOverlay>
     </DndContext>

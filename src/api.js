@@ -26,6 +26,7 @@ function taskFromRow(row) {
     startDate: row.start_date ?? '',
     progress,
     category: row.category ?? null,
+    assigneeId: row.assignee_id ?? null,
     created: typeof row.created === 'number' ? row.created : Number(row.created) || 0,
   }
 }
@@ -71,6 +72,17 @@ function categoryFromRow(row) {
   }
 }
 
+function userFromRow(row) {
+  if (!row) return null
+  return {
+    id: row.id,
+    name: row.name ?? '',
+    email: row.email ?? '',
+    avatarUrl: row.avatar_url ?? '',
+    created: typeof row.created === 'number' ? row.created : Number(row.created) || 0,
+  }
+}
+
 // ── 取得 ─────────────────────────────────────────────────────
 export async function fetchProjects() {
   requireSupabase()
@@ -98,6 +110,13 @@ export async function fetchCategories() {
   const { data, error } = await supabase.from('tf_categories').select('*').order('id')
   if (error) throw error
   return (data ?? []).map(categoryFromRow)
+}
+
+export async function fetchUsers() {
+  requireSupabase()
+  const { data, error } = await supabase.from('tf_users').select('*').order('created', { ascending: false })
+  if (error) throw error
+  return (data ?? []).map(userFromRow)
 }
 
 // ── プロジェクト追加・更新 ─────────────────────────────────────
@@ -145,6 +164,7 @@ export async function insertTask(task) {
     start_date: task.startDate || null,
     progress: task.progress != null && task.progress >= 0 && task.progress <= 100 ? task.progress : null,
     category: task.category || null,
+    assignee_id: task.assigneeId || null,
     created: task.created,
   }
   const { data, error } = await supabase.from('tf_tasks').insert(row).select().single()
@@ -170,9 +190,36 @@ export async function updateTask(id, patch) {
   if (patch.startDate !== undefined) row.start_date = patch.startDate || null
   if (patch.progress !== undefined) row.progress = (patch.progress >= 0 && patch.progress <= 100) ? patch.progress : null
   if (patch.category !== undefined) row.category = patch.category || null
+  if (patch.assigneeId !== undefined) row.assignee_id = patch.assigneeId || null
   const { data, error } = await supabase.from('tf_tasks').update(row).eq('id', id).select().single()
   if (error) throw error
   return taskFromRow(data)
+}
+
+// ── ユーザー（チームメンバー）追加・更新 ─────────────────────
+export async function insertUser(user) {
+  requireSupabase()
+  const row = {
+    id: user.id,
+    name: user.name,
+    email: user.email || null,
+    avatar_url: user.avatarUrl || null,
+    created: user.created,
+  }
+  const { data, error } = await supabase.from('tf_users').insert(row).select().single()
+  if (error) throw error
+  return userFromRow(data)
+}
+
+export async function updateUser(id, patch) {
+  requireSupabase()
+  const row = {}
+  if (patch.name !== undefined) row.name = patch.name
+  if (patch.email !== undefined) row.email = patch.email || null
+  if (patch.avatarUrl !== undefined) row.avatar_url = patch.avatarUrl || null
+  const { data, error } = await supabase.from('tf_users').update(row).eq('id', id).select().single()
+  if (error) throw error
+  return userFromRow(data)
 }
 
 // ── カテゴリ追加 ─────────────────────────────────────────────
@@ -252,4 +299,30 @@ export async function deleteRemember(id) {
   requireSupabase()
   const { error } = await supabase.from('tf_remember').delete().eq('id', id)
   if (error) throw error
+}
+
+// ── 認証（Supabase Auth）──────────────────────────────────────
+export async function getAuthSession() {
+  if (!supabase) return null
+  const { data: { session } } = await supabase.auth.getSession()
+  return session
+}
+
+export async function signInWithPassword(email, password) {
+  if (!supabase) throw new Error(CONFIG_MSG)
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+  if (error) throw error
+  return data
+}
+
+export async function signOut() {
+  if (!supabase) return
+  await supabase.auth.signOut()
+}
+
+/** 認証状態変更の購読。クリーンアップ用の unsubscribe を返す */
+export function subscribeAuth(callback) {
+  if (!supabase?.auth) return () => {}
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((_ev, session) => callback(session))
+  return () => subscription.unsubscribe()
 }
