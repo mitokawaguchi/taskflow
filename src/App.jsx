@@ -13,7 +13,7 @@ import { PRIORITY, SORT_OPTIONS, priorityOrder, PRIORITY_KEYS } from './constant
 import { today, isToday, isOverdue, formatTodayDisplay, endDateLabel } from './utils'
 
 const PRIORITY_OPTIONS = Object.entries(PRIORITY).map(([key, { label }]) => ({ key, label }))
-import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, fetchCategories, fetchUsers, insertProject, updateProject, insertTask, updateTask, insertTemplate, insertRemember, updateRemember, deleteRemember, insertClient, insertCategory, insertUser, getAuthSession, signInWithPassword, signUpWithEmail, signOut, subscribeAuth, claimExistingDataToAccount } from './api'
+import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, fetchCategories, fetchUsers, insertProject, updateProject, insertTask, updateTask, insertTemplate, insertRemember, updateRemember, deleteRemember, insertClient, insertCategory, insertUser, getAuthSession, signInWithPassword, signUpWithEmail, signOut, subscribeAuth } from './api'
 import MorningModal from './MorningModal'
 import TaskCard from './TaskCard'
 import TaskForm from './TaskForm'
@@ -124,7 +124,7 @@ const CATEGORY_COLOR_OPTIONS = [
   { value: '#f59e0b', label: 'オレンジ' },
 ]
 
-function ProfileLoginForm({ onSuccess, onError }) {
+function ProfileLoginForm({ onSuccess, onError, showCloseButton = true }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -224,11 +224,36 @@ function ProfileLoginForm({ onSuccess, onError }) {
         <button type="submit" className="btn btn-primary" disabled={loading}>
           {loading ? (isSignUp ? '作成中…' : 'ログイン中…') : (isSignUp ? 'アカウントを作成' : 'ログイン')}
         </button>
-        <button type="button" className="btn btn-ghost" onClick={() => onSuccess()} aria-label="閉じる">
-          閉じる（ログインしない）
-        </button>
+        {showCloseButton && (
+          <button type="button" className="btn btn-ghost" onClick={() => onSuccess()} aria-label="閉じる">
+            閉じる（ログインしない）
+          </button>
+        )}
       </div>
     </form>
+  )
+}
+
+/** 未ログイン時のみ表示するフル画面のログイン画面。タスク等は一切表示しない */
+function LoginScreen({ onError }) {
+  return (
+    <div className="app login-screen">
+      <div className="login-screen__inner">
+        <div className="login-screen__brand">
+          <img
+            src="/logo.png"
+            alt=""
+            className="logo-icon"
+            onError={(e) => { e.target.onerror = null; e.target.src = '/logo.svg' }}
+          />
+          <h1 className="login-screen__title">Task<span>Flow</span></h1>
+          <p className="login-screen__lead">ログインしてタスクを管理</p>
+        </div>
+        <div className="login-screen__form">
+          <ProfileLoginForm onSuccess={() => {}} onError={onError} showCloseButton={false} />
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -457,9 +482,8 @@ export default function App() {
   const [users, setUsers] = useState([])
   const [filterAssigneeId, setFilterAssigneeId] = useState('')
   const [authUser, setAuthUser] = useState(null)
+  const [authReady, setAuthReady] = useState(false)
   const [notifyReminderEnabled, setNotifyReminderEnabled] = useState(() => localStorage.getItem('taskflow_notify_reminder') !== 'false')
-  const [dataRefreshKey, setDataRefreshKey] = useState(0)
-  const [claiming, setClaiming] = useState(false)
   const [showProfileModal, setShowProfileModal] = useState(false)
 
   useEffect(() => {
@@ -474,7 +498,12 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    if (!authUser) {
+      setLoading(false)
+      return
+    }
     let cancelled = false
+    setLoading(true)
     async function load() {
       try {
         const [projs, ts, tpls, clis, rems] = await Promise.all([fetchProjects(), fetchTasks(), fetchTemplates(), fetchClients(), fetchRemember()])
@@ -507,7 +536,7 @@ export default function App() {
     }
     load()
     return () => { cancelled = true }
-  }, [addToast, dataRefreshKey])
+  }, [authUser, addToast])
 
   useEffect(() => {
     if (typeof globalThis.window !== 'undefined' && 'Notification' in globalThis && globalThis.Notification.permission === 'granted') {
@@ -518,7 +547,10 @@ export default function App() {
   useEffect(() => {
     let cancelled = false
     getAuthSession().then(session => {
-      if (!cancelled) setAuthUser(session?.user ?? null)
+      if (!cancelled) {
+        setAuthUser(session?.user ?? null)
+        setAuthReady(true)
+      }
     })
     const unsub = subscribeAuth(session => setAuthUser(session?.user ?? null))
     return () => { cancelled = true; unsub() }
@@ -890,6 +922,23 @@ export default function App() {
   }, [editTask, taskFormProjectId, isProjectView, view, kanbanAddStatus])
 
   // ── Render ───────────────────────────────────────────────
+  if (!authReady) {
+    return (
+      <div className="app" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+        <p style={{ color: 'var(--text-muted)' }}>認証確認中...</p>
+      </div>
+    )
+  }
+
+  if (authReady && !authUser) {
+    return (
+      <>
+        <LoginScreen onError={addToast} />
+        <Toast toasts={toasts} />
+      </>
+    )
+  }
+
   if (loading) {
     return (
       <div className="app" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
@@ -1576,32 +1625,10 @@ export default function App() {
             <h2 className="modal-title">プロフィール・ログイン</h2>
             {authUser ? (
               <>
-                <p style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 12 }}>
+                <p style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 16 }}>
                   ログイン中: <strong>{authUser.email ?? authUser.id}</strong>
                 </p>
-                <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 16 }}>
-                  今まで運用していたデータをこのアカウントに紐づけると、ログイン時だけそのデータが表示されます。
-                </p>
                 <div className="modal-actions" style={{ flexWrap: 'wrap', gap: 8 }}>
-                  <button
-                    type="button"
-                    className="btn btn-ghost"
-                    disabled={claiming}
-                    onClick={async () => {
-                      setClaiming(true)
-                      try {
-                        await claimExistingDataToAccount()
-                        addToast('✅', '紐づけました', '既存のデータをこのアカウントに紐づけました')
-                        setDataRefreshKey(k => k + 1)
-                      } catch (e) {
-                        addToast('❌', '紐づけに失敗しました', e?.message ?? 'owner_id カラムが未追加の場合は SUPABASE_OWNER_LINK.sql を実行してください')
-                      } finally {
-                        setClaiming(false)
-                      }
-                    }}
-                  >
-                    {claiming ? '紐づけ中…' : '今までのデータをこのアカウントに紐づける'}
-                  </button>
                   <button
                     type="button"
                     className="btn btn-ghost"

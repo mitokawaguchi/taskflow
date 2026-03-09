@@ -370,10 +370,15 @@ export async function signInWithPassword(email, password) {
   return data
 }
 
-/** 新規アカウント作成。メール確認が有効な場合は session が null になり確認メールが送られる */
+/** 新規アカウント作成。メール確認が有効な場合は session が null になり確認メールが送られる。
+ * 確認メールのリンクは emailRedirectTo のURLへ飛ぶ。本番では Supabase の「サイトURL」も本番URLにすること。 */
 export async function signUpWithEmail(email, password) {
   if (!supabase) throw new Error(CONFIG_MSG)
-  const { data, error } = await supabase.auth.signUp({ email, password })
+  const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/` : undefined
+  const { data, error } = await supabase.auth.signUp(
+    { email, password },
+    redirectTo ? { emailRedirectTo: redirectTo } : undefined
+  )
   if (error) throw error
   return data
 }

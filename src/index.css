@@ -126,6 +126,27 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
 .app { display: flex; height: 100vh; height: 100dvh; overflow: hidden; }
+.app.login-screen {
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  padding: 24px;
+}
+.login-screen__inner {
+  width: 100%;
+  max-width: 380px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+}
+.login-screen__brand { text-align: center; margin-bottom: 28px; }
+.login-screen__brand .logo-icon { width: 48px; height: 48px; margin: 0 auto 12px; display: block; }
+.login-screen__title { font-size: 24px; font-weight: 800; margin: 0 0 4px; letter-spacing: -0.02em; }
+.login-screen__title span { color: var(--accent); }
+.login-screen__lead { font-size: 13px; color: var(--text-muted); margin: 0; }
+.login-screen__form { margin-top: 8px; }
 .sidebar {
   width: 240px; min-width: 240px;
   background: var(--surface);
