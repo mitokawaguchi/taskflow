@@ -39,27 +39,19 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
   }, [range])
 
   const todayStr = today()
-  /** 表示範囲に重なるタスクを全件表示。期限なしは「今日」に表示 */
-  const tasksWithDue = useMemo(() => {
-    return tasks.filter(t => {
-      const taskEnd = t.due || todayStr
-      const taskStart = t.startDate || t.due || todayStr
-      return taskStart <= endDate && taskEnd >= startDate
-    })
-  }, [tasks, startDate, endDate, todayStr])
 
-  /** プロジェクト順でグループ化（未設定 → プロジェクト一覧の順） */
+  /** プロジェクト順でグループ化（全プロジェクト・全タスクを表示。未設定 → プロジェクト一覧の順） */
   const groupsByProject = useMemo(() => {
     const order = [{ id: '', project: null }]
     for (const p of projects) order.push({ id: p.id, project: p })
     const map = new Map(order.map(o => [o.id, { project: o.project, tasks: [] }]))
-    for (const t of tasksWithDue) {
+    for (const t of tasks) {
       const id = t.projectId || ''
       const g = map.get(id) ?? map.get('')
       if (g) g.tasks.push(t)
     }
-    return order.map(o => map.get(o.id)).filter(g => g.tasks.length > 0)
-  }, [tasksWithDue, projects])
+    return order.map(o => map.get(o.id))
+  }, [tasks, projects])
 
   const totalRows = groupsByProject.reduce((sum, g) => sum + 1 + g.tasks.length, 0)
   const rowTemplate = `auto repeat(${totalRows}, ${ROW_HEIGHT}px)`

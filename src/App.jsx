@@ -39,7 +39,7 @@ const SIDEBAR_MENU_ITEMS = [
   { key: 'overdue', icon: '🚨', label: '期限超過', badgeKey: 'overdueCount' },
   { key: 'kanban', icon: '📌', label: 'カンバン' },
   { key: 'dashboard', icon: '📊', label: 'ダッシュボード' },
-  { key: 'gantt', icon: '📅', label: 'ガント' },
+  { key: 'gantt', icon: '📅', label: 'タイムライン' },
 ]
 
 function SortableProjectCard({ item, setView, toggleTask, openTaskFormForProject }) {
@@ -901,7 +901,7 @@ export default function App() {
     if (view === 'overdue') return '期限超過'
     if (view === 'kanban') return 'カンバン'
     if (view === 'dashboard') return 'ダッシュボード'
-    if (view === 'gantt') return 'ガントチャート'
+    if (view === 'gantt') return 'タイムライン'
     if (view === 'projects') return 'プロジェクト'
     if (view === 'templates') return 'テンプレート'
     if (view === 'clients') return '覚えておくこと'
@@ -1026,6 +1026,19 @@ export default function App() {
     const status = kanbanAddStatus ?? null
     return (projectId || status) ? { projectId: projectId || null, status } : null
   }, [editTask, taskFormProjectId, isProjectView, view, kanbanAddStatus])
+
+  /** 担当者選択用：自分（ログインユーザー）を必ず含める */
+  const usersForTaskForm = useMemo(() => {
+    if (!authUser) return users
+    const exists = users.some(u => u.id === authUser.id)
+    if (exists) return users
+    const me = {
+      id: authUser.id,
+      name: authUser.user_metadata?.display_name || authUser.email || '自分',
+      email: authUser.email ?? '',
+    }
+    return [me, ...users]
+  }, [users, authUser])
 
   // ── Render ───────────────────────────────────────────────
   if (!authReady) {
@@ -1511,15 +1524,17 @@ export default function App() {
 
             {/* ALL / TODAY / OVERDUE TASKS */}
             {view === 'kanban' && (
-              <KanbanBoard
-                tasks={tasksForBoard}
-                projects={projects}
-                categories={categories}
-                users={users}
-                onMoveTask={moveTaskStatus}
-                onEditTask={(task) => { setEditTask(task); setShowTaskForm(true) }}
-                onAddTask={openTaskFormForKanbanColumn}
-              />
+              <div className="kanban-view-wrap">
+                <KanbanBoard
+                  tasks={tasksForBoard}
+                  projects={projects}
+                  categories={categories}
+                  users={users}
+                  onMoveTask={moveTaskStatus}
+                  onEditTask={(task) => { setEditTask(task); setShowTaskForm(true) }}
+                  onAddTask={openTaskFormForKanbanColumn}
+                />
+              </div>
             )}
 
             {view === 'dashboard' && (
@@ -1527,11 +1542,13 @@ export default function App() {
             )}
 
             {view === 'gantt' && (
-              <GanttChart
-                tasks={tasksForBoard}
-                projects={projects}
-                onEditTask={(task) => { setEditTask(task); setShowTaskForm(true) }}
-              />
+              <div className="gantt-view-wrap">
+                <GanttChart
+                  tasks={tasksForBoard}
+                  projects={projects}
+                  onEditTask={(task) => { setEditTask(task); setShowTaskForm(true) }}
+                />
+              </div>
             )}
 
             {(view === 'all' || view === 'today' || view === 'overdue') && (
@@ -1717,7 +1734,7 @@ export default function App() {
           projects={projects}
           templates={templates}
           categories={categories}
-          users={users}
+          users={usersForTaskForm}
           onSave={saveTask}
           onClose={closeTaskForm}
         />

@@ -264,8 +264,9 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 /* 画面切り替え時：メインエリアのコンテンツが右からスライドイン（全遷移で共通） */
 .content-view {
   animation: contentViewIn 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  flex: 1;
   min-width: 0;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 @keyframes contentViewIn {
   from { transform: translateX(32px); }
@@ -419,7 +420,15 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 .btn-ghost.active { background: var(--surface3); color: var(--text); border-color: var(--accent); font-weight: 600; }
 .btn-sm { padding: 5px 12px; font-size: 12px; }
 
-.content { position: relative; min-width: 0; padding: 24px 28px; flex: 1; overflow-x: hidden; }
+.content {
+  position: relative;
+  min-width: 0;
+  padding: 24px 28px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
 .filter-toggle {
   display: inline-flex; align-items: center; gap: 8px;
@@ -691,6 +700,66 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 .form-select option { background: var(--surface2); }
 select { appearance: none; }
 
+/* カテゴリ選択（色＋名前） */
+.form-category-picker { position: relative; width: 100%; }
+.form-category-picker__trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.form-category-picker__trigger:hover { border-color: var(--accent); }
+.form-category-picker__swatch {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+.form-category-picker__swatch--none { background: var(--surface3); }
+.form-category-picker__empty { color: var(--text-muted); }
+.form-category-picker__list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin: 4px 0 0;
+  padding: 4px 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  list-style: none;
+  max-height: 240px;
+  overflow-y: auto;
+  z-index: 50;
+}
+.form-category-picker__option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: none;
+  background: none;
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.form-category-picker__option:hover { background: var(--surface3); }
+.form-category-picker__option .form-category-picker__swatch { width: 12px; height: 12px; }
+
 .calendar-picker {
   background: var(--surface2);
   border: 1px solid var(--border);
@@ -880,9 +949,19 @@ select { appearance: none; }
   overflow: hidden;
 }
 .project-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; min-width: 0; }
-.project-card-clickable { cursor: pointer; border: none; background: none; width: 100%; text-align: left; padding: 0; font: inherit; color: inherit; min-width: 0; }
+.project-card-clickable {
+  cursor: pointer; border: none; background: none; width: 100%; text-align: left; padding: 0; font: inherit; color: inherit;
+  min-width: 0; flex: 1;
+  display: flex; align-items: center; gap: 10px;
+}
 .project-card-header:has(.project-card-clickable:hover) + .project-progress { background: var(--surface3); }
-.project-card-header > div { min-width: 0; flex: 1; overflow: visible; }
+/* 名前エリアをカード幅内に収め、ここで折り返す */
+.project-card-clickable > div {
+  min-width: 0;
+  flex: 1;
+  overflow: visible;
+  max-width: 100%;
+}
 .project-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
 .project-name {
   font-family: 'Sora', sans-serif;
@@ -1004,25 +1083,33 @@ select { appearance: none; }
 .remember-actions { display: flex; gap: 8px; font-size: 12px; }
 .remember-delete { color: var(--critical); }
 
-/* カンバンボード */
+/* カンバンボード（横スクロールなしで4列を画面幅に収める） */
+.kanban-view-wrap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
 .kanban-board {
   display: flex;
-  gap: 16px;
-  overflow-x: auto;
-  overflow-y: hidden;
+  gap: 12px;
   padding-bottom: 12px;
   min-height: 400px;
-  max-width: 100%;
+  width: 100%;
+  min-width: 0;
 }
 .kanban-column {
-  flex: 0 0 280px;
-  min-width: 280px;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 320px;
   background: var(--surface3);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 12px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   transition: background 0.15s, border-color 0.15s;
 }
 .kanban-column--over { border-color: var(--accent); background: var(--accent-glow); }
@@ -1206,11 +1293,18 @@ select { appearance: none; }
 .dashboard-activity__meta { font-size: 11px; color: var(--text-muted); }
 .dashboard-empty { color: var(--text-muted); font-size: 13px; padding: 12px 0; }
 
-/* ガントチャート */
-.gantt { display: flex; flex-direction: column; gap: 12px; }
-.gantt-toolbar { display: flex; align-items: center; gap: 8px; }
+/* タイムライン（ガント） */
+.gantt-view-wrap {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.gantt { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.gantt-toolbar { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .gantt-toolbar__label { font-size: 12px; color: var(--text-muted); }
-.gantt-scroll { overflow-x: auto; position: relative; }
+.gantt-scroll { overflow-x: auto; position: relative; min-width: 0; }
 .gantt-grid {
   display: grid;
   gap: 0;
@@ -1232,11 +1326,30 @@ select { appearance: none; }
   border-top: none;
   min-height: 36px;
 }
-.gantt-cell--label { border-right: none; font-size: 12px; }
-.gantt-cell__title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
-.gantt-cell__proj { margin-left: 4px; }
+.gantt-cell--label {
+  border-right: none;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  overflow: hidden;
+}
+.gantt-cell__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  flex: 1;
+}
+.gantt-cell__proj { flex-shrink: 0; line-height: 1; }
 .gantt-cell--project { font-weight: 600; font-size: 12px; border-left-width: 3px; border-left-style: solid; }
-.gantt-cell__project { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+.gantt-cell__project {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
 .gantt-cell.today { background: rgba(255,69,96,0.06); border-left: 2px dashed var(--critical); }
 .gantt-cell--clickable { cursor: pointer; }
 .gantt-cell--clickable:hover { background: var(--surface3); }
