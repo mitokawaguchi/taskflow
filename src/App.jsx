@@ -7,13 +7,12 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core'
-import { arrayMove, SortableContext, useSortable, rectSortingStrategy } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
+import { arrayMove, SortableContext, rectSortingStrategy } from '@dnd-kit/sortable'
 import { PRIORITY, SORT_OPTIONS, priorityOrder, PRIORITY_KEYS } from './constants'
 import { today, isToday, isOverdue, formatTodayDisplay, endDateLabel } from './utils'
 
 const PRIORITY_OPTIONS = Object.entries(PRIORITY).map(([key, { label }]) => ({ key, label }))
-import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, fetchCategories, fetchUsers, insertProject, updateProject, insertTask, updateTask, insertTemplate, insertRemember, updateRemember, deleteRemember, insertClient, insertUser, getAuthSession, signOut, subscribeAuth, updateAuthPassword, updateAuthUserMetadata } from './api'
+import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, fetchCategories, fetchUsers, insertProject, updateProject, insertTask, updateTask, insertTemplate, updateTemplate, deleteTemplate, insertRemember, updateRemember, deleteRemember, insertClient, updateClient, deleteClient, insertUser, getAuthSession, signOut, subscribeAuth, updateAuthPassword, updateAuthUserMetadata } from './api'
 import MorningModal from './MorningModal'
 import TaskCard from './TaskCard'
 import TaskForm from './TaskForm'
@@ -31,6 +30,7 @@ import CategoriesView from './components/CategoriesView'
 import SettingsModal from './components/SettingsModal'
 import ClientDetailView from './components/ClientDetailView'
 import LegalPageView from './components/LegalPageView'
+import SortableProjectCard from './components/SortableProjectCard'
 import { getLegalPageFromHash } from './legalContent'
 
 const DUE_TODAY_CHECK_DELAY_MS = 2000
@@ -47,78 +47,6 @@ const SIDEBAR_MENU_ITEMS = [
   { key: 'gantt', icon: '📅', label: 'タイムライン' },
 ]
 
-function SortableProjectCard({ item, setView, toggleTask, openTaskFormForProject }) {
-  const { project: p, ptasks, pct } = item
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: p.id,
-  })
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition: isDragging ? 'none' : transition,
-    background: `${p.color}28`,
-    border: `1px solid ${p.color}60`,
-    opacity: isDragging ? 0.4 : 1,
-  }
-  return (
-    <div ref={setNodeRef} style={style} className={`project-card ${isDragging ? 'project-card-dragging' : ''}`}>
-      <div className="project-card-header">
-        <span
-          className="project-card-drag-handle"
-          {...attributes}
-          {...listeners}
-          aria-label="並び順を変える"
-          title="ドラッグで並び替え"
-        >
-          ⋮⋮
-        </span>
-        <button
-          type="button"
-          className="project-card-clickable"
-          onClick={() => setView(`p:${p.id}`)}
-          style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '10px', border: 'none', background: 'none', padding: 0, font: 'inherit', color: 'inherit', cursor: 'pointer', textAlign: 'left', minWidth: 0 }}
-        >
-          <div className="project-icon" style={{ background: `${p.color}20` }}>{p.icon}</div>
-        <div>
-          <div className="project-name">{p.name}</div>
-          <div className="project-count">
-            {ptasks.filter((t) => !t.done).length} 件残り
-            {p.endDate && <span className="project-due"> · {endDateLabel(p.endDate)}</span>}
-          </div>
-        </div>
-        </button>
-      </div>
-      <div className="project-progress" onClick={() => setView(`p:${p.id}`)}>
-        <div className="project-progress-fill" style={{ width: `${pct}%`, background: p.color }} />
-      </div>
-      <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '6px' }}>{pct}% 完了</div>
-      <ul className="project-card-tasks" aria-label={`${p.name}のタスク`}>
-        {ptasks.map((t) => (
-          <li key={t.id} className={`project-task-row project-task-row--${t.priority}`}>
-            <input
-              type="checkbox"
-              className="project-task-check"
-              checked={!!t.done}
-              onChange={() => toggleTask(t.id)}
-              aria-label={`${t.title}を${t.done ? '未完了に' : '完了に'}`}
-            />
-            <span className={`project-task-title ${t.done ? 'done' : ''}`}>{t.title}</span>
-          </li>
-        ))}
-      </ul>
-      <button
-        type="button"
-        className="btn btn-ghost btn-sm project-card-add-task"
-        onClick={(e) => {
-          e.stopPropagation()
-          openTaskFormForProject(p.id)
-        }}
-      >
-        ＋ タスクを追加
-      </button>
-    </div>
-  )
-}
-
 export default function App() {
   const [tasks, setTasks] = useState([])
   const [projects, setProjects] = useState([])
@@ -127,6 +55,7 @@ export default function App() {
   const [remembers, setRemembers] = useState([])
   const [loading, setLoading] = useState(true)
   const [showClientForm, setShowClientForm] = useState(false)
+  const [editClient, setEditClient] = useState(null)
   const [view, setView] = useState('projects')
   const [sort, setSort] = useState('priority')
   const [filterProjectIds, setFilterProjectIds] = useState([])
@@ -144,6 +73,7 @@ export default function App() {
   const [showProjForm, setShowProjForm] = useState(false)
   const [editProject, setEditProject] = useState(null)
   const [showTplForm, setShowTplForm] = useState(false)
+  const [editTemplate, setEditTemplate] = useState(null)
   const [toasts, setToasts] = useState([])
   const [showDone, setShowDone] = useState(false)
   const [notifGranted, setNotifGranted] = useState(false)
@@ -386,17 +316,42 @@ export default function App() {
     }
   }, [addToast])
 
-  const saveTemplate = useCallback(async (form) => {
-    try {
-      const template = { ...form, id: `tpl-${crypto.randomUUID()}` }
-      const created = await insertTemplate(template)
-      setTemplates(ts => [...ts, created])
-      setShowTplForm(false)
-      addToast('📋', 'テンプレート保存', form.title)
-    } catch (e) {
-      addToast('❌', '保存できませんでした', e?.message ?? '')
-    }
-  }, [addToast])
+  const saveTemplate = useCallback(
+    async (form) => {
+      try {
+        if (form.id) {
+          const updated = await updateTemplate(form.id, form)
+          setTemplates((ts) => ts.map((t) => (t.id === updated.id ? updated : t)))
+          addToast('📋', 'テンプレートを更新しました', form.title)
+        } else {
+          const template = { ...form, id: `tpl-${crypto.randomUUID()}` }
+          const created = await insertTemplate(template)
+          setTemplates((ts) => [...ts, created])
+          addToast('📋', 'テンプレートを保存しました', form.title)
+        }
+        setShowTplForm(false)
+        setEditTemplate(null)
+      } catch (e) {
+        addToast('❌', '保存できませんでした', e?.message ?? '')
+      }
+    },
+    [addToast]
+  )
+
+  const removeTemplate = useCallback(
+    async (id) => {
+      try {
+        await deleteTemplate(id)
+        setTemplates((ts) => ts.filter((t) => t.id !== id))
+        setShowTplForm(false)
+        setEditTemplate(null)
+        addToast('📋', 'テンプレートを削除しました', '')
+      } catch (e) {
+        addToast('❌', '削除できませんでした', e?.message ?? '')
+      }
+    },
+    [addToast]
+  )
 
   const addRemember = useCallback(async (clientId, body) => {
     if (!body?.trim()) return
@@ -410,17 +365,48 @@ export default function App() {
     }
   }, [addToast])
 
-  const addClient = useCallback(async (form) => {
-    try {
-      const client = { ...form, id: `c-${crypto.randomUUID()}` }
-      const created = await insertClient(client)
-      setClients(prev => [...prev, created])
-      setShowClientForm(false)
-      addToast('🤝', 'クライアントを追加しました', form.name)
-    } catch (e) {
-      addToast('❌', '追加できませんでした', e?.message ?? '')
-    }
-  }, [addToast])
+  const saveClient = useCallback(
+    async (form) => {
+      try {
+        if (form.id) {
+          const updated = await updateClient(form.id, form)
+          setClients((prev) => prev.map((c) => (c.id === updated.id ? updated : c)))
+          addToast('🤝', 'クライアントを更新しました', form.name)
+        } else {
+          const client = { ...form, id: `c-${crypto.randomUUID()}` }
+          const created = await insertClient(client)
+          setClients((prev) => [...prev, created])
+          addToast('🤝', 'クライアントを追加しました', form.name)
+        }
+        setShowClientForm(false)
+        setEditClient(null)
+      } catch (e) {
+        addToast('❌', '追加できませんでした', e?.message ?? '')
+      }
+    },
+    [addToast]
+  )
+
+  const removeClient = useCallback(
+    async (id) => {
+      try {
+        const clientRemembers = remembers.filter((r) => r.clientId === id)
+        for (const r of clientRemembers) {
+          await deleteRemember(r.id)
+        }
+        await deleteClient(id)
+        setRemembers((prev) => prev.filter((r) => r.clientId !== id))
+        setClients((prev) => prev.filter((c) => c.id !== id))
+        setShowClientForm(false)
+        setEditClient(null)
+        setView((v) => (v === `c:${id}` ? 'clients' : v))
+        addToast('🤝', 'クライアントを削除しました', '')
+      } catch (e) {
+        addToast('❌', '削除できませんでした', e?.message ?? '')
+      }
+    },
+    [addToast, remembers]
+  )
 
   const updateRememberItem = useCallback(async (id, body) => {
     if (!body?.trim()) return
@@ -925,7 +911,7 @@ export default function App() {
             {view === 'clients' && (
               <>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
-                  <button type="button" className="btn btn-primary" onClick={() => setShowClientForm(true)}>
+                  <button type="button" className="btn btn-primary" onClick={() => { setEditClient(null); setShowClientForm(true) }}>
                     + クライアント追加
                   </button>
                 </div>
@@ -936,7 +922,7 @@ export default function App() {
                     <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '8px' }}>
                       取引先・担当先を追加すると、そのクライアントごとに「今後に向けて覚えておくこと」をメモできます。プロジェクトとは別で残ります。
                     </p>
-                    <button type="button" className="btn btn-primary" onClick={() => setShowClientForm(true)}>
+                    <button type="button" className="btn btn-primary" onClick={() => { setEditClient(null); setShowClientForm(true) }}>
                       最初のクライアントを追加
                     </button>
                   </div>
@@ -977,6 +963,13 @@ export default function App() {
                             </ul>
                           )}
                           <div className="card-footer" style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--border)' }}>
+                            <button
+                              type="button"
+                              className="btn btn-ghost btn-sm"
+                              onClick={() => { setEditClient(c); setShowClientForm(true) }}
+                            >
+                              設定
+                            </button>
                             <button
                               type="button"
                               className="btn btn-ghost btn-sm"
@@ -1084,24 +1077,33 @@ export default function App() {
             {/* TEMPLATES */}
             {view === 'templates' && (
               <>
-                <div style={{ display:'flex', justifyContent:'flex-end', marginBottom:'20px' }}>
-                  <button className="btn btn-primary" onClick={() => setShowTplForm(true)}>+ テンプレート作成</button>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+                  <button type="button" className="btn btn-primary" onClick={() => { setEditTemplate(null); setShowTplForm(true) }}>
+                    + テンプレート作成
+                  </button>
                 </div>
                 {templates.length === 0 ? (
                   <div className="empty-state">
                     <div className="empty-icon">📋</div>
                     <p>テンプレートがありません</p>
-                    <button className="btn btn-primary" onClick={() => setShowTplForm(true)}>最初のテンプレートを作成</button>
+                    <button type="button" className="btn btn-primary" onClick={() => { setEditTemplate(null); setShowTplForm(true) }}>
+                      最初のテンプレートを作成
+                    </button>
                   </div>
                 ) : (
                   <div className="cards-grid">
-                    {templates.map(t => (
-                      <div key={t.id} className="task-card medium" style={{ cursor:'default' }}>
+                    {templates.map((t) => (
+                      <div key={t.id} className="task-card medium" style={{ cursor: 'default' }}>
                         <div className="card-header"><div className="card-title">{t.title}</div></div>
                         {t.desc && <div className="card-desc">{t.desc}</div>}
                         <div className="card-footer">
-                          <span className={`priority-badge ${t.priority}`}>{PRIORITY[t.priority].label}</span>
-                          <button className="btn btn-ghost btn-sm" style={{ marginLeft:'auto' }} onClick={() => setShowTaskForm(true)}>このテンプレを使う</button>
+                          <span className={`priority-badge ${t.priority}`}>{PRIORITY[t.priority]?.label ?? t.priority}</span>
+                          <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setEditTemplate(t); setShowTplForm(true) }}>
+                            編集
+                          </button>
+                          <button type="button" className="btn btn-ghost btn-sm" style={{ marginLeft: 'auto' }} onClick={() => setShowTaskForm(true)}>
+                            このテンプレを使う
+                          </button>
                         </div>
                       </div>
                     ))}
@@ -1334,8 +1336,22 @@ export default function App() {
           onClose={() => { setShowProjForm(false); setEditProject(null) }}
         />
       )}
-      {showTplForm  && <TemplateForm onSave={saveTemplate} onClose={() => setShowTplForm(false)} />}
-      {showClientForm && <ClientForm onSave={addClient} onClose={() => setShowClientForm(false)} />}
+      {showTplForm && (
+        <TemplateForm
+          template={editTemplate}
+          onSave={saveTemplate}
+          onDelete={removeTemplate}
+          onClose={() => { setShowTplForm(false); setEditTemplate(null) }}
+        />
+      )}
+      {showClientForm && (
+        <ClientForm
+          client={editClient}
+          onSave={saveClient}
+          onDelete={removeClient}
+          onClose={() => { setShowClientForm(false); setEditClient(null) }}
+        />
+      )}
 
       {showSettings && (
         <SettingsModal

@@ -279,6 +279,24 @@ export async function insertTemplate(template) {
   return templateFromRow(data)
 }
 
+export async function updateTemplate(id, patch) {
+  requireSupabase()
+  const row = {
+    title: patch.title,
+    desc: patch.desc ?? '',
+    priority: patch.priority ?? 'medium',
+  }
+  const { data, error } = await supabase.from('tf_templates').update(row).eq('id', id).select().single()
+  if (error) throw error
+  return templateFromRow(data)
+}
+
+export async function deleteTemplate(id) {
+  requireSupabase()
+  const { error } = await supabase.from('tf_templates').delete().eq('id', id)
+  if (error) throw error
+}
+
 // ── クライアント（プロジェクトと別。取引先単位で覚えておくことを管理）────
 export async function fetchClients() {
   requireSupabase()
@@ -298,6 +316,20 @@ export async function insertClient(client) {
   const { data, error } = await supabase.from('tf_clients').insert(row).select().single()
   if (error) throw error
   return clientFromRow(data)
+}
+
+export async function updateClient(id, patch) {
+  requireSupabase()
+  const row = { name: patch.name, color: patch.color, icon: patch.icon }
+  const { data, error } = await supabase.from('tf_clients').update(row).eq('id', id).select().single()
+  if (error) throw error
+  return clientFromRow(data)
+}
+
+export async function deleteClient(id) {
+  requireSupabase()
+  const { error } = await supabase.from('tf_clients').delete().eq('id', id)
+  if (error) throw error
 }
 
 // ── 覚えておくこと（クライアントごと）────────────────────────────

@@ -3,6 +3,38 @@ import { PRIORITY, TASK_STATUS, TASK_STATUS_KEYS, categoriesToOptions } from './
 import { formatDate, isToday, isTomorrow } from './utils'
 import CalendarPicker from './CalendarPicker'
 
+const DEFAULT_FORM = {
+  title: '',
+  desc: '',
+  priority: 'medium',
+  projectId: '',
+  startDate: '',
+  due: '',
+  done: false,
+  status: 'todo',
+  category: '',
+  assigneeId: '',
+}
+
+/** 編集対象（id あり）または新規用ヒント（projectId/status 等）から初期フォーム値を生成 */
+function getInitialTaskForm(task, projects) {
+  const defaultProjectId = projects[0]?.id ?? ''
+  if (task && task.id) {
+    return { ...DEFAULT_FORM, projectId: defaultProjectId, ...task }
+  }
+  if (task && typeof task === 'object') {
+    return {
+      ...DEFAULT_FORM,
+      projectId: task.projectId ?? defaultProjectId,
+      startDate: task.startDate ?? '',
+      due: task.due ?? '',
+      status: task.status ?? 'todo',
+      assigneeId: task.assigneeId ?? '',
+    }
+  }
+  return { ...DEFAULT_FORM, projectId: defaultProjectId }
+}
+
 export default function TaskForm({ task, projects, templates, categories = [], users = [], onSave, onClose }) {
   const categoryOptions = categoriesToOptions(categories)
   const [categoryOpen, setCategoryOpen] = useState(false)
@@ -15,11 +47,7 @@ export default function TaskForm({ task, projects, templates, categories = [], u
     document.addEventListener('click', close)
     return () => document.removeEventListener('click', close)
   }, [categoryOpen])
-  const [form, setForm] = useState(
-    task
-      ? { title:'', desc:'', priority:'medium', projectId: projects[0]?.id || '', startDate:'', due:'', done:false, status:'todo', category: '', assigneeId: '', ...task }
-      : { title:'', desc:'', priority:'medium', projectId: task?.projectId ?? projects[0]?.id ?? '', startDate: task?.startDate ?? '', due: task?.due ?? '', done:false, status: task?.status ?? 'todo', category: '', assigneeId: task?.assigneeId ?? '' }
-  )
+  const [form, setForm] = useState(() => getInitialTaskForm(task, projects))
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
   const applyTemplate = (t) => setForm(f => ({ ...f, title: t.title, desc: t.desc, priority: t.priority }))
