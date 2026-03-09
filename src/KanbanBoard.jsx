@@ -176,7 +176,7 @@ function DroppableColumn({ id, title, count, children, onAddTask }) {
   )
 }
 
-export default function KanbanBoard({ tasks, projects, categories = [], onMoveTask, onEditTask, onAddTask }) {
+export default function KanbanBoard({ tasks, projects, categories = [], users = [], onMoveTask, onEditTask, onAddTask }) {
   const dragProcessedRef = useRef(null)
 
   const byStatus = useCallback(() => {

@@ -388,6 +388,22 @@ export async function signOut() {
   await supabase.auth.signOut()
 }
 
+/** ログイン中のユーザーのパスワードを変更 */
+export async function updateAuthPassword(newPassword) {
+  if (!supabase) throw new Error(CONFIG_MSG)
+  const { data, error } = await supabase.auth.updateUser({ password: newPassword })
+  if (error) throw error
+  return data
+}
+
+/** ログイン中のユーザーのメタデータ（表示名など）を更新 */
+export async function updateAuthUserMetadata(metadata) {
+  if (!supabase) throw new Error(CONFIG_MSG)
+  const { data, error } = await supabase.auth.updateUser({ data: metadata })
+  if (error) throw error
+  return data
+}
+
 /** 認証状態変更の購読。クリーンアップ用の unsubscribe を返す */
 export function subscribeAuth(callback) {
   if (!supabase?.auth) return () => {}

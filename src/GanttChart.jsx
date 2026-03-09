@@ -40,15 +40,29 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
 
   const todayStr = today()
   const tasksWithDue = useMemo(() => {
-    return tasks
-      .filter(t => {
-        const taskStart = t.startDate || t.due
-        const taskEnd = t.due
-        if (!taskEnd) return false
-        return taskStart <= endDate && taskEnd >= startDate
-      })
-      .slice(0, 50)
+    return tasks.filter(t => {
+      const taskStart = t.startDate || t.due
+      const taskEnd = t.due
+      if (!taskEnd) return false
+      return taskStart <= endDate && taskEnd >= startDate
+    })
   }, [tasks, startDate, endDate])
+
+  /** プロジェクト順でグループ化（未設定 → プロジェクト一覧の順） */
+  const groupsByProject = useMemo(() => {
+    const order = [{ id: '', project: null }]
+    for (const p of projects) order.push({ id: p.id, project: p })
+    const map = new Map(order.map(o => [o.id, { project: o.project, tasks: [] }]))
+    for (const t of tasksWithDue) {
+      const id = t.projectId || ''
+      const g = map.get(id) ?? map.get('')
+      if (g) g.tasks.push(t)
+    }
+    return order.map(o => map.get(o.id)).filter(g => g.tasks.length > 0)
+  }, [tasksWithDue, projects])
+
+  const totalRows = groupsByProject.reduce((sum, g) => sum + 1 + g.tasks.length, 0)
+  const rowTemplate = `auto repeat(${totalRows}, ${ROW_HEIGHT}px)`
 
   const [tooltip, setTooltip] = useState(null)
 
@@ -72,70 +86,83 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
           className="gantt-grid"
           style={{
             gridTemplateColumns: `200px repeat(${days.length}, ${DAY_WIDTH}px)`,
-            gridTemplateRows: `auto repeat(${tasksWithDue.length}, ${ROW_HEIGHT}px)`,
+            gridTemplateRows: rowTemplate,
           }}
         >
           <div className="gantt-head gantt-head--label">タスク</div>
           {days.map(d => (
             <div key={d} className={`gantt-head ${d === todayStr ? 'today' : ''}`}>{formatDate(d)}</div>
           ))}
-          {tasksWithDue.flatMap(t => {
-            const proj = projects.find(p => p.id === t.projectId)
-            const handleOpen = () => onEditTask?.(t)
+          {groupsByProject.flatMap((group) => {
+            const proj = group.project
+            const projectLabel = proj ? `${proj.icon} ${proj.name}` : 'プロジェクト未設定'
+            const projectColor = proj?.color || 'var(--text-muted)'
             return [
-              <div
-                key={`${t.id}-l`}
-                className="gantt-cell gantt-cell--label gantt-cell--clickable"
-                onClick={handleOpen}
-                onKeyDown={e => e.key === 'Enter' && handleOpen()}
-                role="button"
-                tabIndex={0}
-                title="クリックでタスクを編集"
-              >
-                <span className="gantt-cell__title">{t.title}</span>
-                {proj && <span className="gantt-cell__proj" style={{ color: proj.color }}>{proj.icon}</span>}
+              <div key={`ph-${proj?.id ?? 'none'}-l`} className="gantt-cell gantt-cell--label gantt-cell--project" style={{ background: `${projectColor}18`, borderLeftColor: projectColor }}>
+                <span className="gantt-cell__project" style={{ color: projectColor }}>{projectLabel}</span>
               </div>,
-              ...days.map((d) => {
-                const taskStart = t.startDate || t.due
-                const taskEnd = t.due
-                const isInRange = taskStart && taskEnd && d >= taskStart && d <= taskEnd
-                const isStart = d === taskStart
-                const isEnd = d === taskEnd
-                return (
+              ...days.map(d => (
+                <div key={`ph-${proj?.id ?? 'none'}-${d}`} className={`gantt-cell gantt-cell--project ${d === todayStr ? 'today' : ''}`} style={{ background: `${projectColor}08` }} />
+              )),
+              ...group.tasks.flatMap(t => {
+                const taskProj = projects.find(p => p.id === t.projectId)
+                const handleOpen = () => onEditTask?.(t)
+                return [
                   <div
-                    key={`${t.id}-${d}`}
-                    className={`gantt-cell ${d === todayStr ? 'today' : ''}`}
+                    key={`${t.id}-l`}
+                    className="gantt-cell gantt-cell--label gantt-cell--clickable"
                     onClick={handleOpen}
+                    onKeyDown={e => e.key === 'Enter' && handleOpen()}
                     role="button"
                     tabIndex={0}
-                    onMouseEnter={(e) => {
-                      if (isInRange) {
-                        setTooltip({
-                          title: t.title,
-                          startDate: taskStart,
-                          endDate: taskEnd,
-                          status: t.status,
-                          x: e.clientX,
-                          y: e.clientY,
-                        })
-                      }
-                    }}
-                    onMouseMove={(e) => {
-                      if (tooltip && tooltip.title === t.title) {
-                        setTooltip(prev => prev ? { ...prev, x: e.clientX, y: e.clientY } : null)
-                      }
-                    }}
-                    onMouseLeave={() => setTooltip(null)}
+                    title="クリックでタスクを編集"
                   >
-                    {isInRange && (
+                    <span className="gantt-cell__title">{t.title}</span>
+                    {taskProj && <span className="gantt-cell__proj" style={{ color: taskProj.color }}>{taskProj.icon}</span>}
+                  </div>,
+                  ...days.map((d) => {
+                    const taskStart = t.startDate || t.due
+                    const taskEnd = t.due
+                    const isInRange = taskStart && taskEnd && d >= taskStart && d <= taskEnd
+                    const isStart = d === taskStart
+                    const isEnd = d === taskEnd
+                    return (
                       <div
-                        className={`gantt-bar ${isStart ? 'gantt-bar--start' : ''} ${isEnd ? 'gantt-bar--end' : ''}`}
-                        style={{ background: proj?.color || 'var(--accent)' }}
-                        title={`${t.title} — ${taskStart !== taskEnd ? `${formatDate(taskStart)} 〜 ` : ''}${formatDate(taskEnd)}（クリックで編集）`}
-                      />
-                    )}
-                  </div>
-                )
+                        key={`${t.id}-${d}`}
+                        className={`gantt-cell ${d === todayStr ? 'today' : ''}`}
+                        onClick={handleOpen}
+                        role="button"
+                        tabIndex={0}
+                        onMouseEnter={(e) => {
+                          if (isInRange) {
+                            setTooltip({
+                              title: t.title,
+                              startDate: taskStart,
+                              endDate: taskEnd,
+                              status: t.status,
+                              x: e.clientX,
+                              y: e.clientY,
+                            })
+                          }
+                        }}
+                        onMouseMove={(e) => {
+                          if (tooltip && tooltip.title === t.title) {
+                            setTooltip(prev => prev ? { ...prev, x: e.clientX, y: e.clientY } : null)
+                          }
+                        }}
+                        onMouseLeave={() => setTooltip(null)}
+                      >
+                        {isInRange && (
+                          <div
+                            className={`gantt-bar ${isStart ? 'gantt-bar--start' : ''} ${isEnd ? 'gantt-bar--end' : ''}`}
+                            style={{ background: taskProj?.color || 'var(--accent)' }}
+                            title={`${t.title} — ${taskStart !== taskEnd ? `${formatDate(taskStart)} 〜 ` : ''}${formatDate(taskEnd)}（クリックで編集）`}
+                          />
+                        )}
+                      </div>
+                    )
+                  }),
+                ]
               }),
             ]
           })}

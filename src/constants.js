@@ -57,6 +57,16 @@ export const TASK_CATEGORIES = {
 
 export const CATEGORY_KEYS = ['design', 'dev', 'bug', 'docs', 'other', 'event', 'routine']
 
+/** カテゴリ色選択用パレット（視覚選択UI用） */
+export const CATEGORY_COLOR_PALETTE = [
+  '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#22c55e', '#10b981', '#14b8a6',
+  '#06b6d4', '#0ea5e9', '#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899',
+  '#f43f5e', '#dc2626', '#b91c1c', '#991b1b', '#7f1d1d', '#c2410c', '#9a3412', '#78350f',
+  '#713f12', '#654321', '#4d7c0f', '#365314', '#14532d', '#134e4a', '#0f766e', '#155e75',
+  '#0e7490', '#1e40af', '#312e81', '#4c1d95', '#581c87', '#701a75', '#831843', '#9d174d',
+  '#6b7280', '#4b5563', '#374151', '#1f2937', '#111827', '#78716c', '#57534e', '#44403c',
+]
+
 /** カテゴリを { id, label, color } の配列として扱う際のヘルパー */
 export function categoriesToOptions(categories) {
   if (!categories || categories.length === 0) {

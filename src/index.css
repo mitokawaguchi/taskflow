@@ -147,6 +147,37 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 .login-screen__title span { color: var(--accent); }
 .login-screen__lead { font-size: 13px; color: var(--text-muted); margin: 0; }
 .login-screen__form { margin-top: 8px; }
+.login-screen__footer { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); text-align: center; }
+.legal-page {
+  align-items: flex-start;
+  justify-content: center;
+  background: var(--bg);
+  padding: 24px;
+  overflow-y: auto;
+}
+.legal-page__inner {
+  width: 100%;
+  max-width: 640px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px 32px 40px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+}
+.legal-page__back { margin-bottom: 16px; }
+.legal-page__title { font-size: 20px; font-weight: 800; margin: 0 0 20px; }
+.legal-page__body { font-size: 14px; line-height: 1.7; color: var(--text); }
+.legal-page__heading { font-size: 14px; font-weight: 700; margin: 20px 0 8px; }
+.legal-page__heading:first-child { margin-top: 0; }
+.legal-page__p { margin: 0 0 12px; color: var(--text-muted); }
+.legal-links { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 8px; font-size: 11px; color: var(--text-muted); }
+.legal-links__link {
+  background: none; border: none; padding: 0; font: inherit; color: inherit;
+  cursor: pointer; text-decoration: underline;
+}
+.legal-links__link:hover { color: var(--accent); }
+.legal-links__sep { opacity: 0.6; user-select: none; }
+.sidebar-legal-links { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); justify-content: flex-start; }
 .sidebar {
   width: 240px; min-width: 240px;
   background: var(--surface);
@@ -229,7 +260,7 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 .project-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
 .main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-width: 0; overflow-x: hidden; }
-.clients-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+.clients-grid { grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); }
 /* 画面切り替え時：メインエリアのコンテンツが右からスライドイン（全遷移で共通） */
 .content-view {
   animation: contentViewIn 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -590,6 +621,8 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 .modal-header-with-back .modal-title { margin-bottom: 0; flex: 1; }
 .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
 .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+.profile-settings { padding: 12px 0; border-top: 1px solid var(--border); }
+.profile-settings__title { font-size: 14px; font-weight: 700; margin: 0 0 12px; color: var(--text-muted); }
 
 .form-group { margin-bottom: 16px; }
 .form-hint { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
@@ -600,6 +633,32 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 .settings-category-add { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .settings-category-add .form-input { flex: 1; min-width: 120px; }
 .settings-category-add .form-select { width: auto; }
+.color-swatch-picker { margin-top: 8px; }
+.color-swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.color-swatch {
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 36px;
+  max-height: 36px;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.color-swatch:hover { transform: scale(1.08); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+.color-swatch.active { border-color: var(--text); box-shadow: 0 0 0 2px var(--bg); outline: 2px solid var(--text); }
+.color-swatch-custom { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.color-swatch-custom-input input[type="color"] { width: 44px; height: 32px; padding: 2px; border-radius: 6px; border: 1px solid var(--border); cursor: pointer; }
+.categories-view { max-width: 560px; }
+.categories-view__lead { font-size: 14px; color: var(--text-muted); margin: 0 0 20px; }
+.categories-view__list { max-height: 240px; }
+.categories-view__add { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 16px; }
 .settings-user-avatar { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: var(--surface3); font-size: 12px; }
 .sidebar-team-avatars { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .sidebar-team-avatar {
@@ -871,7 +930,7 @@ select { appearance: none; }
 .proj-detail-title { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; min-width: 0; }
 .proj-detail-title > div { min-width: 0; overflow: hidden; }
 .proj-detail-title > div:not(:last-of-type) { flex: 1; }
-.proj-detail-icon { width: 52px; height: 52px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+.proj-detail-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
 .proj-detail-name { font-size: 22px; font-weight: 800; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
 .proj-detail-enddate-label { font-size: 14px; color: var(--text-muted); font-weight: 600; }
 .proj-detail-enddate-value { font-size: 16px; font-weight: 600; color: var(--text); }
@@ -1151,6 +1210,8 @@ select { appearance: none; }
 .gantt-cell--label { border-right: none; font-size: 12px; }
 .gantt-cell__title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
 .gantt-cell__proj { margin-left: 4px; }
+.gantt-cell--project { font-weight: 600; font-size: 12px; border-left-width: 3px; border-left-style: solid; }
+.gantt-cell__project { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
 .gantt-cell.today { background: rgba(255,69,96,0.06); border-left: 2px dashed var(--critical); }
 .gantt-cell--clickable { cursor: pointer; }
 .gantt-cell--clickable:hover { background: var(--surface3); }

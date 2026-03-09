@@ -9,11 +9,11 @@ import {
 } from '@dnd-kit/core'
 import { arrayMove, SortableContext, useSortable, rectSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { PRIORITY, SORT_OPTIONS, priorityOrder, PRIORITY_KEYS } from './constants'
+import { PRIORITY, SORT_OPTIONS, priorityOrder, PRIORITY_KEYS, CATEGORY_COLOR_PALETTE } from './constants'
 import { today, isToday, isOverdue, formatTodayDisplay, endDateLabel } from './utils'
 
 const PRIORITY_OPTIONS = Object.entries(PRIORITY).map(([key, { label }]) => ({ key, label }))
-import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, fetchCategories, fetchUsers, insertProject, updateProject, insertTask, updateTask, insertTemplate, insertRemember, updateRemember, deleteRemember, insertClient, insertCategory, insertUser, getAuthSession, signInWithPassword, signUpWithEmail, signOut, subscribeAuth } from './api'
+import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, fetchCategories, fetchUsers, insertProject, updateProject, insertTask, updateTask, insertTemplate, insertRemember, updateRemember, deleteRemember, insertClient, insertCategory, insertUser, getAuthSession, signInWithPassword, signUpWithEmail, signOut, subscribeAuth, updateAuthPassword, updateAuthUserMetadata } from './api'
 import MorningModal from './MorningModal'
 import TaskCard from './TaskCard'
 import TaskForm from './TaskForm'
@@ -26,11 +26,12 @@ import Toast from './Toast'
 import KanbanBoard from './KanbanBoard'
 import Dashboard from './Dashboard'
 import GanttChart from './GanttChart'
+import { LEGAL_PAGES, getLegalPageFromHash } from './legalContent'
 
 const DUE_TODAY_CHECK_DELAY_MS = 2000
 const DUE_TODAY_NOTIFY_THROTTLE_MS = 60 * 60 * 1000 // 1時間に1回まで
 const DUE_TODAY_NOTIFY_STORAGE_KEY = 'taskflow_due_today_notified_at'
-const TOAST_DURATION_MS = 4000
+const TOAST_DURATION_MS = 2400
 const SIDEBAR_MENU_ITEMS = [
   { key: 'projects', icon: '📁', label: 'プロジェクト' },
   { key: 'all', icon: '📋', label: 'すべてのタスク' },
@@ -113,16 +114,48 @@ function SortableProjectCard({ item, setView, toggleTask, openTaskFormForProject
   )
 }
 
-const CATEGORY_COLOR_OPTIONS = [
-  { value: '#3b82f6', label: '青' },
-  { value: '#8b5cf6', label: '紫' },
-  { value: '#ef4444', label: '赤' },
-  { value: '#06b6d4', label: 'シアン' },
-  { value: '#6b7280', label: 'グレー' },
-  { value: '#ec4899', label: 'ピンク' },
-  { value: '#14b8a6', label: 'ティール' },
-  { value: '#f59e0b', label: 'オレンジ' },
-]
+/** 色を視覚的に選択するUI（スウォッチ＋任意でカスタム色） */
+function ColorSwatchPicker({ value, onChange, ariaLabel = '色を選択' }) {
+  const [customOpen, setCustomOpen] = useState(false)
+  return (
+    <div className="color-swatch-picker" role="group" aria-label={ariaLabel}>
+      <div className="color-swatch-grid">
+        {CATEGORY_COLOR_PALETTE.map((hex) => (
+          <button
+            key={hex}
+            type="button"
+            className={`color-swatch ${value === hex ? 'active' : ''}`}
+            style={{ background: hex }}
+            onClick={() => { onChange(hex); setCustomOpen(false) }}
+            title={hex}
+            aria-label={hex}
+            aria-pressed={value === hex}
+          />
+        ))}
+      </div>
+      <div className="color-swatch-custom">
+        <button
+          type="button"
+          className="btn btn-ghost btn-sm"
+          onClick={() => setCustomOpen(o => !o)}
+          aria-expanded={customOpen}
+        >
+          {customOpen ? '閉じる' : 'カスタム色'}
+        </button>
+        {customOpen && (
+          <label className="color-swatch-custom-input">
+            <input
+              type="color"
+              value={value.startsWith('#') && value.length === 7 ? value : '#6b7280'}
+              onChange={e => onChange(e.target.value)}
+              aria-label="カスタム色"
+            />
+          </label>
+        )}
+      </div>
+    </div>
+  )
+}
 
 function ProfileLoginForm({ onSuccess, onError, showCloseButton = true }) {
   const [email, setEmail] = useState('')
@@ -159,7 +192,10 @@ function ProfileLoginForm({ onSuccess, onError, showCloseButton = true }) {
         onSuccess()
       }
     } catch (e) {
-      const msg = e?.message ?? (isSignUp ? 'アカウント作成に失敗しました' : 'ログインに失敗しました')
+      let msg = e?.message ?? (isSignUp ? 'アカウント作成に失敗しました' : 'ログインに失敗しました')
+      if (isSignUp && (e?.code === 'user_already_exists' || /already registered|already exists|既に登録/i.test(String(msg)))) {
+        msg = 'このメールアドレスは既に登録されています。ログインタブからサインインしてください。'
+      }
       setError(msg)
       onError?.('❌', isSignUp ? 'アカウント作成' : 'ログイン', msg)
     } finally {
@@ -187,11 +223,6 @@ function ProfileLoginForm({ onSuccess, onError, showCloseButton = true }) {
           アカウント作成
         </button>
       </div>
-      <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 16 }}>
-        {isSignUp
-          ? 'メールとパスワードで新規アカウントを作成します（Supabase Auth）。'
-          : 'Supabase Auth でサインインします。'}
-      </p>
       <div className="form-group">
         <label className="form-label" htmlFor="profile-login-email">メール</label>
         <input
@@ -234,6 +265,48 @@ function ProfileLoginForm({ onSuccess, onError, showCloseButton = true }) {
   )
 }
 
+/** 法定ページ（利用規約・プライバシーポリシー・免責事項）のフル画面表示 */
+function LegalPageView({ pageKey, onBack }) {
+  const page = LEGAL_PAGES[pageKey]
+  if (!page) return null
+  return (
+    <div className="app legal-page">
+      <div className="legal-page__inner">
+        <button type="button" className="btn btn-ghost btn-sm legal-page__back" onClick={onBack}>
+          ← 戻る
+        </button>
+        <h1 className="legal-page__title">{page.title}</h1>
+        <div className="legal-page__body">
+          {page.sections.map((sec, i) => (
+            <section key={i}>
+              <h2 className="legal-page__heading">{sec.heading}</h2>
+              {sec.paragraphs.map((p, j) => (
+                <p key={j} className="legal-page__p">{p}</p>
+              ))}
+            </section>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/** 利用規約・プライバシーポリシー・免責事項へのリンク（ハッシュで表示） */
+function LegalLinks({ className = '' }) {
+  const go = (hash) => {
+    window.location.hash = hash
+  }
+  return (
+    <nav className={`legal-links ${className}`} aria-label="法定ページ">
+      <button type="button" className="legal-links__link" onClick={() => go('#/terms')}>利用規約</button>
+      <span className="legal-links__sep">|</span>
+      <button type="button" className="legal-links__link" onClick={() => go('#/privacy')}>プライバシーポリシー</button>
+      <span className="legal-links__sep">|</span>
+      <button type="button" className="legal-links__link" onClick={() => go('#/disclaimer')}>免責事項</button>
+    </nav>
+  )
+}
+
 /** 未ログイン時のみ表示するフル画面のログイン画面。タスク等は一切表示しない */
 function LoginScreen({ onError }) {
   return (
@@ -252,18 +325,18 @@ function LoginScreen({ onError }) {
         <div className="login-screen__form">
           <ProfileLoginForm onSuccess={() => {}} onError={onError} showCloseButton={false} />
         </div>
+        <footer className="login-screen__footer">
+          <LegalLinks />
+        </footer>
       </div>
     </div>
   )
 }
 
-function SettingsModal({ theme, setTheme, onClose, categories, setCategories, users, setUsers, notifyReminderEnabled, setNotifyReminderEnabled, addToast }) {
+function CategoriesView({ categories, setCategories, addToast }) {
   const [newCatName, setNewCatName] = useState('')
   const [newCatColor, setNewCatColor] = useState('#6b7280')
   const [adding, setAdding] = useState(false)
-  const [newUserName, setNewUserName] = useState('')
-  const [newUserEmail, setNewUserEmail] = useState('')
-  const [addingUser, setAddingUser] = useState(false)
 
   const handleAddCategory = useCallback(async () => {
     const name = newCatName.trim()
@@ -286,6 +359,57 @@ function SettingsModal({ theme, setTheme, onClose, categories, setCategories, us
       setAdding(false)
     }
   }, [newCatName, newCatColor, setCategories, addToast])
+
+  return (
+    <div className="categories-view">
+      <p className="categories-view__lead">タスクに付けるカテゴリを追加・管理します。</p>
+      <ul className="settings-category-list categories-view__list" aria-label="登録済みカテゴリ">
+        {categories.length === 0 ? (
+          <li className="settings-category-empty">カテゴリがありません。下のフォームで追加してください。</li>
+        ) : (
+          categories.map(c => (
+            <li key={c.id} className="settings-category-item">
+              <span className="settings-category-dot" style={{ background: c.color }} aria-hidden />
+              <span>{c.name}</span>
+            </li>
+          ))
+        )}
+      </ul>
+      <div className="categories-view__add">
+        <div className="form-group">
+          <label className="form-label" htmlFor="cat-name">新しいカテゴリ名</label>
+          <input
+            id="cat-name"
+            type="text"
+            className="form-input"
+            placeholder="カテゴリ名"
+            value={newCatName}
+            onChange={e => setNewCatName(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleAddCategory()}
+            disabled={adding}
+          />
+        </div>
+        <div className="form-group">
+          <span className="form-label">色</span>
+          <ColorSwatchPicker value={newCatColor} onChange={setNewCatColor} ariaLabel="カテゴリの色" />
+        </div>
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={handleAddCategory}
+          disabled={adding || !newCatName.trim()}
+        >
+          {adding ? '追加中…' : '追加'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function SettingsModal({ theme, setTheme, onClose, users, setUsers, notifyReminderEnabled, setNotifyReminderEnabled, addToast }) {
+  const [newUserName, setNewUserName] = useState('')
+  const [newUserEmail, setNewUserEmail] = useState('')
+  const [addingUser, setAddingUser] = useState(false)
 
   const handleAddUser = useCallback(async () => {
     const name = newUserName.trim()
@@ -325,56 +449,6 @@ function SettingsModal({ theme, setTheme, onClose, categories, setCategories, us
               aria-pressed={theme === 'dark'}
               onClick={() => setTheme(t => (t === 'dark' ? 'light' : 'dark'))}
             />
-          </div>
-        </div>
-
-        <div className="form-group" style={{ marginTop: 24 }}>
-          <span className="form-label">カテゴリ</span>
-          <p className="form-hint">タスクに付けるカテゴリを追加できます。</p>
-          <ul className="settings-category-list" aria-label="登録済みカテゴリ">
-            {categories.length === 0 ? (
-              <li className="settings-category-empty">Supabase でカテゴリを読み込んでいません（初期データを使用中）</li>
-            ) : (
-              categories.map(c => (
-                <li key={c.id} className="settings-category-item">
-                  <span
-                    className="settings-category-dot"
-                    style={{ background: c.color }}
-                    aria-hidden
-                  />
-                  <span>{c.name}</span>
-                </li>
-              ))
-            )}
-          </ul>
-          <div className="settings-category-add">
-            <input
-              type="text"
-              className="form-input"
-              placeholder="新しいカテゴリ名"
-              value={newCatName}
-              onChange={e => setNewCatName(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleAddCategory()}
-              aria-label="新しいカテゴリ名"
-            />
-            <select
-              className="form-select"
-              value={newCatColor}
-              onChange={e => setNewCatColor(e.target.value)}
-              aria-label="色"
-            >
-              {CATEGORY_COLOR_OPTIONS.map(opt => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={handleAddCategory}
-              disabled={adding || !newCatName.trim()}
-            >
-              {adding ? '追加中…' : '追加'}
-            </button>
           </div>
         </div>
 
@@ -485,6 +559,27 @@ export default function App() {
   const [authReady, setAuthReady] = useState(false)
   const [notifyReminderEnabled, setNotifyReminderEnabled] = useState(() => localStorage.getItem('taskflow_notify_reminder') !== 'false')
   const [showProfileModal, setShowProfileModal] = useState(false)
+  const [profileDisplayName, setProfileDisplayName] = useState('')
+  const [profileNewPassword, setProfileNewPassword] = useState('')
+  const [profileConfirmPassword, setProfileConfirmPassword] = useState('')
+  const [profileLoading, setProfileLoading] = useState(false)
+  const [profileError, setProfileError] = useState('')
+  const [legalPage, setLegalPage] = useState(() => getLegalPageFromHash())
+
+  useEffect(() => {
+    if (showProfileModal && authUser) {
+      setProfileDisplayName(authUser.user_metadata?.display_name ?? '')
+      setProfileNewPassword('')
+      setProfileConfirmPassword('')
+      setProfileError('')
+    }
+  }, [showProfileModal, authUser])
+
+  useEffect(() => {
+    const onHash = () => setLegalPage(getLegalPageFromHash())
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark')
@@ -520,8 +615,18 @@ export default function App() {
           // tf_users 未作成時は空のまま
         }
         if (!cancelled) {
+          let tasksToSet = ts
+          const overdueNotCritical = ts.filter(t => !t.done && isOverdue(t.due) && t.priority !== 'critical')
+          if (overdueNotCritical.length > 0) {
+            try {
+              await Promise.all(overdueNotCritical.map(t => updateTask(t.id, { ...t, priority: 'critical' })))
+              tasksToSet = ts.map(t => overdueNotCritical.some(u => u.id === t.id) ? { ...t, priority: 'critical' } : t)
+            } catch {
+              // 更新失敗時は取得したタスクのまま表示
+            }
+          }
           setProjects(projs)
-          setTasks(ts)
+          setTasks(tasksToSet)
           setTemplates(tpls)
           setClients(clis)
           setRemembers(rems)
@@ -800,6 +905,7 @@ export default function App() {
     if (view === 'projects') return 'プロジェクト'
     if (view === 'templates') return 'テンプレート'
     if (view === 'clients') return '覚えておくこと'
+    if (view === 'categories') return 'カテゴリ'
     if (view.startsWith('c:')) return clients.find(c => c.id === view.slice(2))?.name ?? 'クライアント'
     if (view.startsWith('p:')) return projects.find(p => p.id === view.slice(2))?.name ?? ''
     return ''
@@ -930,6 +1036,15 @@ export default function App() {
     )
   }
 
+  if (legalPage) {
+    return (
+      <LegalPageView
+        pageKey={legalPage}
+        onBack={() => { window.location.hash = '' }}
+      />
+    )
+  }
+
   if (authReady && !authUser) {
     return (
       <>
@@ -1040,6 +1155,9 @@ export default function App() {
             <button className={`sidebar-item ${view==='clients'||view.startsWith('c:')?'active':''}`} onClick={() => { setView('clients'); setSidebarOpen(false) }}>
               <span className="icon">📌</span>覚えておくこと
             </button>
+            <button className={`sidebar-item ${view==='categories'?'active':''}`} onClick={() => { setView('categories'); setSidebarOpen(false) }}>
+              <span className="icon">🏷</span>カテゴリ
+            </button>
           </div>
 
           <div className="sidebar-footer">
@@ -1071,6 +1189,7 @@ export default function App() {
           </div>
           <div style={{ padding:'12px', marginTop:'auto' }}>
             <button className="btn btn-ghost btn-sm" style={{ width:'100%' }} onClick={() => setShowMorning(true)}>☀️ 朝の確認を表示</button>
+            <LegalLinks className="sidebar-legal-links" />
           </div>
         </aside>
 
@@ -1116,29 +1235,30 @@ export default function App() {
               </div>
               {view !== 'clients' && !view.startsWith('c:') && (
                 <>
-                  <button
-                    type="button"
-                    className="btn btn-ghost btn-sm topbar-filter-btn"
-                    onClick={() => {
-                      if (!['all', 'today', 'overdue'].includes(view)) setView('all')
-                      setFilterOpen(o => !o)
-                    }}
-                    aria-label="フィルター"
-                  >
-                    フィルター
-                    {activeFilterCount > 0 && <span className="topbar-filter-badge">{activeFilterCount}</span>}
-                  </button>
-                  <label className="topbar-search-wrap">
-                    <span className="topbar-search-icon" aria-hidden>🔍</span>
-                    <input
-                      type="search"
-                      className="topbar-search"
-                      placeholder="タスクを検索..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      aria-label="タスクを検索"
-                    />
-                  </label>
+                  {(view === 'all' || view === 'today' || view === 'overdue') && (
+                    <>
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-sm topbar-filter-btn"
+                        onClick={() => setFilterOpen(o => !o)}
+                        aria-label="フィルター"
+                      >
+                        フィルター
+                        {activeFilterCount > 0 && <span className="topbar-filter-badge">{activeFilterCount}</span>}
+                      </button>
+                      <label className="topbar-search-wrap">
+                        <span className="topbar-search-icon" aria-hidden>🔍</span>
+                        <input
+                          type="search"
+                          className="topbar-search"
+                          placeholder="タスクを検索..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          aria-label="タスクを検索"
+                        />
+                      </label>
+                    </>
+                  )}
                   <button
                     type="button"
                     className="topbar-icon-btn"
@@ -1160,7 +1280,7 @@ export default function App() {
                   </button>
                 </>
               )}
-              {view !== 'clients' && !view.startsWith('c:') && (
+              {view !== 'clients' && !view.startsWith('c:') && view !== 'projects' && view !== 'categories' && (
                 <button className="btn btn-ghost btn-sm" onClick={() => setShowDone(!showDone)}>
                   {showDone ? '完了を非表示' : '完了を表示'}
                 </button>
@@ -1264,6 +1384,10 @@ export default function App() {
               </>
             )}
 
+            {view === 'categories' && (
+              <CategoriesView categories={categories} setCategories={setCategories} addToast={addToast} />
+            )}
+
             {view.startsWith('c:') && (() => {
               const clientId = view.slice(2)
               const client = clients.find(c => c.id === clientId)
@@ -1287,7 +1411,10 @@ export default function App() {
             {/* PROJECTS OVERVIEW */}
             {view === 'projects' && (
               <>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: 8 }}>
+                  <button className="btn btn-ghost btn-sm" onClick={() => setShowDone(!showDone)}>
+                    {showDone ? '完了を非表示' : '完了を表示'}
+                  </button>
                   <button className="btn btn-primary" onClick={() => { setEditProject(null); setShowProjForm(true) }}>+ プロジェクト追加</button>
                 </div>
                 <DndContext
@@ -1388,6 +1515,7 @@ export default function App() {
                 tasks={tasksForBoard}
                 projects={projects}
                 categories={categories}
+                users={users}
                 onMoveTask={moveTaskStatus}
                 onEditTask={(task) => { setEditTask(task); setShowTaskForm(true) }}
                 onAddTask={openTaskFormForKanbanColumn}
@@ -1609,8 +1737,6 @@ export default function App() {
           theme={theme}
           setTheme={setTheme}
           onClose={() => setShowSettings(false)}
-          categories={categories}
-          setCategories={setCategories}
           users={users}
           setUsers={setUsers}
           notifyReminderEnabled={notifyReminderEnabled}
@@ -1628,7 +1754,94 @@ export default function App() {
                 <p style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 16 }}>
                   ログイン中: <strong>{authUser.email ?? authUser.id}</strong>
                 </p>
-                <div className="modal-actions" style={{ flexWrap: 'wrap', gap: 8 }}>
+                <div className="profile-settings">
+                  <h3 className="profile-settings__title">プロフィール設定</h3>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="profile-display-name">表示名（任意）</label>
+                    <input
+                      id="profile-display-name"
+                      type="text"
+                      className="form-input"
+                      value={profileDisplayName}
+                      onChange={e => setProfileDisplayName(e.target.value)}
+                      placeholder="表示名"
+                      disabled={profileLoading}
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-sm"
+                      style={{ marginTop: 6 }}
+                      disabled={profileLoading}
+                      onClick={async () => {
+                        setProfileError('')
+                        setProfileLoading(true)
+                        try {
+                          await updateAuthUserMetadata({ display_name: profileDisplayName.trim() || undefined })
+                          addToast('✅', '保存しました', '表示名を更新しました')
+                        } catch (e) {
+                          setProfileError(e?.message ?? '保存に失敗しました')
+                        } finally {
+                          setProfileLoading(false)
+                        }
+                      }}
+                    >
+                      保存
+                    </button>
+                  </div>
+                  <div className="form-group" style={{ marginTop: 16 }}>
+                    <label className="form-label" htmlFor="profile-new-password">パスワードを変更</label>
+                    <input
+                      id="profile-new-password"
+                      type="password"
+                      className="form-input"
+                      value={profileNewPassword}
+                      onChange={e => { setProfileNewPassword(e.target.value); setProfileError('') }}
+                      placeholder="新しいパスワード（6文字以上）"
+                      disabled={profileLoading}
+                    />
+                    <input
+                      type="password"
+                      className="form-input"
+                      style={{ marginTop: 6 }}
+                      value={profileConfirmPassword}
+                      onChange={e => { setProfileConfirmPassword(e.target.value); setProfileError('') }}
+                      placeholder="確認"
+                      disabled={profileLoading}
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-sm"
+                      style={{ marginTop: 6 }}
+                      disabled={profileLoading || !profileNewPassword || !profileConfirmPassword}
+                      onClick={async () => {
+                        setProfileError('')
+                        if (profileNewPassword.length < 6) {
+                          setProfileError('パスワードは6文字以上にしてください')
+                          return
+                        }
+                        if (profileNewPassword !== profileConfirmPassword) {
+                          setProfileError('確認が一致しません')
+                          return
+                        }
+                        setProfileLoading(true)
+                        try {
+                          await updateAuthPassword(profileNewPassword)
+                          setProfileNewPassword('')
+                          setProfileConfirmPassword('')
+                          addToast('✅', 'パスワードを変更しました', '')
+                        } catch (e) {
+                          setProfileError(e?.message ?? '変更に失敗しました')
+                        } finally {
+                          setProfileLoading(false)
+                        }
+                      }}
+                    >
+                      パスワードを変更
+                    </button>
+                  </div>
+                  {profileError && <p style={{ fontSize: 13, color: 'var(--critical)', marginTop: 8 }}>{profileError}</p>}
+                </div>
+                <div className="modal-actions" style={{ flexWrap: 'wrap', gap: 8, marginTop: 20 }}>
                   <button
                     type="button"
                     className="btn btn-ghost"
