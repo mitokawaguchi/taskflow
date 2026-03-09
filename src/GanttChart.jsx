@@ -54,25 +54,14 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
     const endStr = end.toISOString().slice(0, 10)
 
     if (range === 'quarter') {
-      // 3ヶ月表示: タスクの期限がある週だけを列にする
+      // 3ヶ月表示: 四半期の全週を列に表示（週単位・○月○週目）
       const weekSet = new Set()
-      for (const t of tasks) {
-        const due = t.due
-        if (!due) continue
-        if (due >= startStr && due <= endStr) {
-          weekSet.add(getWeekStart(due))
-        }
+      const cur = new Date(start)
+      while (cur <= end) {
+        weekSet.add(getWeekStart(cur.toISOString().slice(0, 10)))
+        cur.setDate(cur.getDate() + 7)
       }
-      let weekList = [...weekSet].sort()
-      if (weekList.length === 0) {
-        // 期限が1件もない場合は四半期の全週を表示
-        const cur = new Date(start)
-        while (cur <= end) {
-          weekList.push(getWeekStart(cur.toISOString().slice(0, 10)))
-          cur.setDate(cur.getDate() + 7)
-        }
-        weekList = [...new Set(weekList)].sort()
-      }
+      const weekList = [...weekSet].sort((a, b) => a.localeCompare(b))
       return { days: [], weeks: weekList, isQuarter: true }
     }
 
@@ -83,7 +72,7 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
       cur.setDate(cur.getDate() + 1)
     }
     return { days: daysList, weeks: [], isQuarter: false }
-  }, [range, tasks])
+  }, [range])
 
   const todayStr = today()
   /** 今日より過去7日間（今日は含まない） */
