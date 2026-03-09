@@ -1,4 +1,5 @@
 import { supabase } from './supabase'
+import { TASK_STATUS_KEYS } from './constants'
 
 const CONFIG_MSG =
   'Supabase の設定がありません。.env に VITE_SUPABASE_URL と VITE_SUPABASE_ANON_KEY を設定するか、Vercel の環境変数を確認してください。'
@@ -6,8 +7,6 @@ const CONFIG_MSG =
 function requireSupabase() {
   if (!supabase) throw new Error(CONFIG_MSG)
 }
-
-const TASK_STATUS_KEYS = ['todo', 'in_progress', 'review', 'done']
 
 // DB の行 → アプリで使う形に変換
 function taskFromRow(row) {

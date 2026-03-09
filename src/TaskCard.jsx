@@ -1,10 +1,10 @@
 import { PRIORITY, getCategoryInfo } from './constants'
 import { isOverdue, isToday, isTomorrow, formatDate } from './utils'
 
-export default function TaskCard({ task, projects, categories = [], users = [], onToggle, onClick }) {
+export default function TaskCard({ task, projects, categories = [], users = [], projectsMap, usersMap, onToggle, onClick }) {
   const categoryInfo = getCategoryInfo(task.category, categories)
-  const proj = projects.find(p => p.id === task.projectId)
-  const assignee = task.assigneeId ? users.find(u => u.id === task.assigneeId) : null
+  const proj = projectsMap ? projectsMap.get(task.projectId) : (projects || []).find(p => p.id === task.projectId)
+  const assignee = task.assigneeId ? (usersMap ? usersMap.get(task.assigneeId) : (users || []).find(u => u.id === task.assigneeId)) : null
   const over = isOverdue(task.due)
   const tod  = isToday(task.due)
   const tom  = isTomorrow(task.due)
@@ -18,9 +18,13 @@ export default function TaskCard({ task, projects, categories = [], users = [], 
         </div>
       )}
       <div className="card-header">
-        <div
+        <input
+          type="checkbox"
           className={`card-check ${task.done ? 'checked' : ''}`}
-          onClick={e => { e.stopPropagation(); onToggle(task.id) }}
+          checked={!!task.done}
+          onChange={e => { e.stopPropagation(); onToggle(task.id) }}
+          onClick={e => e.stopPropagation()}
+          aria-label={`${task.title}を${task.done ? '未完了に' : '完了に'}する`}
         />
         <div className={`card-title ${task.done ? 'done' : ''}`}>{task.title}</div>
       </div>
@@ -44,7 +48,7 @@ export default function TaskCard({ task, projects, categories = [], users = [], 
             {categoryInfo.label}
           </span>
         )}
-        <span className={`priority-badge ${task.priority}`}>{PRIORITY[task.priority].label}</span>
+        <span className={`priority-badge ${task.priority}`}>{PRIORITY[task.priority]?.label ?? task.priority}</span>
         {task.due && (
           <span className={`due-badge ${over ? 'overdue' : tod || tom ? 'today-or-tomorrow' : ''}`} style={{ marginLeft: 'auto' }}>
             {formatDate(task.due)}

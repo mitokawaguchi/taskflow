@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useRef } from 'react'
 import { today, formatDate } from './utils'
 
 const ROW_HEIGHT = 36
@@ -102,6 +102,7 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
   const rowTemplate = `auto repeat(${totalRows}, ${ROW_HEIGHT}px)`
 
   const [tooltip, setTooltip] = useState(null)
+  const tooltipRef = useRef(null)
 
   return (
     <div className="gantt">
@@ -215,8 +216,9 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
                           }
                         }}
                         onMouseMove={(e) => {
-                          if (tooltip && tooltip.title === t.title) {
-                            setTooltip(prev => prev ? { ...prev, x: e.clientX, y: e.clientY } : null)
+                          if (tooltipRef.current) {
+                            tooltipRef.current.style.left = `${e.clientX}px`
+                            tooltipRef.current.style.top = `${e.clientY}px`
                           }
                         }}
                         onMouseLeave={() => setTooltip(null)}
@@ -238,7 +240,7 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
         </div>
       </div>
       {tooltip && (
-        <div className="gantt-tooltip" style={{ left: tooltip.x, top: tooltip.y }}>
+        <div ref={tooltipRef} className="gantt-tooltip" style={{ left: tooltip.x, top: tooltip.y }}>
           <div className="gantt-tooltip__title">{tooltip.title}</div>
           <div className="gantt-tooltip__date">
             {tooltip.startDate && tooltip.startDate !== tooltip.endDate

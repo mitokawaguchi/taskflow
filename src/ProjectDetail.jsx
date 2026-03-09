@@ -4,7 +4,7 @@ import { isOverdue, endDateLabel } from './utils'
 import TaskCard from './TaskCard'
 import CalendarPicker from './CalendarPicker'
 
-export default function ProjectDetail({ project, tasks, projects, categories = [], users = [], onToggle, onEditTask, onAddTask, onEditProject, onUpdateProjectEndDate, sort, setSort, showDone }) {
+export default function ProjectDetail({ project, tasks, projects, categories = [], users = [], projectsMap, usersMap, onToggle, onEditTask, onAddTask, onEditProject, onUpdateProjectEndDate, sort, setSort, showDone }) {
   const [editingEndDate, setEditingEndDate] = useState(false)
   const [endDateInput, setEndDateInput] = useState(project.endDate || '')
   const allptasks = tasks.filter(t => t.projectId === project.id)
@@ -113,7 +113,7 @@ export default function ProjectDetail({ project, tasks, projects, categories = [
       ) : (
         <div className="cards-grid">
           {sorted.map(t => (
-            <TaskCard key={t.id} task={t} projects={projects} categories={categories} users={users} onToggle={onToggle} onClick={() => onEditTask(t)} />
+            <TaskCard key={t.id} task={t} projects={projects} categories={categories} users={users} projectsMap={projectsMap} usersMap={usersMap} onToggle={onToggle} onClick={() => onEditTask(t)} />
           ))}
         </div>
       )}

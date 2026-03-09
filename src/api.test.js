@@ -123,6 +123,17 @@ describe('api', () => {
       expect(result).toHaveProperty('endDate', '')
       expect(result).toHaveProperty('sortOrder', 0)
     })
+
+    it('accepts and returns project with UUID-style id (CODE-003)', async () => {
+      const { supabase } = await import('./supabase')
+      const { insertProject } = await import('./api')
+      const uuidId = `p-${crypto.randomUUID()}`
+      const project = { id: uuidId, name: 'N', color: '#000', icon: '📂' }
+      supabase.from.mockReturnValue(mockInsertSingle(project))
+      const result = await insertProject(project)
+      expect(result.id).toMatch(/^p-[0-9a-f-]{36}$/i)
+      expect(result.name).toBe('N')
+    })
   })
 
   describe('insertTask', () => {
@@ -150,6 +161,35 @@ describe('api', () => {
         done: false,
         created: 999,
       })
+      expect(result.projectId).toBe('p1')
+    })
+
+    it('accepts and returns task with UUID-style id (CODE-003)', async () => {
+      const { supabase } = await import('./supabase')
+      const { insertTask } = await import('./api')
+      const uuidId = `t-${crypto.randomUUID()}`
+      const row = {
+        id: uuidId,
+        project_id: 'p1',
+        title: 'T',
+        desc: '',
+        priority: 'medium',
+        due: null,
+        done: false,
+        created: 999,
+      }
+      supabase.from.mockReturnValue(mockInsertSingle(row))
+      const result = await insertTask({
+        id: uuidId,
+        projectId: 'p1',
+        title: 'T',
+        desc: '',
+        priority: 'medium',
+        due: null,
+        done: false,
+        created: 999,
+      })
+      expect(result.id).toMatch(/^t-[0-9a-f-]{36}$/i)
       expect(result.projectId).toBe('p1')
     })
   })

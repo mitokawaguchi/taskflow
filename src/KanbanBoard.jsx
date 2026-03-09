@@ -9,14 +9,14 @@ import {
 import { PRIORITY, TASK_STATUS, TASK_STATUS_KEYS, progressFromStatus, getCategoryInfo } from './constants'
 import { formatDate, isOverdue } from './utils'
 
-function KanbanCard({ task, projects, categories = [], users = [], onClick, isOverlay }) {
+function KanbanCardContent({ task, projects, categories = [], users = [] }) {
   const proj = projects.find(p => p.id === task.projectId)
   const progress = task.progress != null ? task.progress : progressFromStatus(task.status)
   const over = isOverdue(task.due)
   const categoryInfo = getCategoryInfo(task.category, categories)
   const assignee = task.assigneeId ? users.find(u => u.id === task.assigneeId) : null
 
-  const cardBody = (
+  return (
     <>
       <div className={`kanban-card__bar kanban-card__bar--${task.priority}`} />
       <div className="kanban-card__body">
@@ -53,23 +53,23 @@ function KanbanCard({ task, projects, categories = [], users = [], onClick, isOv
               📅 {formatDate(task.due)}
             </span>
           )}
-          <span className={`priority-badge ${task.priority}`}>{PRIORITY[task.priority].label}</span>
+          <span className={`priority-badge ${task.priority}`}>{PRIORITY[task.priority]?.label ?? task.priority}</span>
         </div>
       </div>
     </>
   )
+}
+
+function KanbanCard({ task, projects, categories = [], users = [], onClick, isOverlay }) {
+  const content = <KanbanCardContent task={task} projects={projects} categories={categories} users={users} />
 
   if (isOverlay) {
-    return (
-      <div className="kanban-card kanban-card--overlay">
-        {cardBody}
-      </div>
-    )
+    return <div className="kanban-card kanban-card--overlay">{content}</div>
   }
 
   return (
     <div className="kanban-card" onClick={() => onClick(task)} role="button" tabIndex={0} onKeyDown={e => e.key === 'Enter' && onClick(task)}>
-      {cardBody}
+      {content}
     </div>
   )
 }
@@ -79,11 +79,6 @@ function DraggableKanbanCard({ task, projects, categories = [], users = [], onCl
     id: task.id,
     data: { task },
   })
-  const proj = projects.find(p => p.id === task.projectId)
-  const progress = task.progress != null ? task.progress : progressFromStatus(task.status)
-  const over = isOverdue(task.due)
-  const categoryInfo = getCategoryInfo(task.category, categories)
-  const assignee = task.assigneeId ? users.find(u => u.id === task.assigneeId) : null
 
   return (
     <div
@@ -107,44 +102,7 @@ function DraggableKanbanCard({ task, projects, categories = [], users = [], onCl
         role="button"
         tabIndex={0}
       >
-        <div className={`kanban-card__bar kanban-card__bar--${task.priority}`} />
-        <div className="kanban-card__body">
-          <div className="kanban-card__title">{task.title}</div>
-          {categoryInfo && (
-            <span
-              className="kanban-card__category"
-              style={{
-                background: `${categoryInfo.color}20`,
-                color: categoryInfo.color,
-              }}
-            >
-              {categoryInfo.label}
-            </span>
-          )}
-          {proj && (
-            <div className="kanban-card__meta" style={{ color: proj.color }}>
-              {proj.icon} {proj.name}
-            </div>
-          )}
-          {assignee && (
-            <div className="kanban-card__assignee">
-              {assignee.avatarUrl ? <img src={assignee.avatarUrl} alt="" width={14} height={14} style={{ borderRadius: '50%' }} /> : '👤'}
-              <span>{assignee.name}</span>
-            </div>
-          )}
-          <div className="kanban-card__progress">
-            <div className="kanban-card__progress-bar" style={{ width: `${progress}%` }} />
-            <span className="kanban-card__progress-text">{progress}%</span>
-          </div>
-          <div className="kanban-card__footer">
-            {task.due && (
-              <span className={`kanban-card__due ${over ? 'overdue' : ''}`}>
-                📅 {formatDate(task.due)}
-              </span>
-            )}
-            <span className={`priority-badge ${task.priority}`}>{PRIORITY[task.priority].label}</span>
-          </div>
-        </div>
+        <KanbanCardContent task={task} projects={projects} categories={categories} users={users} />
       </div>
     </div>
   )

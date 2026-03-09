@@ -9,11 +9,11 @@ import {
 } from '@dnd-kit/core'
 import { arrayMove, SortableContext, useSortable, rectSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { PRIORITY, SORT_OPTIONS, priorityOrder, PRIORITY_KEYS, CATEGORY_COLOR_PALETTE } from './constants'
+import { PRIORITY, SORT_OPTIONS, priorityOrder, PRIORITY_KEYS } from './constants'
 import { today, isToday, isOverdue, formatTodayDisplay, endDateLabel } from './utils'
 
 const PRIORITY_OPTIONS = Object.entries(PRIORITY).map(([key, { label }]) => ({ key, label }))
-import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, fetchCategories, fetchUsers, insertProject, updateProject, insertTask, updateTask, insertTemplate, insertRemember, updateRemember, deleteRemember, insertClient, insertCategory, insertUser, getAuthSession, signInWithPassword, signUpWithEmail, signOut, subscribeAuth, updateAuthPassword, updateAuthUserMetadata } from './api'
+import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, fetchCategories, fetchUsers, insertProject, updateProject, insertTask, updateTask, insertTemplate, insertRemember, updateRemember, deleteRemember, insertClient, insertUser, getAuthSession, signOut, subscribeAuth, updateAuthPassword, updateAuthUserMetadata } from './api'
 import MorningModal from './MorningModal'
 import TaskCard from './TaskCard'
 import TaskForm from './TaskForm'
@@ -26,7 +26,12 @@ import Toast from './Toast'
 import KanbanBoard from './KanbanBoard'
 import Dashboard from './Dashboard'
 import GanttChart from './GanttChart'
-import { LEGAL_PAGES, getLegalPageFromHash } from './legalContent'
+import LoginScreen, { ProfileLoginForm, LegalLinks } from './components/LoginScreen'
+import CategoriesView from './components/CategoriesView'
+import SettingsModal from './components/SettingsModal'
+import ClientDetailView from './components/ClientDetailView'
+import LegalPageView from './components/LegalPageView'
+import { getLegalPageFromHash } from './legalContent'
 
 const DUE_TODAY_CHECK_DELAY_MS = 2000
 const DUE_TODAY_NOTIFY_THROTTLE_MS = 60 * 60 * 1000 // 1時間に1回まで
@@ -114,412 +119,6 @@ function SortableProjectCard({ item, setView, toggleTask, openTaskFormForProject
   )
 }
 
-/** 色を視覚的に選択するUI（スウォッチ＋任意でカスタム色） */
-function ColorSwatchPicker({ value, onChange, ariaLabel = '色を選択' }) {
-  const [customOpen, setCustomOpen] = useState(false)
-  return (
-    <div className="color-swatch-picker" role="group" aria-label={ariaLabel}>
-      <div className="color-swatch-grid">
-        {CATEGORY_COLOR_PALETTE.map((hex) => (
-          <button
-            key={hex}
-            type="button"
-            className={`color-swatch ${value === hex ? 'active' : ''}`}
-            style={{ background: hex }}
-            onClick={() => { onChange(hex); setCustomOpen(false) }}
-            title={hex}
-            aria-label={hex}
-            aria-pressed={value === hex}
-          />
-        ))}
-      </div>
-      <div className="color-swatch-custom">
-        <button
-          type="button"
-          className="btn btn-ghost btn-sm"
-          onClick={() => setCustomOpen(o => !o)}
-          aria-expanded={customOpen}
-        >
-          {customOpen ? '閉じる' : 'カスタム色'}
-        </button>
-        {customOpen && (
-          <label className="color-swatch-custom-input">
-            <input
-              type="color"
-              value={value.startsWith('#') && value.length === 7 ? value : '#6b7280'}
-              onChange={e => onChange(e.target.value)}
-              aria-label="カスタム色"
-            />
-          </label>
-        )}
-      </div>
-    </div>
-  )
-}
-
-function ProfileLoginForm({ onSuccess, onError, showCloseButton = true }) {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [isSignUp, setIsSignUp] = useState(false)
-  const [signUpMessage, setSignUpMessage] = useState('')
-
-  const handleSubmit = useCallback(async (e) => {
-    e.preventDefault()
-    if (!email.trim() || !password) {
-      setError(isSignUp ? 'メールとパスワードを入力してください（6文字以上推奨）' : 'メールとパスワードを入力してください')
-      return
-    }
-    if (isSignUp && password.length < 6) {
-      setError('パスワードは6文字以上にしてください')
-      return
-    }
-    setError('')
-    setSignUpMessage('')
-    setLoading(true)
-    try {
-      if (isSignUp) {
-        const data = await signUpWithEmail(email.trim(), password)
-        if (data?.session) {
-          onSuccess()
-        } else {
-          setSignUpMessage('確認メールを送りました。メール内のリンクから認証してください。')
-          onError?.('✅', 'アカウント作成', '確認メールを送りました')
-        }
-      } else {
-        await signInWithPassword(email.trim(), password)
-        onSuccess()
-      }
-    } catch (e) {
-      let msg = e?.message ?? (isSignUp ? 'アカウント作成に失敗しました' : 'ログインに失敗しました')
-      if (isSignUp && (e?.code === 'user_already_registered' || e?.code === 'user_already_exists' || /already registered|already exists|既に登録/i.test(String(msg)))) {
-        msg = 'このメールアドレスは既に登録されています。ログインタブからサインインしてください。'
-      }
-      setError(msg)
-      onError?.('❌', isSignUp ? 'アカウント作成' : 'ログイン', msg)
-    } finally {
-      setLoading(false)
-    }
-  }, [email, password, isSignUp, onSuccess, onError])
-
-  return (
-    <form onSubmit={handleSubmit} className="form-group">
-      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-        <button
-          type="button"
-          className={`btn btn-ghost btn-sm ${!isSignUp ? 'active' : ''}`}
-          onClick={() => { setIsSignUp(false); setError(''); setSignUpMessage('') }}
-          aria-pressed={!isSignUp}
-        >
-          ログイン
-        </button>
-        <button
-          type="button"
-          className={`btn btn-ghost btn-sm ${isSignUp ? 'active' : ''}`}
-          onClick={() => { setIsSignUp(true); setError(''); setSignUpMessage('') }}
-          aria-pressed={isSignUp}
-        >
-          アカウント作成
-        </button>
-      </div>
-      <div className="form-group">
-        <label className="form-label" htmlFor="profile-login-email">メール</label>
-        <input
-          id="profile-login-email"
-          type="email"
-          className="form-input"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          placeholder="email@example.com"
-          autoComplete={isSignUp ? 'email' : 'email'}
-          disabled={loading}
-        />
-      </div>
-      <div className="form-group">
-        <label className="form-label" htmlFor="profile-login-password">パスワード</label>
-        <input
-          id="profile-login-password"
-          type="password"
-          className="form-input"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          placeholder={isSignUp ? '6文字以上' : undefined}
-          autoComplete={isSignUp ? 'new-password' : 'current-password'}
-          disabled={loading}
-        />
-      </div>
-      {error && <p style={{ fontSize: 13, color: 'var(--critical)', marginBottom: 12 }}>{error}</p>}
-      {signUpMessage && <p style={{ fontSize: 13, color: 'var(--accent)', marginBottom: 12 }}>{signUpMessage}</p>}
-      <div className="modal-actions">
-        <button type="submit" className="btn btn-primary" disabled={loading}>
-          {loading ? (isSignUp ? '作成中…' : 'ログイン中…') : (isSignUp ? 'アカウントを作成' : 'ログイン')}
-        </button>
-        {showCloseButton && (
-          <button type="button" className="btn btn-ghost" onClick={() => onSuccess()} aria-label="閉じる">
-            閉じる（ログインしない）
-          </button>
-        )}
-      </div>
-    </form>
-  )
-}
-
-/** 法定ページ（利用規約・プライバシーポリシー・免責事項）のフル画面表示 */
-function LegalPageView({ pageKey, onBack }) {
-  const page = LEGAL_PAGES[pageKey]
-  if (!page) return null
-  return (
-    <div className="app legal-page">
-      <div className="legal-page__inner">
-        <button type="button" className="btn btn-ghost btn-sm legal-page__back" onClick={onBack}>
-          ← 戻る
-        </button>
-        <h1 className="legal-page__title">{page.title}</h1>
-        <div className="legal-page__body">
-          {page.sections.map((sec, i) => (
-            <section key={i}>
-              <h2 className="legal-page__heading">{sec.heading}</h2>
-              {sec.paragraphs.map((p, j) => (
-                <p key={j} className="legal-page__p">{p}</p>
-              ))}
-            </section>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-/** 利用規約・プライバシーポリシー・免責事項へのリンク（ハッシュで表示） */
-function LegalLinks({ className = '' }) {
-  const go = (hash) => {
-    window.location.hash = hash
-  }
-  return (
-    <nav className={`legal-links ${className}`} aria-label="法定ページ">
-      <button type="button" className="legal-links__link" onClick={() => go('#/terms')}>利用規約</button>
-      <span className="legal-links__sep">|</span>
-      <button type="button" className="legal-links__link" onClick={() => go('#/privacy')}>プライバシーポリシー</button>
-      <span className="legal-links__sep">|</span>
-      <button type="button" className="legal-links__link" onClick={() => go('#/disclaimer')}>免責事項</button>
-    </nav>
-  )
-}
-
-/** 未ログイン時のみ表示するフル画面のログイン画面。タスク等は一切表示しない */
-function LoginScreen({ onError }) {
-  return (
-    <div className="app login-screen">
-      <div className="login-screen__inner">
-        <div className="login-screen__brand">
-          <img
-            src="/logo.png"
-            alt=""
-            className="logo-icon"
-            onError={(e) => { e.target.onerror = null; e.target.src = '/logo.svg' }}
-          />
-          <h1 className="login-screen__title">Task<span>Flow</span></h1>
-          <p className="login-screen__lead">ログインしてタスクを管理</p>
-        </div>
-        <div className="login-screen__form">
-          <ProfileLoginForm onSuccess={() => {}} onError={onError} showCloseButton={false} />
-        </div>
-        <footer className="login-screen__footer">
-          <LegalLinks />
-        </footer>
-      </div>
-    </div>
-  )
-}
-
-function CategoriesView({ categories, setCategories, addToast }) {
-  const [newCatName, setNewCatName] = useState('')
-  const [newCatColor, setNewCatColor] = useState('#6b7280')
-  const [adding, setAdding] = useState(false)
-
-  const handleAddCategory = useCallback(async () => {
-    const name = newCatName.trim()
-    if (!name) return
-    setAdding(true)
-    try {
-      await insertCategory({
-        id: `cat${Date.now()}`,
-        name,
-        color: newCatColor,
-      })
-      const list = await fetchCategories()
-      setCategories(list)
-      setNewCatName('')
-      setNewCatColor('#6b7280')
-      addToast('✅', 'カテゴリを追加しました', name)
-    } catch (e) {
-      addToast('❌', '追加できませんでした', e?.message ?? 'Supabase の設定または tf_categories テーブルを確認してください')
-    } finally {
-      setAdding(false)
-    }
-  }, [newCatName, newCatColor, setCategories, addToast])
-
-  return (
-    <div className="categories-view">
-      <p className="categories-view__lead">タスクに付けるカテゴリを追加・管理します。</p>
-      <ul className="settings-category-list categories-view__list" aria-label="登録済みカテゴリ">
-        {categories.length === 0 ? (
-          <li className="settings-category-empty">カテゴリがありません。下のフォームで追加してください。</li>
-        ) : (
-          categories.map(c => (
-            <li key={c.id} className="settings-category-item">
-              <span className="settings-category-dot" style={{ background: c.color }} aria-hidden />
-              <span>{c.name}</span>
-            </li>
-          ))
-        )}
-      </ul>
-      <div className="categories-view__add">
-        <div className="form-group">
-          <label className="form-label" htmlFor="cat-name">新しいカテゴリ名</label>
-          <input
-            id="cat-name"
-            type="text"
-            className="form-input"
-            placeholder="カテゴリ名"
-            value={newCatName}
-            onChange={e => setNewCatName(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleAddCategory()}
-            disabled={adding}
-          />
-        </div>
-        <div className="form-group">
-          <span className="form-label">色</span>
-          <ColorSwatchPicker value={newCatColor} onChange={setNewCatColor} ariaLabel="カテゴリの色" />
-        </div>
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={handleAddCategory}
-          disabled={adding || !newCatName.trim()}
-        >
-          {adding ? '追加中…' : '追加'}
-        </button>
-      </div>
-    </div>
-  )
-}
-
-function SettingsModal({ theme, setTheme, onClose, users, setUsers, notifyReminderEnabled, setNotifyReminderEnabled, addToast }) {
-  const [newUserName, setNewUserName] = useState('')
-  const [newUserEmail, setNewUserEmail] = useState('')
-  const [addingUser, setAddingUser] = useState(false)
-
-  const handleAddUser = useCallback(async () => {
-    const name = newUserName.trim()
-    if (!name) return
-    setAddingUser(true)
-    try {
-      await insertUser({
-        id: `u${Date.now()}`,
-        name,
-        email: newUserEmail.trim() || null,
-        avatarUrl: '',
-        created: Date.now(),
-      })
-      const list = await fetchUsers()
-      setUsers(list)
-      setNewUserName('')
-      setNewUserEmail('')
-      addToast('✅', 'メンバーを追加しました', name)
-    } catch (e) {
-      addToast('❌', '追加できませんでした', e?.message ?? 'tf_users テーブルを確認してください')
-    } finally {
-      setAddingUser(false)
-    }
-  }, [newUserName, newUserEmail, setUsers, addToast])
-
-  return (
-    <div className="overlay" onClick={onClose}>
-      <div className="modal settings-modal" onClick={e => e.stopPropagation()}>
-        <h2 className="modal-title">設定</h2>
-        <div className="form-group">
-          <span className="form-label">表示モード</span>
-          <div className="theme-toggle" style={{ marginTop: 8 }}>
-            <span className="theme-toggle__label">{theme === 'dark' ? 'ダーク' : 'ライト'}</span>
-            <button
-              type="button"
-              className="theme-toggle__switch"
-              aria-pressed={theme === 'dark'}
-              onClick={() => setTheme(t => (t === 'dark' ? 'light' : 'dark'))}
-            />
-          </div>
-        </div>
-
-        <div className="form-group" style={{ marginTop: 24 }}>
-          <span className="form-label">チームメンバー</span>
-          <p className="form-hint">タスクの担当者として選べるメンバーを追加します。</p>
-          <ul className="settings-category-list" aria-label="チームメンバー">
-            {users.length === 0 ? (
-              <li className="settings-category-empty">メンバーがいません。追加するとタスクに担当者を割り当てられます。</li>
-            ) : (
-              users.map(u => (
-                <li key={u.id} className="settings-category-item">
-                  <span className="settings-user-avatar">
-                    {u.avatarUrl ? <img src={u.avatarUrl} alt="" width={24} height={24} style={{ borderRadius: '50%' }} /> : '👤'}
-                  </span>
-                  <span>{u.name}{u.email ? ` (${u.email})` : ''}</span>
-                </li>
-              ))
-            )}
-          </ul>
-          <div className="settings-category-add">
-            <input
-              type="text"
-              className="form-input"
-              placeholder="表示名"
-              value={newUserName}
-              onChange={e => setNewUserName(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleAddUser()}
-              aria-label="メンバー名"
-            />
-            <input
-              type="email"
-              className="form-input"
-              placeholder="メール（任意）"
-              value={newUserEmail}
-              onChange={e => setNewUserEmail(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleAddUser()}
-              aria-label="メール"
-            />
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={handleAddUser}
-              disabled={addingUser || !newUserName.trim()}
-            >
-              {addingUser ? '追加中…' : '追加'}
-            </button>
-          </div>
-        </div>
-
-        <div className="form-group" style={{ marginTop: 24 }}>
-          <span className="form-label">通知</span>
-          <div className="theme-toggle" style={{ marginTop: 8 }}>
-            <span className="theme-toggle__label">期限リマインダー（今日が期限のタスクをお知らせ）</span>
-            <button
-              type="button"
-              className="theme-toggle__switch"
-              aria-pressed={notifyReminderEnabled}
-              onClick={() => setNotifyReminderEnabled(v => !v)}
-            />
-          </div>
-        </div>
-
-        <div className="modal-actions">
-          <button type="button" className="btn btn-primary" onClick={onClose}>閉じる</button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export default function App() {
   const [tasks, setTasks] = useState([])
   const [projects, setProjects] = useState([])
@@ -587,7 +186,7 @@ export default function App() {
   }, [theme])
 
   const addToast = useCallback((icon, title, msg) => {
-    const id = Date.now()
+    const id = crypto.randomUUID()
     setToasts(prev => [...prev, { id, icon, title, msg }])
     setTimeout(() => setToasts(prev => prev.filter(x => x.id !== id)), TOAST_DURATION_MS)
   }, [])
@@ -606,13 +205,13 @@ export default function App() {
         let usrs = []
         try {
           cats = await fetchCategories()
-        } catch {
-          // tf_categories 未作成時はフォールバック用に空のまま
+        } catch (e) {
+          if (!cancelled) addToast('⚠️', 'カテゴリの読み込みに失敗しました', e?.message ?? '')
         }
         try {
           usrs = await fetchUsers()
-        } catch {
-          // tf_users 未作成時は空のまま
+        } catch (e) {
+          if (!cancelled) addToast('⚠️', '担当者の読み込みに失敗しました', e?.message ?? '')
         }
         if (!cancelled) {
           let tasksToSet = ts
@@ -711,7 +310,7 @@ export default function App() {
         addToast('✏️', 'タスクを更新しました', form.title)
       } else {
         const status = form.status || 'todo'
-        const newTask = { ...form, id: 't' + Date.now(), done: status === 'done', status, created: Date.now() }
+        const newTask = { ...form, id: `t-${crypto.randomUUID()}`, done: status === 'done', status, created: Date.now() }
         const created = await insertTask(newTask)
         setTasks(ts => [created, ...ts])
         addToast('✅', 'タスクを追加しました', form.title)
@@ -766,7 +365,7 @@ export default function App() {
         addToast('✏️', 'プロジェクトを更新しました', form.name)
       } else {
         const nextOrder = projects.length ? Math.max(...projects.map(p => p.sortOrder ?? 0), -1) + 1 : 0
-        const project = { ...form, id: 'p' + Date.now(), endDate: form.endDate ?? '', sortOrder: nextOrder }
+        const project = { ...form, id: `p-${crypto.randomUUID()}`, endDate: form.endDate ?? '', sortOrder: nextOrder }
         const created = await insertProject(project)
         setProjects(ps => [...ps, created])
         setShowProjForm(false)
@@ -789,7 +388,7 @@ export default function App() {
 
   const saveTemplate = useCallback(async (form) => {
     try {
-      const template = { ...form, id: 'tpl' + Date.now() }
+      const template = { ...form, id: `tpl-${crypto.randomUUID()}` }
       const created = await insertTemplate(template)
       setTemplates(ts => [...ts, created])
       setShowTplForm(false)
@@ -802,7 +401,7 @@ export default function App() {
   const addRemember = useCallback(async (clientId, body) => {
     if (!body?.trim()) return
     try {
-      const item = { id: 'rem' + Date.now(), clientId, body: body.trim(), created: Date.now() }
+      const item = { id: `rem-${crypto.randomUUID()}`, clientId, body: body.trim(), created: Date.now() }
       const created = await insertRemember(item)
       setRemembers(prev => [created, ...prev])
       addToast('📌', '覚えておくことを追加しました', '')
@@ -813,7 +412,7 @@ export default function App() {
 
   const addClient = useCallback(async (form) => {
     try {
-      const client = { ...form, id: 'c' + Date.now() }
+      const client = { ...form, id: `c-${crypto.randomUUID()}` }
       const created = await insertClient(client)
       setClients(prev => [...prev, created])
       setShowClientForm(false)
@@ -961,7 +560,7 @@ export default function App() {
         ＋ タスクを追加
       </button>
     </div>
-  ), [toggleTask, openTaskFormForProject])
+  ), [toggleTask, openTaskFormForProject, setView])
 
   const handleProjectDragEnd = useCallback(
     async (event) => {
@@ -1030,6 +629,10 @@ export default function App() {
     }
     return [me, ...users]
   }, [users, authUser])
+
+  /** PERF-002: TaskCard 内の O(n) find を避けるため Map を1回だけ生成 */
+  const projectsMap = useMemo(() => new Map(projects.map(p => [p.id, p])), [projects])
+  const usersMap = useMemo(() => new Map(users.map(u => [u.id, u])), [users])
 
   // ── Render ───────────────────────────────────────────────
   if (!authReady) {
@@ -1305,6 +908,8 @@ export default function App() {
                 projects={projects}
                 categories={categories}
                 users={users}
+                projectsMap={projectsMap}
+                usersMap={usersMap}
                 onToggle={toggleTask}
                 onEditTask={setEditTask}
                 onAddTask={() => setShowTaskForm(true)}
@@ -1392,25 +997,17 @@ export default function App() {
               <CategoriesView categories={categories} setCategories={setCategories} addToast={addToast} />
             )}
 
-            {view.startsWith('c:') && (() => {
-              const clientId = view.slice(2)
-              const client = clients.find(c => c.id === clientId)
-              if (!client) return null
-              return (
-                <>
-                  <button type="button" className="btn btn-ghost btn-sm" style={{ marginBottom: '16px' }} onClick={() => setView('clients')}>
-                    ← クライアント一覧
-                  </button>
-                  <ClientDetail
-                    client={client}
-                    remembers={remembers.filter(r => r.clientId === client.id)}
-                    onAddRemember={addRemember}
-                    onUpdateRemember={updateRememberItem}
-                    onDeleteRemember={removeRemember}
-                  />
-                </>
-              )
-            })()}
+            {view.startsWith('c:') && (
+              <ClientDetailView
+                clientId={view.slice(2)}
+                clients={clients}
+                remembers={remembers}
+                onBack={() => setView('clients')}
+                onAddRemember={addRemember}
+                onUpdateRemember={updateRememberItem}
+                onDeleteRemember={removeRemember}
+              />
+            )}
 
             {/* PROJECTS OVERVIEW */}
             {view === 'projects' && (
@@ -1707,7 +1304,7 @@ export default function App() {
                 ) : (
                   <div className="cards-grid cards-grid--compact">
                     {sortedTasks.map(t => (
-                      <TaskCard key={t.id} task={t} projects={projects} categories={categories} users={users} onToggle={toggleTask} onClick={() => setEditTask(t)} />
+                      <TaskCard key={t.id} task={t} projects={projects} categories={categories} users={users} projectsMap={projectsMap} usersMap={usersMap} onToggle={toggleTask} onClick={() => setEditTask(t)} />
                     ))}
                   </div>
                 )}
