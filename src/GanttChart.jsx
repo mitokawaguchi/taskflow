@@ -3,11 +3,36 @@ import { today, formatDate } from './utils'
 
 const ROW_HEIGHT = 36
 const DAY_WIDTH = 44
+const WEEK_WIDTH = 80
+
+/** 指定日の属する週の月曜日を YYYY-MM-DD で返す */
+function getWeekStart(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00')
+  const day = d.getDay()
+  const diff = day === 0 ? 6 : day - 1
+  d.setDate(d.getDate() - diff)
+  return d.toISOString().slice(0, 10)
+}
+
+/** 月曜日 YYYY-MM-DD から日曜日を返す */
+function getWeekEnd(weekStartStr) {
+  const d = new Date(weekStartStr + 'T12:00:00')
+  d.setDate(d.getDate() + 6)
+  return d.toISOString().slice(0, 10)
+}
+
+/** 週開始日から「○月○週目」ラベルを返す（ツールチップ用に日付範囲も渡せる） */
+function formatWeekLabel(weekStartStr) {
+  const d = new Date(weekStartStr + 'T12:00:00')
+  const month = d.getMonth() + 1
+  const weekOfMonth = Math.ceil(d.getDate() / 7)
+  return `${month}月${weekOfMonth}週目`
+}
 
 export default function GanttChart({ tasks, projects, onEditTask }) {
   const [range, setRange] = useState('month') // 'week' | 'month' | 'quarter'
 
-  const { startDate, endDate, days } = useMemo(() => {
+  const { days, weeks, isQuarter } = useMemo(() => {
     const now = new Date(today())
     let start, end
     if (range === 'week') {
@@ -25,18 +50,40 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
       start = new Date(now.getFullYear(), now.getMonth(), 1)
       end = new Date(now.getFullYear(), now.getMonth() + 1, 0)
     }
-    const days = []
+    const startStr = start.toISOString().slice(0, 10)
+    const endStr = end.toISOString().slice(0, 10)
+
+    if (range === 'quarter') {
+      // 3ヶ月表示: タスクの期限がある週だけを列にする
+      const weekSet = new Set()
+      for (const t of tasks) {
+        const due = t.due
+        if (!due) continue
+        if (due >= startStr && due <= endStr) {
+          weekSet.add(getWeekStart(due))
+        }
+      }
+      let weekList = [...weekSet].sort()
+      if (weekList.length === 0) {
+        // 期限が1件もない場合は四半期の全週を表示
+        const cur = new Date(start)
+        while (cur <= end) {
+          weekList.push(getWeekStart(cur.toISOString().slice(0, 10)))
+          cur.setDate(cur.getDate() + 7)
+        }
+        weekList = [...new Set(weekList)].sort()
+      }
+      return { days: [], weeks: weekList, isQuarter: true }
+    }
+
+    const daysList = []
     const cur = new Date(start)
     while (cur <= end) {
-      days.push(cur.toISOString().slice(0, 10))
+      daysList.push(cur.toISOString().slice(0, 10))
       cur.setDate(cur.getDate() + 1)
     }
-    return {
-      startDate: start.toISOString().slice(0, 10),
-      endDate: end.toISOString().slice(0, 10),
-      days,
-    }
-  }, [range])
+    return { days: daysList, weeks: [], isQuarter: false }
+  }, [range, tasks])
 
   const todayStr = today()
   /** 今日より過去7日間（今日は含まない） */
@@ -45,6 +92,9 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
     const diffDays = Math.round((new Date(todayStr) - new Date(d)) / 86400000)
     return diffDays >= 1 && diffDays <= 7
   }
+
+  const columns = isQuarter ? weeks : days
+  const colWidth = isQuarter ? WEEK_WIDTH : DAY_WIDTH
 
   /** プロジェクト順でグループ化（全プロジェクト・全タスクを表示。未設定 → プロジェクト一覧の順） */
   const groupsByProject = useMemo(() => {
@@ -83,14 +133,26 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
         <div
           className="gantt-grid"
           style={{
-            gridTemplateColumns: `200px repeat(${days.length}, ${DAY_WIDTH}px)`,
+            gridTemplateColumns: `200px repeat(${columns.length}, ${colWidth}px)`,
             gridTemplateRows: rowTemplate,
           }}
         >
           <div className="gantt-head gantt-head--label">タスク</div>
-          {days.map(d => (
-            <div key={d} className={`gantt-head ${d === todayStr ? 'today' : ''} ${isPastWeek(d) ? 'past' : ''}`} title={formatDate(d)}>{formatDate(d)}</div>
-          ))}
+          {columns.map((col) => {
+            if (isQuarter) {
+              const weekEnd = getWeekEnd(col)
+              const isTodayCol = todayStr >= col && todayStr <= weekEnd
+              const isPastCol = weekEnd < todayStr
+              return (
+                <div key={col} className={`gantt-head ${isTodayCol ? 'today' : ''} ${isPastCol ? 'past' : ''}`} title={`${formatDate(col)} 〜 ${formatDate(weekEnd)}`}>
+                  {formatWeekLabel(col)}
+                </div>
+              )
+            }
+            return (
+              <div key={col} className={`gantt-head ${col === todayStr ? 'today' : ''} ${isPastWeek(col) ? 'past' : ''}`} title={formatDate(col)}>{formatDate(col)}</div>
+            )
+          })}
           {groupsByProject.flatMap((group) => {
             const proj = group.project
             const projectLabel = proj ? `${proj.icon} ${proj.name}` : 'プロジェクト未設定'
@@ -99,12 +161,24 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
               <div key={`ph-${proj?.id ?? 'none'}-l`} className="gantt-cell gantt-cell--label gantt-cell--project" style={{ background: `${projectColor}18`, borderLeftColor: projectColor }}>
                 <span className="gantt-cell__project" style={{ color: projectColor }}>{projectLabel}</span>
               </div>,
-              ...days.map(d => (
-                <div key={`ph-${proj?.id ?? 'none'}-${d}`} className={`gantt-cell gantt-cell--project ${d === todayStr ? 'today' : ''} ${isPastWeek(d) ? 'past' : ''}`} style={{ background: `${projectColor}08` }} />
-              )),
+              ...columns.map((col) => {
+                if (isQuarter) {
+                  const weekEnd = getWeekEnd(col)
+                  const isTodayCol = todayStr >= col && todayStr <= weekEnd
+                  const isPastCol = weekEnd < todayStr
+                  return (
+                    <div key={`ph-${proj?.id ?? 'none'}-${col}`} className={`gantt-cell gantt-cell--project ${isTodayCol ? 'today' : ''} ${isPastCol ? 'past' : ''}`} style={{ background: `${projectColor}08` }} />
+                  )
+                }
+                return (
+                  <div key={`ph-${proj?.id ?? 'none'}-${col}`} className={`gantt-cell gantt-cell--project ${col === todayStr ? 'today' : ''} ${isPastWeek(col) ? 'past' : ''}`} style={{ background: `${projectColor}08` }} />
+                )
+              }),
               ...group.tasks.flatMap(t => {
                 const taskProj = projects.find(p => p.id === t.projectId)
                 const handleOpen = () => onEditTask?.(t)
+                const taskStart = t.startDate || t.due || todayStr
+                const taskEnd = t.due || todayStr
                 return [
                   <div
                     key={`${t.id}-l`}
@@ -118,16 +192,24 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
                     <span className="gantt-cell__title">{t.title}</span>
                     {taskProj && <span className="gantt-cell__proj" style={{ color: taskProj.color }}>{taskProj.icon}</span>}
                   </div>,
-                  ...days.map((d) => {
-                    const taskStart = t.startDate || t.due || todayStr
-                    const taskEnd = t.due || todayStr
-                    const isInRange = d >= taskStart && d <= taskEnd
-                    const isStart = d === taskStart
-                    const isEnd = d === taskEnd
+                  ...columns.map((col) => {
+                    let isInRange, isStart, isEnd
+                    if (isQuarter) {
+                      const weekEnd = getWeekEnd(col)
+                      isInRange = weekEnd >= taskStart && col <= taskEnd
+                      isStart = taskStart >= col && taskStart <= weekEnd
+                      isEnd = taskEnd >= col && taskEnd <= weekEnd
+                    } else {
+                      isInRange = col >= taskStart && col <= taskEnd
+                      isStart = col === taskStart
+                      isEnd = col === taskEnd
+                    }
+                    const cellToday = isQuarter ? (todayStr >= col && todayStr <= getWeekEnd(col)) : col === todayStr
+                    const cellPast = isQuarter ? getWeekEnd(col) < todayStr : isPastWeek(col)
                     return (
                       <div
-                        key={`${t.id}-${d}`}
-                        className={`gantt-cell ${d === todayStr ? 'today' : ''} ${isPastWeek(d) ? 'past' : ''}`}
+                        key={`${t.id}-${col}`}
+                        className={`gantt-cell ${cellToday ? 'today' : ''} ${cellPast ? 'past' : ''}`}
                         onClick={handleOpen}
                         role="button"
                         tabIndex={0}
