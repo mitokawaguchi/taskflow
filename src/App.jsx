@@ -185,7 +185,9 @@ function ProfileLoginForm({ onSuccess, onError }) {
         <button type="submit" className="btn btn-primary" disabled={loading}>
           {loading ? 'ログイン中…' : 'ログイン'}
         </button>
-        <button type="button" className="btn btn-ghost" onClick={() => onSuccess()}>キャンセル</button>
+        <button type="button" className="btn btn-ghost" onClick={() => onSuccess()} aria-label="閉じる">
+          閉じる（ログインしない）
+        </button>
       </div>
     </form>
   )
@@ -1565,10 +1567,10 @@ export default function App() {
                     type="button"
                     className="btn btn-ghost"
                     onClick={async () => {
+                      setShowProfileModal(false)
                       try {
                         await signOut()
                         setAuthUser(null)
-                        setShowProfileModal(false)
                       } catch (e) {
                         addToast('❌', 'ログアウトに失敗しました', e?.message ?? '')
                       }
@@ -1580,10 +1582,15 @@ export default function App() {
                 </div>
               </>
             ) : (
-              <ProfileLoginForm
-                onSuccess={() => setShowProfileModal(false)}
-                onError={addToast}
-              />
+              <>
+                <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 12 }}>
+                  外側をクリックしても閉じられます。
+                </p>
+                <ProfileLoginForm
+                  onSuccess={() => setShowProfileModal(false)}
+                  onError={addToast}
+                />
+              </>
             )}
           </div>
         </div>

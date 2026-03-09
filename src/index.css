@@ -220,7 +220,15 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
   background: var(--bg); position: sticky; top: 0; z-index: 10;
   flex-wrap: wrap;
 }
-.topbar-title { font-size: 18px; font-weight: 700; flex: 1; min-width: 0; }
+.topbar-title {
+  font-size: 18px;
+  font-weight: 700;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .topbar-tabs {
   display: inline-flex;
   align-items: center;
