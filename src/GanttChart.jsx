@@ -5,25 +5,25 @@ const ROW_HEIGHT = 36
 const DAY_WIDTH = 28
 
 export default function GanttChart({ tasks, projects, onEditTask }) {
-  const [range, setRange] = useState('week') // 'day' | 'week' | 'month'
+  const [range, setRange] = useState('month') // 'week' | 'month' | 'quarter'
 
   const { startDate, endDate, days } = useMemo(() => {
     const now = new Date(today())
     let start, end
-    if (range === 'day') {
-      start = new Date(now)
-      end = new Date(now)
-      end.setDate(end.getDate() + 6)
-    } else if (range === 'month') {
-      start = new Date(now.getFullYear(), now.getMonth(), 1)
-      end = new Date(now.getFullYear(), now.getMonth() + 1, 0)
-    } else {
+    if (range === 'week') {
       const d = now.getDay()
       const mon = new Date(now)
       mon.setDate(mon.getDate() - (d === 0 ? 6 : d - 1))
       start = mon
       end = new Date(mon)
       end.setDate(end.getDate() + 6)
+    } else if (range === 'quarter') {
+      const q = Math.floor(now.getMonth() / 3) + 1
+      start = new Date(now.getFullYear(), (q - 1) * 3, 1)
+      end = new Date(now.getFullYear(), q * 3, 0)
+    } else {
+      start = new Date(now.getFullYear(), now.getMonth(), 1)
+      end = new Date(now.getFullYear(), now.getMonth() + 1, 0)
     }
     const days = []
     const cur = new Date(start)
@@ -39,14 +39,14 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
   }, [range])
 
   const todayStr = today()
+  /** 表示範囲に重なるタスクを全件表示。期限なしは「今日」に表示 */
   const tasksWithDue = useMemo(() => {
     return tasks.filter(t => {
-      const taskStart = t.startDate || t.due
-      const taskEnd = t.due
-      if (!taskEnd) return false
+      const taskEnd = t.due || todayStr
+      const taskStart = t.startDate || t.due || todayStr
       return taskStart <= endDate && taskEnd >= startDate
     })
-  }, [tasks, startDate, endDate])
+  }, [tasks, startDate, endDate, todayStr])
 
   /** プロジェクト順でグループ化（未設定 → プロジェクト一覧の順） */
   const groupsByProject = useMemo(() => {
@@ -70,14 +70,14 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
     <div className="gantt">
       <div className="gantt-toolbar">
         <span className="gantt-toolbar__label">表示:</span>
-        {['day', 'week', 'month'].map(r => (
+        {['week', 'month', 'quarter'].map(r => (
           <button
             key={r}
             type="button"
             className={`btn btn-ghost btn-sm ${range === r ? 'active' : ''}`}
             onClick={() => setRange(r)}
           >
-            {r === 'day' ? '日' : r === 'week' ? '週' : '月'}
+            {r === 'week' ? '週' : r === 'month' ? '月' : '3ヶ月'}
           </button>
         ))}
       </div>
@@ -121,9 +121,9 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
                     {taskProj && <span className="gantt-cell__proj" style={{ color: taskProj.color }}>{taskProj.icon}</span>}
                   </div>,
                   ...days.map((d) => {
-                    const taskStart = t.startDate || t.due
-                    const taskEnd = t.due
-                    const isInRange = taskStart && taskEnd && d >= taskStart && d <= taskEnd
+                    const taskStart = t.startDate || t.due || todayStr
+                    const taskEnd = t.due || todayStr
+                    const isInRange = d >= taskStart && d <= taskEnd
                     const isStart = d === taskStart
                     const isEnd = d === taskEnd
                     return (

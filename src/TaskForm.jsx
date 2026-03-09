@@ -7,8 +7,8 @@ export default function TaskForm({ task, projects, templates, categories = [], u
   const categoryOptions = categoriesToOptions(categories)
   const [form, setForm] = useState(
     task
-      ? { title:'', desc:'', priority:'medium', projectId: projects[0]?.id || '', due:'', done:false, status:'todo', category: '', assigneeId: '', ...task }
-      : { title:'', desc:'', priority:'medium', projectId: task?.projectId ?? projects[0]?.id ?? '', due:'', done:false, status: task?.status ?? 'todo', category: '', assigneeId: task?.assigneeId ?? '' }
+      ? { title:'', desc:'', priority:'medium', projectId: projects[0]?.id || '', startDate:'', due:'', done:false, status:'todo', category: '', assigneeId: '', ...task }
+      : { title:'', desc:'', priority:'medium', projectId: task?.projectId ?? projects[0]?.id ?? '', startDate: task?.startDate ?? '', due: task?.due ?? '', done:false, status: task?.status ?? 'todo', category: '', assigneeId: task?.assigneeId ?? '' }
   )
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
@@ -48,6 +48,19 @@ export default function TaskForm({ task, projects, templates, categories = [], u
           <select className="form-select" value={form.priority} onChange={e => set('priority', e.target.value)}>
             {Object.entries(PRIORITY).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
           </select>
+        </div>
+        <div className="form-group">
+          <label className="form-label">開始日</label>
+          {form.startDate && (
+            <div className="form-due-display">
+              {form.startDate}（{formatDate(form.startDate)}）
+            </div>
+          )}
+          <CalendarPicker
+            value={form.startDate || ''}
+            onChange={(v) => set('startDate', v || '')}
+            onClear={() => set('startDate', '')}
+          />
         </div>
         <div className="form-group">
           <label className="form-label form-label--emphasis">期限</label>
@@ -98,7 +111,7 @@ export default function TaskForm({ task, projects, templates, categories = [], u
         </div>
         <div className="modal-actions">
           <button className="btn btn-ghost" onClick={onClose}>キャンセル</button>
-          <button className="btn btn-primary" onClick={() => { if (form.title.trim()) onSave({ ...form, category: form.category || null, assigneeId: form.assigneeId || null }) }} disabled={!form.title.trim()}>保存</button>
+          <button className="btn btn-primary" onClick={() => { if (form.title.trim()) onSave({ ...form, startDate: form.startDate || null, category: form.category || null, assigneeId: form.assigneeId || null }) }} disabled={!form.title.trim()}>保存</button>
         </div>
       </div>
     </div>
