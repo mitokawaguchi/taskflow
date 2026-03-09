@@ -266,7 +266,9 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
   animation: contentViewIn 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   flex: 1;
   min-width: 0;
-  overflow: hidden;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 @keyframes contentViewIn {
   from { transform: translateX(32px); }
@@ -962,7 +964,7 @@ select { appearance: none; }
   overflow: visible;
   max-width: 100%;
 }
-.project-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.project-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
 .project-name {
   font-family: 'Sora', sans-serif;
   font-size: 14px;
