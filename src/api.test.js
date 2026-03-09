@@ -240,6 +240,50 @@ describe('api', () => {
     })
   })
 
+  describe('updateTemplate', () => {
+    it('returns updated template', async () => {
+      const { supabase } = await import('./supabase')
+      const { updateTemplate } = await import('./api')
+      const updated = { id: 'tpl1', title: 'Updated', desc: 'd', priority: 'high' }
+      supabase.from.mockReturnValue(mockUpdateSingle(updated))
+      const result = await updateTemplate('tpl1', { title: 'Updated', desc: 'd', priority: 'high' })
+      expect(result).toMatchObject({ id: 'tpl1', title: 'Updated', priority: 'high' })
+    })
+  })
+
+  describe('deleteTemplate', () => {
+    it('does not throw', async () => {
+      const { supabase } = await import('./supabase')
+      supabase.from.mockReturnValue({
+        delete: () => ({ eq: () => Promise.resolve({ error: null }) }),
+      })
+      const { deleteTemplate } = await import('./api')
+      await expect(deleteTemplate('tpl1')).resolves.toBeUndefined()
+    })
+  })
+
+  describe('updateClient', () => {
+    it('returns updated client', async () => {
+      const { supabase } = await import('./supabase')
+      const { updateClient } = await import('./api')
+      const updated = { id: 'c1', name: 'Client A', color: '#333', icon: '🤝' }
+      supabase.from.mockReturnValue(mockUpdateSingle(updated))
+      const result = await updateClient('c1', { name: 'Client A', color: '#333', icon: '🤝' })
+      expect(result).toMatchObject({ id: 'c1', name: 'Client A' })
+    })
+  })
+
+  describe('deleteClient', () => {
+    it('does not throw', async () => {
+      const { supabase } = await import('./supabase')
+      supabase.from.mockReturnValue({
+        delete: () => ({ eq: () => Promise.resolve({ error: null }) }),
+      })
+      const { deleteClient } = await import('./api')
+      await expect(deleteClient('c1')).resolves.toBeUndefined()
+    })
+  })
+
   describe('claimExistingDataToAccount', () => {
     it('throws (deprecated SEC-002)', async () => {
       const { claimExistingDataToAccount } = await import('./api')

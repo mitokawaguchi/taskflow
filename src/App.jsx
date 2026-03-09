@@ -524,7 +524,7 @@ export default function App() {
       <div className="project-progress" onClick={() => setView(`p:${p.id}`)}>
         <div className="project-progress-fill" style={{ width: `${pct}%`, background: p.color }} />
       </div>
-      <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '6px' }}>{pct}% 完了</div>
+      <div className="project-pct-label">{pct}% 完了</div>
       <ul className="project-card-tasks" aria-label={`${p.name}のタスク`}>
         {ptasks.map(t => (
           <li key={t.id} className={`project-task-row project-task-row--${t.priority}`}>
@@ -625,7 +625,7 @@ export default function App() {
   if (!authReady) {
     return (
       <div className="app app-loading">
-        <p style={{ color: 'var(--text-muted)' }}>認証確認中...</p>
+        <p className="text-muted">認証確認中...</p>
       </div>
     )
   }
@@ -651,7 +651,7 @@ export default function App() {
   if (loading) {
     return (
       <div className="app app-loading">
-        <p style={{ color: 'var(--text-muted)' }}>読み込み中...</p>
+        <p className="text-muted">読み込み中...</p>
       </div>
     )
   }
@@ -691,11 +691,11 @@ export default function App() {
               <p className="sidebar-notif-box__p">
                 アプリを開いたときに「今日が期限」のタスクがあれば通知します。スマホではバックグラウンド通知には未対応です。
               </p>
-              <button type="button" className="btn btn-primary btn-sm" style={{ width: '100%' }} onClick={requestNotif}>許可する</button>
+              <button type="button" className="btn btn-primary btn-sm w-100" onClick={requestNotif}>許可する</button>
             </div>
           )}
 
-          <div className="sidebar-section" style={{ paddingBottom:'8px' }}>
+          <div className="sidebar-section sidebar-section--pb8">
             <div className="sidebar-label">メニュー</div>
             {SIDEBAR_MENU_ITEMS.map(item => {
               const badge = item.badgeKey === 'todayCount' ? todayCount : item.badgeKey === 'overdueCount' ? overdueCount : 0
@@ -738,7 +738,7 @@ export default function App() {
             ))}
           </div>
 
-          <div className="sidebar-section" style={{ marginTop:'4px' }}>
+          <div className="sidebar-section sidebar-section--mt4">
             <div className="sidebar-label">その他</div>
             <button className={`sidebar-item ${view==='projects'?'active':''}`} onClick={() => { setView('projects'); setSidebarOpen(false) }}>
               <span className="icon">🗂</span>プロジェクト管理
@@ -781,8 +781,8 @@ export default function App() {
               <span className="icon">🚪</span>ログアウト
             </button>
           </div>
-          <div style={{ padding:'12px', marginTop:'auto' }}>
-            <button className="btn btn-ghost btn-sm" style={{ width:'100%' }} onClick={() => setShowMorning(true)}>☀️ 朝の確認を表示</button>
+          <div className="sidebar-bottom">
+            <button type="button" className="btn btn-ghost btn-sm w-100" onClick={() => setShowMorning(true)}>☀️ 朝の確認を表示</button>
             <LegalLinks className="sidebar-legal-links" />
           </div>
         </aside>
@@ -920,7 +920,7 @@ export default function App() {
                   <div className="empty-state">
                     <div className="empty-icon">🤝</div>
                     <p>クライアントがありません</p>
-                    <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '8px' }}>
+                    <p className="text-muted-13-mt8">
                       取引先・担当先を追加すると、そのクライアントごとに「今後に向けて覚えておくこと」をメモできます。プロジェクトとは別で残ります。
                     </p>
                     <button type="button" className="btn btn-primary" onClick={() => { setEditClient(null); setShowClientForm(true) }}>
@@ -1006,11 +1006,11 @@ export default function App() {
             {/* PROJECTS OVERVIEW */}
             {view === 'projects' && (
               <>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: 8 }}>
-                  <button className="btn btn-ghost btn-sm" onClick={() => setShowDone(!showDone)}>
+                <div className="section-header">
+                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => setShowDone(!showDone)}>
                     {showDone ? '完了を非表示' : '完了を表示'}
                   </button>
-                  <button className="btn btn-primary" onClick={() => { setEditProject(null); setShowProjForm(true) }}>+ プロジェクト追加</button>
+                  <button type="button" className="btn btn-primary" onClick={() => { setEditProject(null); setShowProjForm(true) }}>+ プロジェクト追加</button>
                 </div>
                 <DndContext
                   sensors={sensors}
@@ -1044,7 +1044,7 @@ export default function App() {
                           className="project-card project-card-overlay"
                           style={{ background: `${p.color}28`, border: `1px solid ${p.color}60` }}
                         >
-                          <div className="project-card-header" style={{ cursor: 'grabbing' }}>
+                          <div className="project-card-header cursor-grabbing">
                             <span className="project-card-drag-handle" aria-hidden>⋮⋮</span>
                             <div className="project-icon" style={{ background: `${p.color}20` }}>{p.icon}</div>
                             <div>
@@ -1058,7 +1058,7 @@ export default function App() {
                           <div className="project-progress">
                             <div className="project-progress-fill" style={{ width: `${pct}%`, background: p.color }} />
                           </div>
-                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '6px' }}>{pct}% 完了</div>
+                          <div className="project-pct-label">{pct}% 完了</div>
                         </div>
                       )
                     })() : null}
@@ -1094,7 +1094,7 @@ export default function App() {
                 ) : (
                   <div className="cards-grid">
                     {templates.map((t) => (
-                      <div key={t.id} className="task-card medium" style={{ cursor: 'default' }}>
+                      <div key={t.id} className="task-card medium">
                         <div className="card-header"><div className="card-title">{t.title}</div></div>
                         {t.desc && <div className="card-desc">{t.desc}</div>}
                         <div className="card-footer">
@@ -1102,7 +1102,7 @@ export default function App() {
                           <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setEditTemplate(t); setShowTplForm(true) }}>
                             編集
                           </button>
-                          <button type="button" className="btn btn-ghost btn-sm" style={{ marginLeft: 'auto' }} onClick={() => setShowTaskForm(true)}>
+                          <button type="button" className="btn btn-ghost btn-sm ml-auto" onClick={() => setShowTaskForm(true)}>
                             このテンプレを使う
                           </button>
                         </div>
@@ -1200,7 +1200,7 @@ export default function App() {
                               onClick={() => setFilterAssigneeId(prev => (prev === u.id ? '' : u.id))}
                               title={u.name}
                             >
-                              {u.avatarUrl ? <img src={u.avatarUrl} alt="" width={16} height={16} style={{ borderRadius: '50%', verticalAlign: 'middle', marginRight: 4 }} /> : '👤'}
+                              {u.avatarUrl ? <img src={u.avatarUrl} alt="" className="avatar-sm" /> : '👤'}
                               {u.name}
                             </button>
                           )
@@ -1373,7 +1373,7 @@ export default function App() {
             <h2 className="modal-title">プロフィール・ログイン</h2>
             {authUser ? (
               <>
-                <p style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 16 }}>
+                <p className="text-muted-14-mb16">
                   ログイン中: <strong>{authUser.email ?? authUser.id}</strong>
                 </p>
                 <div className="profile-settings">
@@ -1410,7 +1410,7 @@ export default function App() {
                       保存
                     </button>
                   </div>
-                  <div className="form-group" style={{ marginTop: 16 }}>
+                  <div className="form-group mt-16">
                     <label className="form-label" htmlFor="profile-new-password">パスワードを変更</label>
                     <input
                       id="profile-new-password"
@@ -1432,8 +1432,7 @@ export default function App() {
                     />
                     <button
                       type="button"
-                      className="btn btn-ghost btn-sm"
-                      style={{ marginTop: 6 }}
+                      className="btn btn-ghost btn-sm mt-6"
                       disabled={profileLoading || !profileNewPassword || !profileConfirmPassword}
                       onClick={async () => {
                         setProfileError('')
@@ -1461,9 +1460,9 @@ export default function App() {
                       パスワードを変更
                     </button>
                   </div>
-                  {profileError && <p style={{ fontSize: 13, color: 'var(--critical)', marginTop: 8 }}>{profileError}</p>}
+                  {profileError && <p className="form-message form-message--error mt-8">{profileError}</p>}
                 </div>
-                <div className="modal-actions" style={{ flexWrap: 'wrap', gap: 8, marginTop: 20 }}>
+                <div className="modal-actions modal-actions--wrap">
                   <button
                     type="button"
                     className="btn btn-ghost"
@@ -1484,7 +1483,7 @@ export default function App() {
               </>
             ) : (
               <>
-                <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 12 }}>
+                <p className="form-message">
                   外側をクリックしても閉じられます。
                 </p>
                 <ProfileLoginForm

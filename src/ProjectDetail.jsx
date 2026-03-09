@@ -31,9 +31,9 @@ export default function ProjectDetail({ project, tasks, projects, categories = [
           <div className="proj-detail-icon" style={{ background: `${project.color}20` }}>{project.icon}</div>
           <div>
             <div className="proj-detail-name">{project.name}</div>
-            <div style={{ fontSize:'13px', color:'var(--text-muted)' }}>{allptasks.filter(t=>!t.done).length} 件残り / 全 {allptasks.length} 件</div>
+            <div className="text-muted-13">{allptasks.filter(t=>!t.done).length} 件残り / 全 {allptasks.length} 件</div>
           </div>
-          <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto' }}>
+          <div className="proj-detail-actions">
             {onEditProject && (
               <button type="button" className="btn btn-ghost" onClick={onEditProject}>編集</button>
             )}
@@ -52,7 +52,7 @@ export default function ProjectDetail({ project, tasks, projects, categories = [
                   onClear={() => setEndDateInput('')}
                 />
               </div>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <div className="flex-gap-8-center">
                 <button type="button" className="btn btn-primary btn-sm" onClick={() => { onUpdateProjectEndDate(project.id, endDateInput); setEditingEndDate(false) }}>
                   保存
                 </button>

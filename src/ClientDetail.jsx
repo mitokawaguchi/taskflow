@@ -12,31 +12,20 @@ export default function ClientDetail({
   const [editingBody, setEditingBody] = useState('')
 
   return (
-    <section style={{ marginBottom: '32px' }} aria-label={`${client.name} の覚えておくこと`}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-        <div
-          style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: '12px',
-            background: `${client.color}20`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '24px',
-          }}
-        >
+    <section className="client-detail" aria-label={`${client.name} の覚えておくこと`}>
+      <div className="client-detail__header">
+        <div className="client-detail__avatar" style={{ background: `${client.color}20` }}>
           {client.icon}
         </div>
         <div>
-          <h2 style={{ fontSize: '18px', fontWeight: 600, margin: 0 }}>{client.name}</h2>
+          <h2 className="client-detail__title">{client.name}</h2>
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+      <div className="client-detail__row">
         <input
           type="text"
-          className="form-input"
+          className="form-input flex-1"
           placeholder="言われたこと・覚えておきたいことをメモ..."
           value={input}
           onChange={e => setInput(e.target.value)}
@@ -47,7 +36,6 @@ export default function ClientDetail({
               setInput('')
             }
           }}
-          style={{ flex: 1 }}
         />
         <button
           type="button"
@@ -86,10 +74,10 @@ export default function ClientDetail({
                       }
                       if (e.key === 'Escape') setEditingId(null)
                     }}
-                    style={{ marginBottom: '8px', width: '100%' }}
+                    className="form-input remember-edit-input"
                     autoFocus
                   />
-                  <div style={{ display: 'flex', gap: '8px' }}>
+                  <div className="flex-gap-8">
                     <button
                       type="button"
                       className="btn btn-primary btn-sm"

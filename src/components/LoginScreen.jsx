@@ -108,8 +108,8 @@ export function ProfileLoginForm({ onSuccess, onError, showCloseButton = true })
           disabled={loading}
         />
       </div>
-      {error && <p style={{ fontSize: 13, color: 'var(--critical)', marginBottom: 12 }}>{error}</p>}
-      {signUpMessage && <p style={{ fontSize: 13, color: 'var(--accent)', marginBottom: 12 }}>{signUpMessage}</p>}
+      {error && <p className="form-message form-message--error">{error}</p>}
+      {signUpMessage && <p className="form-message form-message--accent">{signUpMessage}</p>}
       <div className="modal-actions">
         <button type="submit" className="btn btn-primary" disabled={loading}>
           {loading ? (isSignUp ? '作成中…' : 'ログイン中…') : isSignUp ? 'アカウントを作成' : 'ログイン'}

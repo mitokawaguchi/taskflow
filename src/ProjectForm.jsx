@@ -24,15 +24,15 @@ export default function ProjectForm({ project, onSave, onClose }) {
 
   return (
     <div className="overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="modal" style={{ maxWidth:'380px' }}>
+      <div className="modal modal--sm">
         <div className="modal-title">{isEdit ? 'プロジェクトを編集' : '新しいプロジェクト'}</div>
 
         <div className="form-group">
           <label className="form-label">アイコン</label>
-          <div style={{ display:'flex', gap:'8px', flexWrap:'wrap' }}>
+          <div className="flex-gap-8-wrap">
             {ICONS.map(ic => (
-              <button key={ic} onClick={() => setIcon(ic)}
-                style={{ width:'36px', height:'36px', borderRadius:'8px', border:`2px solid ${icon===ic?'var(--accent)':'var(--border)'}`, background:'var(--surface2)', fontSize:'18px', cursor:'pointer' }}>
+              <button key={ic} type="button" className="form-icon-btn" onClick={() => setIcon(ic)}
+                style={{ border: `2px solid ${icon === ic ? 'var(--accent)' : 'var(--border)'}` }}>
                 {ic}
               </button>
             ))}
@@ -66,7 +66,7 @@ export default function ProjectForm({ project, onSave, onClose }) {
             onChange={setEndDate}
             onClear={() => setEndDate('')}
           />
-          <div style={{ fontSize:'11px', color:'var(--text-muted)', marginTop:'4px' }}>設定すると「残り○日」で表示されます</div>
+          <div className="form-hint--sm">設定すると「残り○日」で表示されます</div>
         </div>
 
         <div className="modal-actions">

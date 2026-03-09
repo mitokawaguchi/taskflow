@@ -65,7 +65,7 @@ export default function TaskForm({ task, projects, templates, categories = [], u
         {templates.length > 0 && !task?.id && (
           <div className="form-group">
             <label className="form-label">テンプレートから</label>
-            <div style={{ display:'flex', gap:'6px', flexWrap:'wrap' }}>
+            <div className="flex-gap-6-wrap">
               {templates.map(t => (
                 <button key={t.id} className="btn btn-ghost btn-sm" onClick={() => applyTemplate(t)}>{t.title}</button>
               ))}
