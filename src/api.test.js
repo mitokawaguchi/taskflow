@@ -75,6 +75,20 @@ describe('api', () => {
       expect(result[0]).toHaveProperty('endDate', '')
       expect(result[0]).toHaveProperty('sortOrder', 0)
     })
+    it('returns data when session has user (owner_id filter path)', async () => {
+      const { supabase } = await import('./supabase')
+      supabase.auth.getSession.mockResolvedValueOnce({
+        data: { session: { user: { id: 'user-123' } } },
+      })
+      supabase.from.mockReturnValue(
+        mockSelectOrder([{ id: 'p1', name: 'My', color: '#333', icon: '📁' }])
+      )
+      const { fetchProjects } = await import('./api')
+      const result = await fetchProjects()
+      expect(result).toHaveLength(1)
+      expect(result[0].name).toBe('My')
+      expect(supabase.from).toHaveBeenCalledWith('tf_projects')
+    })
   })
 
   describe('fetchTasks', () => {

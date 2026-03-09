@@ -1502,6 +1502,95 @@ select { appearance: none; }
   .morning-tasks { max-height: 50vh; }
   .morning-header h1 { font-size: clamp(22px, 5vw, 32px); }
 }
+/* CODE-005: 繰り返しインラインスタイルの共通クラス */
+.app-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+.text-muted-sm {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.text-muted-sm.mt-1 { margin-top: 6px; }
+.text-muted-xs {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.sidebar-task-count {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.sidebar-notif-box {
+  padding: 12px;
+  margin: 8px 12px;
+  background: var(--accent-glow);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+}
+.sidebar-notif-box__title {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.sidebar-notif-box__p {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+.sidebar-item-count {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.toolbar-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+.card-footer-sep {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+/* ErrorBoundary (CODE-005: インライン → クラス) */
+.error-boundary {
+  min-height: 100vh;
+  background: #0e0e12;
+  color: #e4e4e7;
+  padding: 24px;
+  font-family: system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.error-boundary__message {
+  font-size: 20px;
+  font-weight: 600;
+}
+.error-boundary__pre {
+  max-width: 100%;
+  overflow: auto;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  font-size: 13px;
+}
+.error-boundary__retry {
+  padding: 8px 16px;
+  background: #22c55e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
 @media (max-width: 480px) {
   .topbar { padding: 10px 12px; }
   .topbar-title { font-size: 15px; }

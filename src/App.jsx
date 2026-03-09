@@ -145,6 +145,7 @@ export default function App() {
         }
         if (!cancelled) {
           let tasksToSet = ts
+          // CODE-008: 期限超過の priority 上げは本来 DB トリガー or Cron で行うべき。クライアントのみだと未開封時は反映されず複数デバイスで競合する。
           const overdueNotCritical = ts.filter(t => !t.done && isOverdue(t.due) && t.priority !== 'critical')
           if (overdueNotCritical.length > 0) {
             try {
@@ -623,7 +624,7 @@ export default function App() {
   // ── Render ───────────────────────────────────────────────
   if (!authReady) {
     return (
-      <div className="app" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+      <div className="app app-loading">
         <p style={{ color: 'var(--text-muted)' }}>認証確認中...</p>
       </div>
     )
@@ -649,7 +650,7 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="app" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+      <div className="app app-loading">
         <p style={{ color: 'var(--text-muted)' }}>読み込み中...</p>
       </div>
     )
@@ -681,16 +682,16 @@ export default function App() {
               <span className="sidebar-today-label">今日</span>
               <span className="sidebar-today-date">{formatTodayDisplay()}</span>
             </div>
-            <div style={{ fontSize:'12px', color:'var(--text-muted)', marginTop:'2px' }}>{tasks.filter(t => !t.done).length} 件のタスク</div>
+            <div className="sidebar-task-count">{tasks.filter(t => !t.done).length} 件のタスク</div>
           </div>
 
           {!notifGranted && (
-            <div style={{ padding:'12px', margin:'8px 12px', background:'var(--accent-glow)', border:'1px solid var(--accent)', borderRadius:'8px' }}>
-              <div style={{ fontSize:'12px', fontWeight:'600', marginBottom:'4px' }}>🔔 通知を有効化</div>
-              <p style={{ fontSize:'11px', color:'var(--text-muted)', marginBottom:'8px', lineHeight:1.4 }}>
+            <div className="sidebar-notif-box">
+              <div className="sidebar-notif-box__title">🔔 通知を有効化</div>
+              <p className="sidebar-notif-box__p">
                 アプリを開いたときに「今日が期限」のタスクがあれば通知します。スマホではバックグラウンド通知には未対応です。
               </p>
-              <button className="btn btn-primary btn-sm" style={{ width:'100%' }} onClick={requestNotif}>許可する</button>
+              <button type="button" className="btn btn-primary btn-sm" style={{ width: '100%' }} onClick={requestNotif}>許可する</button>
             </div>
           )}
 
@@ -705,7 +706,7 @@ export default function App() {
                   <span className="icon">{item.icon}</span>
                   {item.label}
                   {item.key === 'all' && (
-                    <span className="sidebar-item-count" style={{ marginLeft: 'auto', fontSize: '11px', color: 'var(--text-muted)' }}>
+                    <span className="sidebar-item-count">
                       {allTaskCount}
                     </span>
                   )}
@@ -910,7 +911,7 @@ export default function App() {
             {/* 覚えておくこと（クライアントごと・プロジェクトと別） */}
             {view === 'clients' && (
               <>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+                <div className="toolbar-row">
                   <button type="button" className="btn btn-primary" onClick={() => { setEditClient(null); setShowClientForm(true) }}>
                     + クライアント追加
                   </button>
@@ -962,7 +963,7 @@ export default function App() {
                               ))}
                             </ul>
                           )}
-                          <div className="card-footer" style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--border)' }}>
+                          <div className="card-footer card-footer-sep">
                             <button
                               type="button"
                               className="btn btn-ghost btn-sm"
@@ -1077,7 +1078,7 @@ export default function App() {
             {/* TEMPLATES */}
             {view === 'templates' && (
               <>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+                <div className="toolbar-row">
                   <button type="button" className="btn btn-primary" onClick={() => { setEditTemplate(null); setShowTplForm(true) }}>
                     + テンプレート作成
                   </button>

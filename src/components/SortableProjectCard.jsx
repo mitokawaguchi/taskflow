@@ -73,7 +73,7 @@ export default function SortableProjectCard({ item, setView, toggleTask, openTas
       >
         <div className="project-progress-fill" style={{ width: `${pct}%`, background: p.color }} />
       </button>
-      <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '6px' }}>{pct}% 完了</div>
+      <div className="text-muted-sm mt-1">{pct}% 完了</div>
       <ul className="project-card-tasks" aria-label={`${p.name}のタスク`}>
         {ptasks.map((t) => (
           <li key={t.id} className={`project-task-row project-task-row--${t.priority}`}>
