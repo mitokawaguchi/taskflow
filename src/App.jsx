@@ -13,7 +13,7 @@ import { PRIORITY, SORT_OPTIONS, priorityOrder, PRIORITY_KEYS } from './constant
 import { today, isToday, isOverdue, formatTodayDisplay, endDateLabel } from './utils'
 
 const PRIORITY_OPTIONS = Object.entries(PRIORITY).map(([key, { label }]) => ({ key, label }))
-import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, fetchCategories, fetchUsers, insertProject, updateProject, insertTask, updateTask, insertTemplate, insertRemember, updateRemember, deleteRemember, insertClient, insertCategory, insertUser, getAuthSession, signInWithPassword, signOut, subscribeAuth } from './api'
+import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, fetchCategories, fetchUsers, insertProject, updateProject, insertTask, updateTask, insertTemplate, insertRemember, updateRemember, deleteRemember, insertClient, insertCategory, insertUser, getAuthSession, signInWithPassword, signOut, subscribeAuth, claimExistingDataToAccount } from './api'
 import MorningModal from './MorningModal'
 import TaskCard from './TaskCard'
 import TaskForm from './TaskForm'
@@ -417,6 +417,8 @@ export default function App() {
   const [filterAssigneeId, setFilterAssigneeId] = useState('')
   const [authUser, setAuthUser] = useState(null)
   const [notifyReminderEnabled, setNotifyReminderEnabled] = useState(() => localStorage.getItem('taskflow_notify_reminder') !== 'false')
+  const [dataRefreshKey, setDataRefreshKey] = useState(0)
+  const [claiming, setClaiming] = useState(false)
   const [showProfileModal, setShowProfileModal] = useState(false)
 
   useEffect(() => {
@@ -464,7 +466,7 @@ export default function App() {
     }
     load()
     return () => { cancelled = true }
-  }, [addToast])
+  }, [addToast, dataRefreshKey])
 
   useEffect(() => {
     if (typeof globalThis.window !== 'undefined' && 'Notification' in globalThis && globalThis.Notification.permission === 'granted') {
@@ -822,7 +824,7 @@ export default function App() {
 
   const isProjectView = view.startsWith('p:')
   const currentProject = isProjectView ? projects.find(p => p.id === view.slice(2)) : null
-  const isMainView = ['kanban', 'gantt', 'dashboard', 'all', 'today', 'overdue'].includes(view) || isProjectView
+  const isMainView = ['kanban', 'gantt', 'dashboard', 'all', 'today', 'overdue', 'projects', 'templates'].includes(view) || isProjectView
   const viewTabs = [
     { key: 'kanban', label: 'カンバン', icon: '📌' },
     { key: 'gantt', label: 'タイムライン', icon: '📅' },
@@ -1536,7 +1538,29 @@ export default function App() {
                 <p style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 12 }}>
                   ログイン中: <strong>{authUser.email ?? authUser.id}</strong>
                 </p>
-                <div className="modal-actions">
+                <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 16 }}>
+                  今まで運用していたデータをこのアカウントに紐づけると、ログイン時だけそのデータが表示されます。
+                </p>
+                <div className="modal-actions" style={{ flexWrap: 'wrap', gap: 8 }}>
+                  <button
+                    type="button"
+                    className="btn btn-ghost"
+                    disabled={claiming}
+                    onClick={async () => {
+                      setClaiming(true)
+                      try {
+                        await claimExistingDataToAccount()
+                        addToast('✅', '紐づけました', '既存のデータをこのアカウントに紐づけました')
+                        setDataRefreshKey(k => k + 1)
+                      } catch (e) {
+                        addToast('❌', '紐づけに失敗しました', e?.message ?? 'owner_id カラムが未追加の場合は SUPABASE_OWNER_LINK.sql を実行してください')
+                      } finally {
+                        setClaiming(false)
+                      }
+                    }}
+                  >
+                    {claiming ? '紐づけ中…' : '今までのデータをこのアカウントに紐づける'}
+                  </button>
                   <button
                     type="button"
                     className="btn btn-ghost"

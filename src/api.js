@@ -83,38 +83,59 @@ function userFromRow(row) {
   }
 }
 
+/** ログイン中ユーザーID。owner_id の絞り込み・設定に使用 */
+async function getOwnerId() {
+  const session = await getAuthSession()
+  return session?.user?.id ?? null
+}
+
 // ── 取得 ─────────────────────────────────────────────────────
 export async function fetchProjects() {
   requireSupabase()
-  const { data, error } = await supabase.from('tf_projects').select('*').order('sort_order').order('id')
+  const ownerId = await getOwnerId()
+  let q = supabase.from('tf_projects').select('*')
+  if (ownerId) q = q.or(`owner_id.eq.${ownerId},owner_id.is.null`)
+  const { data, error } = await q.order('sort_order').order('id')
   if (error) throw error
   return (data ?? []).map(projectFromRow)
 }
 
 export async function fetchTasks() {
   requireSupabase()
-  const { data, error } = await supabase.from('tf_tasks').select('*').order('created', { ascending: false })
+  const ownerId = await getOwnerId()
+  let q = supabase.from('tf_tasks').select('*')
+  if (ownerId) q = q.or(`owner_id.eq.${ownerId},owner_id.is.null`)
+  const { data, error } = await q.order('created', { ascending: false })
   if (error) throw error
   return (data ?? []).map(taskFromRow)
 }
 
 export async function fetchTemplates() {
   requireSupabase()
-  const { data, error } = await supabase.from('tf_templates').select('*').order('id')
+  const ownerId = await getOwnerId()
+  let q = supabase.from('tf_templates').select('*')
+  if (ownerId) q = q.or(`owner_id.eq.${ownerId},owner_id.is.null`)
+  const { data, error } = await q.order('id')
   if (error) throw error
   return (data ?? []).map(templateFromRow)
 }
 
 export async function fetchCategories() {
   requireSupabase()
-  const { data, error } = await supabase.from('tf_categories').select('*').order('id')
+  const ownerId = await getOwnerId()
+  let q = supabase.from('tf_categories').select('*')
+  if (ownerId) q = q.or(`owner_id.eq.${ownerId},owner_id.is.null`)
+  const { data, error } = await q.order('id')
   if (error) throw error
   return (data ?? []).map(categoryFromRow)
 }
 
 export async function fetchUsers() {
   requireSupabase()
-  const { data, error } = await supabase.from('tf_users').select('*').order('created', { ascending: false })
+  const ownerId = await getOwnerId()
+  let q = supabase.from('tf_users').select('*')
+  if (ownerId) q = q.or(`owner_id.eq.${ownerId},owner_id.is.null`)
+  const { data, error } = await q.order('created', { ascending: false })
   if (error) throw error
   return (data ?? []).map(userFromRow)
 }
@@ -122,6 +143,7 @@ export async function fetchUsers() {
 // ── プロジェクト追加・更新 ─────────────────────────────────────
 export async function insertProject(project) {
   requireSupabase()
+  const ownerId = await getOwnerId()
   const row = {
     id: project.id,
     name: project.name,
@@ -130,6 +152,7 @@ export async function insertProject(project) {
     end_date: project.endDate || null,
     sort_order: project.sortOrder ?? 0,
   }
+  if (ownerId) row.owner_id = ownerId
   const { data, error } = await supabase.from('tf_projects').insert(row).select().single()
   if (error) throw error
   return projectFromRow(data)
@@ -151,6 +174,7 @@ export async function updateProject(id, patch) {
 // ── タスク追加・更新 ─────────────────────────────────────────
 export async function insertTask(task) {
   requireSupabase()
+  const ownerId = await getOwnerId()
   const status = task.status && TASK_STATUS_KEYS.includes(task.status) ? task.status : (task.done ? 'done' : 'todo')
   const row = {
     id: task.id,
@@ -167,6 +191,7 @@ export async function insertTask(task) {
     assignee_id: task.assigneeId || null,
     created: task.created,
   }
+  if (ownerId) row.owner_id = ownerId
   const { data, error } = await supabase.from('tf_tasks').insert(row).select().single()
   if (error) throw error
   return taskFromRow(data)
@@ -199,6 +224,7 @@ export async function updateTask(id, patch) {
 // ── ユーザー（チームメンバー）追加・更新 ─────────────────────
 export async function insertUser(user) {
   requireSupabase()
+  const ownerId = await getOwnerId()
   const row = {
     id: user.id,
     name: user.name,
@@ -206,6 +232,7 @@ export async function insertUser(user) {
     avatar_url: user.avatarUrl || null,
     created: user.created,
   }
+  if (ownerId) row.owner_id = ownerId
   const { data, error } = await supabase.from('tf_users').insert(row).select().single()
   if (error) throw error
   return userFromRow(data)
@@ -225,11 +252,13 @@ export async function updateUser(id, patch) {
 // ── カテゴリ追加 ─────────────────────────────────────────────
 export async function insertCategory(category) {
   requireSupabase()
+  const ownerId = await getOwnerId()
   const row = {
     id: category.id,
     name: category.name,
     color: category.color ?? '#6b7280',
   }
+  if (ownerId) row.owner_id = ownerId
   const { data, error } = await supabase.from('tf_categories').insert(row).select().single()
   if (error) throw error
   return categoryFromRow(data)
@@ -238,12 +267,14 @@ export async function insertCategory(category) {
 // ── テンプレート追加 ─────────────────────────────────────────
 export async function insertTemplate(template) {
   requireSupabase()
+  const ownerId = await getOwnerId()
   const row = {
     id: template.id,
     title: template.title,
     desc: template.desc ?? '',
     priority: template.priority ?? 'medium',
   }
+  if (ownerId) row.owner_id = ownerId
   const { data, error } = await supabase.from('tf_templates').insert(row).select().single()
   if (error) throw error
   return templateFromRow(data)
@@ -252,14 +283,19 @@ export async function insertTemplate(template) {
 // ── クライアント（プロジェクトと別。取引先単位で覚えておくことを管理）────
 export async function fetchClients() {
   requireSupabase()
-  const { data, error } = await supabase.from('tf_clients').select('*').order('id')
+  const ownerId = await getOwnerId()
+  let q = supabase.from('tf_clients').select('*')
+  if (ownerId) q = q.or(`owner_id.eq.${ownerId},owner_id.is.null`)
+  const { data, error } = await q.order('id')
   if (error) throw error
   return (data ?? []).map(clientFromRow)
 }
 
 export async function insertClient(client) {
   requireSupabase()
+  const ownerId = await getOwnerId()
   const row = { id: client.id, name: client.name, color: client.color, icon: client.icon }
+  if (ownerId) row.owner_id = ownerId
   const { data, error } = await supabase.from('tf_clients').insert(row).select().single()
   if (error) throw error
   return clientFromRow(data)
@@ -268,22 +304,41 @@ export async function insertClient(client) {
 // ── 覚えておくこと（クライアントごと）────────────────────────────
 export async function fetchRemember() {
   requireSupabase()
-  const { data, error } = await supabase.from('tf_remember').select('*').order('created', { ascending: false })
+  const ownerId = await getOwnerId()
+  let q = supabase.from('tf_remember').select('*')
+  if (ownerId) q = q.or(`owner_id.eq.${ownerId},owner_id.is.null`)
+  const { data, error } = await q.order('created', { ascending: false })
   if (error) throw error
   return (data ?? []).map(rememberFromRow)
 }
 
 export async function insertRemember(item) {
   requireSupabase()
+  const ownerId = await getOwnerId()
   const row = {
     id: item.id,
     client_id: item.clientId,
     body: item.body,
     created: item.created,
   }
+  if (ownerId) row.owner_id = ownerId
   const { data, error } = await supabase.from('tf_remember').insert(row).select().single()
   if (error) throw error
   return rememberFromRow(data)
+}
+
+/** 既存データ（owner_id が NULL の行）を現在のアカウントに紐づける */
+export async function claimExistingDataToAccount() {
+  requireSupabase()
+  const session = await getAuthSession()
+  if (!session?.user?.id) throw new Error('ログインしてください')
+  const uid = session.user.id
+  const tables = ['tf_projects', 'tf_tasks', 'tf_templates', 'tf_categories', 'tf_users', 'tf_clients', 'tf_remember']
+  for (const table of tables) {
+    const { error } = await supabase.from(table).update({ owner_id: uid }).is('owner_id', null)
+    if (error) throw error
+  }
+  return { ok: true }
 }
 
 export async function updateRemember(id, patch) {
