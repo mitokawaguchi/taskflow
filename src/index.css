@@ -956,14 +956,26 @@ select { appearance: none; }
   display: flex; align-items: center; gap: 10px;
 }
 .project-card-header:has(.project-card-clickable:hover) + .project-progress { background: var(--surface3); }
-/* 名前エリアをカード幅内に収め、ここで折り返す */
-.project-card-clickable > div {
+/* 名前エリアをカード幅内に収め、ここで折り返す（アイコンは除外して固定サイズを維持） */
+.project-card-clickable > div:not(.project-icon) {
   min-width: 0;
   flex: 1;
   overflow: visible;
   max-width: 100%;
 }
-.project-icon { width: 22px; height: 22px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 13px; line-height: 1; flex-shrink: 0; }
+.project-icon {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  min-height: 22px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  line-height: 1;
+  flex-shrink: 0;
+}
 .project-name {
   font-family: 'Sora', sans-serif;
   font-size: 14px;
