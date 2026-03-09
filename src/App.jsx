@@ -935,8 +935,8 @@ export default function App() {
               <button key={p.id} className={`sidebar-item ${view===`p:${p.id}`?'active':''}`}
                 onClick={() => { setView(`p:${p.id}`); setSidebarOpen(false) }}>
                 <span className="project-dot" style={{ background: p.color }} />
-                {p.icon} {p.name}
-                <span style={{ marginLeft:'auto', fontSize:'11px', color:'var(--text-muted)' }}>{tasks.filter(t => t.projectId===p.id && !t.done).length}</span>
+                <span className="sidebar-item__label">{p.icon} {p.name}</span>
+                <span className="sidebar-item__count">{tasks.filter(t => t.projectId===p.id && !t.done).length}</span>
               </button>
             ))}
           </div>
