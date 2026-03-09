@@ -193,7 +193,7 @@ function ProfileLoginForm({ onSuccess, onError, showCloseButton = true }) {
       }
     } catch (e) {
       let msg = e?.message ?? (isSignUp ? 'アカウント作成に失敗しました' : 'ログインに失敗しました')
-      if (isSignUp && (e?.code === 'user_already_exists' || /already registered|already exists|既に登録/i.test(String(msg)))) {
+      if (isSignUp && (e?.code === 'user_already_registered' || e?.code === 'user_already_exists' || /already registered|already exists|既に登録/i.test(String(msg)))) {
         msg = 'このメールアドレスは既に登録されています。ログインタブからサインインしてください。'
       }
       setError(msg)

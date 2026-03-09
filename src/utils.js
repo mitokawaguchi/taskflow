@@ -21,13 +21,23 @@ export const isTomorrow = (d) => {
 }
 export const isOverdue = (d) => d && d < today()
 
+const WEEKDAY = ['日', '月', '火', '水', '木', '金', '土']
+
+/** YYYY-MM-DD を「M/D(曜)」形式で返す */
+export function formatDateWithWeekday(dateStr) {
+  if (!dateStr) return ''
+  const [y, m, day] = dateStr.split('-').map(Number)
+  const d = new Date(y, m - 1, day)
+  const w = WEEKDAY[d.getDay()]
+  return `${m}/${day}(${w})`
+}
+
 export function formatDate(d) {
   if (!d) return ''
   const diff = Math.round((new Date(d) - new Date(today())) / 86400000)
-  if (diff < 0)  return `${Math.abs(diff)}日超過`
   if (diff === 0) return '今日'
   if (diff === 1) return '明日'
-  return `${diff}日後`
+  return formatDateWithWeekday(d)
 }
 
 /** 今日の日付を「2025年3月1日(日)」形式で返す（サイト名の下用） */
@@ -40,12 +50,10 @@ export function formatTodayDisplay() {
   return `${y}年${m}月${day}日(${week})`
 }
 
-/** プロジェクト終了日から「残りN日」等のラベルを返す */
+/** プロジェクト終了日を日付・曜日で表示する */
 export function endDateLabel(endDate) {
   if (!endDate) return ''
   const diff = Math.round((new Date(endDate) - new Date(today())) / 86400000)
-  if (diff < 0) return `${Math.abs(diff)}日超過`
   if (diff === 0) return '今日まで'
-  if (diff === 1) return '残り1日'
-  return `残り${diff}日`
+  return formatDateWithWeekday(endDate)
 }

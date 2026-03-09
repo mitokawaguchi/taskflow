@@ -54,11 +54,11 @@ describe('utils', () => {
     it('returns 明日 when date is tomorrow', () => {
       expect(formatDate('2025-03-16')).toBe('明日')
     })
-    it('returns N日後 for future', () => {
-      expect(formatDate('2025-03-20')).toBe('5日後')
+    it('returns date and weekday for future', () => {
+      expect(formatDate('2025-03-20')).toBe('3/20(木)')
     })
-    it('returns N日超過 for past', () => {
-      expect(formatDate('2025-03-10')).toBe('5日超過')
+    it('returns date and weekday for past', () => {
+      expect(formatDate('2025-03-10')).toBe('3/10(月)')
     })
   })
 
