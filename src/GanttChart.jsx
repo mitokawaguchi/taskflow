@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { today, formatDate } from './utils'
 
 const ROW_HEIGHT = 36
-const DAY_WIDTH = 28
+const DAY_WIDTH = 44
 
 export default function GanttChart({ tasks, projects, onEditTask }) {
   const [range, setRange] = useState('month') // 'week' | 'month' | 'quarter'
@@ -39,6 +39,12 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
   }, [range])
 
   const todayStr = today()
+  /** 今日より過去7日間（今日は含まない） */
+  const isPastWeek = (d) => {
+    if (d >= todayStr) return false
+    const diffDays = Math.round((new Date(todayStr) - new Date(d)) / 86400000)
+    return diffDays >= 1 && diffDays <= 7
+  }
 
   /** プロジェクト順でグループ化（全プロジェクト・全タスクを表示。未設定 → プロジェクト一覧の順） */
   const groupsByProject = useMemo(() => {
@@ -83,7 +89,7 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
         >
           <div className="gantt-head gantt-head--label">タスク</div>
           {days.map(d => (
-            <div key={d} className={`gantt-head ${d === todayStr ? 'today' : ''}`}>{formatDate(d)}</div>
+            <div key={d} className={`gantt-head ${d === todayStr ? 'today' : ''} ${isPastWeek(d) ? 'past' : ''}`} title={formatDate(d)}>{formatDate(d)}</div>
           ))}
           {groupsByProject.flatMap((group) => {
             const proj = group.project
@@ -94,7 +100,7 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
                 <span className="gantt-cell__project" style={{ color: projectColor }}>{projectLabel}</span>
               </div>,
               ...days.map(d => (
-                <div key={`ph-${proj?.id ?? 'none'}-${d}`} className={`gantt-cell gantt-cell--project ${d === todayStr ? 'today' : ''}`} style={{ background: `${projectColor}08` }} />
+                <div key={`ph-${proj?.id ?? 'none'}-${d}`} className={`gantt-cell gantt-cell--project ${d === todayStr ? 'today' : ''} ${isPastWeek(d) ? 'past' : ''}`} style={{ background: `${projectColor}08` }} />
               )),
               ...group.tasks.flatMap(t => {
                 const taskProj = projects.find(p => p.id === t.projectId)
@@ -121,7 +127,7 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
                     return (
                       <div
                         key={`${t.id}-${d}`}
-                        className={`gantt-cell ${d === todayStr ? 'today' : ''}`}
+                        className={`gantt-cell ${d === todayStr ? 'today' : ''} ${isPastWeek(d) ? 'past' : ''}`}
                         onClick={handleOpen}
                         role="button"
                         tabIndex={0}
@@ -159,14 +165,6 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
             ]
           })}
         </div>
-        {days.includes(todayStr) && (
-          <div
-            className="gantt-today-line"
-            style={{
-              left: `calc(200px + ${days.indexOf(todayStr) * DAY_WIDTH}px + ${DAY_WIDTH / 2}px)`,
-            }}
-          />
-        )}
       </div>
       {tooltip && (
         <div className="gantt-tooltip" style={{ left: tooltip.x, top: tooltip.y }}>
