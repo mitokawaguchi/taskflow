@@ -41,7 +41,7 @@ cp .env.example .env
    - テーブル作成: `docs/` 内の各 `SUPABASE_*.sql`（プロジェクト・タスク・テンプレート・カテゴリ・ユーザー・クライアント・覚えておくこと など）
    - 所有者用カラム: `docs/SUPABASE_OWNER_LINK.sql`
    - **RLS（必須）**: `docs/SUPABASE_RLS_POLICIES.sql`  
-     → 未実行のままでは他ユーザーのデータが読み書き可能になるため、本番では必ず実行すること
+     → 未実行のままでは他ユーザーのデータが読み書き可能になるため、本番では必ず実行すること。**手順・検証方法は `docs/SUPABASE_RLS_SETUP.md` を参照**
 
 ### 4. 開発サーバー起動
 
@@ -67,6 +67,7 @@ npm run test:run
 
 ## ドキュメント
 
+- `docs/SUPABASE_RLS_SETUP.md` … **RLS の実行手順と検証**（本番前に必読）
 - `docs/OWNER_LINK_GUIDE.md` … ログインとデータ紐づけの流れ
 - `docs/SUPABASE_AUTH_REDIRECT.md` … 認証リダイレクト設定
 - `docs/CODE_REVIEW.md` … コードレビューと改善ロードマップ
