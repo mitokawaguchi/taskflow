@@ -3,14 +3,28 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 vi.mock('./supabase', () => ({
   supabase: {
     from: vi.fn(),
+    auth: {
+      getSession: vi.fn(() => Promise.resolve({ data: { session: null } })),
+    },
   },
 }))
 
+// Supabase の select().or().order().order() チェーンを再現（fetchProjects は .order().order() を使用）
 function mockSelectOrder(data) {
+  const promise = Promise.resolve({ data: data ?? [], error: null })
+  const orderResult = {
+    order: () => promise,
+    then: promise.then.bind(promise),
+    catch: promise.catch.bind(promise),
+  }
+  const chain = {
+    or: function () {
+      return this
+    },
+    order: () => orderResult,
+  }
   return {
-    select: () => ({
-      order: () => Promise.resolve({ data: data ?? [], error: null }),
-    }),
+    select: () => chain,
   }
 }
 
@@ -56,7 +70,10 @@ describe('api', () => {
         mockSelectOrder([{ id: 'p1', name: 'Test', color: '#fff', icon: '📁' }])
       )
       const result = await fetchProjects()
-      expect(result).toEqual([{ id: 'p1', name: 'Test', color: '#fff', icon: '📁' }])
+      expect(result).toHaveLength(1)
+      expect(result[0]).toMatchObject({ id: 'p1', name: 'Test', color: '#fff', icon: '📁' })
+      expect(result[0]).toHaveProperty('endDate', '')
+      expect(result[0]).toHaveProperty('sortOrder', 0)
     })
   })
 
@@ -102,7 +119,9 @@ describe('api', () => {
       const project = { id: 'p99', name: 'N', color: '#000', icon: '📂' }
       supabase.from.mockReturnValue(mockInsertSingle(project))
       const result = await insertProject(project)
-      expect(result).toEqual(project)
+      expect(result).toMatchObject(project)
+      expect(result).toHaveProperty('endDate', '')
+      expect(result).toHaveProperty('sortOrder', 0)
     })
   })
 

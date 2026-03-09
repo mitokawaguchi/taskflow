@@ -31,17 +31,19 @@ export const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 }
 /** 重要度の範囲絞り込み用（緊急→低の順） */
 export const PRIORITY_KEYS = ['critical', 'high', 'medium', 'low']
 
+/** デモ・オフライン用のサンプルプロジェクト（実在企業名・取引先名は使用しない） */
 export const DEFAULT_PROJECTS = [
-  { id: 'p1', name: '個人',          color: '#2d6b3f', icon: '👤' },
-  { id: 'p2', name: 'T&D Holdings',  color: '#ff8c42', icon: '🏢' },
-  { id: 'p3', name: 'クライアントA', color: '#06d6a0', icon: '🤝' },
+  { id: 'p1', name: '個人', color: '#2d6b3f', icon: '👤' },
+  { id: 'p2', name: 'サンプル企業A', color: '#ff8c42', icon: '🏢' },
+  { id: 'p3', name: 'サンプルクライアント', color: '#06d6a0', icon: '🤝' },
 ]
 
+/** デモ・オフライン用のサンプルタスク（業務内容の漏洩を防ぐためダミーのみ） */
 export const DEFAULT_TASKS = [
-  { id: 't1', title: 'アクティビスト投資家レポート作成', desc: 'EV品質ダッシュボードの最終確認', priority: 'critical', projectId: 'p2', due: new Date(Date.now()+86400000*1).toISOString().slice(0,10), done: false, created: Date.now()-100000 },
-  { id: 't2', title: 'クライアントミーティング資料',     desc: '戦略提案スライドの更新',           priority: 'high',     projectId: 'p3', due: new Date(Date.now()+86400000*3).toISOString().slice(0,10), done: false, created: Date.now()-200000 },
-  { id: 't3', title: 'NotebookLM設定確認',               desc: 'YAMLプレゼン設定のテスト',         priority: 'medium',   projectId: 'p1', due: new Date(Date.now()+86400000*5).toISOString().slice(0,10), done: false, created: Date.now()-300000 },
-  { id: 't4', title: '週次レビュー準備',                  desc: '',                                 priority: 'low',      projectId: 'p2', due: new Date(Date.now()+86400000*7).toISOString().slice(0,10), done: true,  created: Date.now()-400000 },
+  { id: 't1', title: 'サンプルタスク（緊急）', desc: '説明文の例', priority: 'critical', projectId: 'p2', due: new Date(Date.now()+86400000*1).toISOString().slice(0,10), done: false, created: Date.now()-100000 },
+  { id: 't2', title: 'サンプルタスク（高）', desc: '説明文の例', priority: 'high', projectId: 'p3', due: new Date(Date.now()+86400000*3).toISOString().slice(0,10), done: false, created: Date.now()-200000 },
+  { id: 't3', title: 'サンプルタスク（中）', desc: '説明文の例', priority: 'medium', projectId: 'p1', due: new Date(Date.now()+86400000*5).toISOString().slice(0,10), done: false, created: Date.now()-300000 },
+  { id: 't4', title: '週次レビュー準備', desc: '', priority: 'low', projectId: 'p2', due: new Date(Date.now()+86400000*7).toISOString().slice(0,10), done: true, created: Date.now()-400000 },
 ]
 
 /** タスクカテゴリ（DB未使用時のフォールバック） */

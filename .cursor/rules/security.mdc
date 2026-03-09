@@ -1,0 +1,37 @@
+---
+description: Supabase セキュリティ・認証・データ保護の規約
+alwaysApply: true
+---
+
+# セキュリティ規約
+
+## Supabase RLS（必須）
+- テーブルを新規作成したら **必ず** RLS ポリシーを含む SQL を書くこと
+- クライアントサイドの `.or()` / `.eq()` フィルタは UI 用。セキュリティではない
+- RLS ポリシー例:
+
+```sql
+ALTER TABLE public.tf_xxx ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "own_data_select" ON public.tf_xxx
+  FOR SELECT USING (owner_id = auth.uid());
+CREATE POLICY "own_data_insert" ON public.tf_xxx
+  FOR INSERT WITH CHECK (owner_id = auth.uid());
+CREATE POLICY "own_data_update" ON public.tf_xxx
+  FOR UPDATE USING (owner_id = auth.uid());
+CREATE POLICY "own_data_delete" ON public.tf_xxx
+  FOR DELETE USING (owner_id = auth.uid());
+```
+
+## シークレット管理
+- ソースコードにハードコード禁止（API キー、トークン、URL）
+- 企業名・取引先名・業務内容をコードに書かない。ダミーデータを使うこと
+- `.env` に新しい変数を追加したら `.env.example` も同時に更新すること
+
+## 入力バリデーション
+- フォーム送信前に Zod 等でバリデーションすること
+- DB の CHECK 制約はコメントアウトせず有効化すること
+
+## 認証
+- データの CRUD は必ず `owner_id = auth.uid()` で制限すること
+- `owner_id IS NULL` のデータを無条件で引き取る設計は禁止

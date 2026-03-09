@@ -1,0 +1,54 @@
+---
+description: TypeScript + React コンポーネントのコード品質規約
+globs: "**/*.{ts,tsx,js,jsx}"
+alwaysApply: false
+---
+
+# TypeScript + React 規約
+
+## TypeScript 必須
+- 新規ファイルは `.ts` / `.tsx` で作成すること（`.js` / `.jsx` 禁止）
+- `any` 禁止。`unknown` を使い、型ガードで絞り込むこと
+- API レスポンスには必ず型定義を付けること
+
+```typescript
+// ❌ BAD
+function taskFromRow(row) { ... }
+
+// ✅ GOOD
+interface TaskRow {
+  id: string;
+  project_id: string;
+  title: string;
+  // ...
+}
+function taskFromRow(row: TaskRow): Task { ... }
+```
+
+## React コンポーネント
+- Props には必ず型定義。`React.FC` は使わず関数宣言 + 型引数を使う
+- インラインスタイルは原則禁止。CSS class を使うこと
+- JSX 内で IIFE `(() => { ... })()` を使わない。別コンポーネントに抽出すること
+
+```tsx
+// ❌ BAD
+{view.startsWith('c:') && (() => {
+  const client = clients.find(c => c.id === view.slice(2))
+  return <ClientView client={client} />
+})()}
+
+// ✅ GOOD — 別コンポーネントに抽出
+<ClientViewRoute clientId={view.slice(2)} clients={clients} />
+```
+
+## パフォーマンス
+- 配列の `.find()` をレンダリング中に毎回呼ばない。`Map` か `useMemo` で事前変換
+- `onMouseMove` 等の高頻度イベントで `setState` しない。`useRef` + CSS で処理
+
+## エラー処理
+- `catch {}` でエラーを握りつぶさない。最低限ログに出すこと
+- エラー処理のポリシーを統一すること（トーストで通知 or throw）
+
+## セマンティック HTML
+- チェックボックスは `<input type="checkbox">` を使う。`<div onClick>` 禁止
+- クリッカブル要素は `<button>` か `<a>` を使う。`role="button"` は最終手段

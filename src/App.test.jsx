@@ -6,6 +6,14 @@ vi.mock('./api', () => ({
   fetchProjects: vi.fn(() => Promise.resolve([])),
   fetchTasks: vi.fn(() => Promise.resolve([])),
   fetchTemplates: vi.fn(() => Promise.resolve([])),
+  fetchRemember: vi.fn(() => Promise.resolve([])),
+  fetchClients: vi.fn(() => Promise.resolve([])),
+  fetchCategories: vi.fn(() => Promise.resolve([])),
+  fetchUsers: vi.fn(() => Promise.resolve([])),
+  getAuthSession: vi.fn(() =>
+    Promise.resolve({ user: { id: 'test-user' } })
+  ),
+  subscribeAuth: vi.fn(() => () => {}),
   insertProject: vi.fn(),
   insertTask: vi.fn(),
   updateTask: vi.fn(),
@@ -22,7 +30,9 @@ describe('App', () => {
 
   it('shows loading then main UI', async () => {
     render(<App />)
-    expect(await screen.findByText(/件のタスク/)).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText(/件のタスク/)).toBeInTheDocument()
+    })
   })
 
   it('shows sidebar with プロジェクト', async () => {

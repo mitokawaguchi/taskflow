@@ -3,3 +3,9 @@ dist
 .DS_Store
 *.local
 .env
+.env.*
+!.env.example
+coverage
+*.log
+.vscode
+.idea

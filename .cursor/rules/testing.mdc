@@ -1,0 +1,43 @@
+---
+description: テスト方針・カバレッジ・品質の規約
+globs: "**/*.{test,spec}.{ts,tsx,js,jsx}"
+alwaysApply: false
+---
+
+# テスト規約
+
+## 新規コンポーネント作成時
+- コンポーネントを作成したら、同時にテストファイルも作成すること
+- 最低限テストすべき項目:
+  1. 正常レンダリング
+  2. ユーザー操作（クリック、入力）
+  3. エラー状態の表示
+  4. Props のエッジケース（空配列、null、undefined）
+
+## API 層のテスト
+- 認証状態（ログイン済み / 未ログイン）の両方をテストすること
+- `owner_id` によるデータ分離が正しく動くことをテストすること
+- エラーレスポンスのハンドリングをテストすること
+
+## テストの書き方
+```typescript
+// ❌ BAD — 存在確認だけ
+it('renders', () => {
+  render(<Component />)
+  expect(screen.getByText('タイトル')).toBeInTheDocument()
+})
+
+// ✅ GOOD — ユーザー行動をテスト
+it('submits form with valid data', async () => {
+  const onSave = vi.fn()
+  render(<TaskForm onSave={onSave} />)
+  await userEvent.type(screen.getByLabelText('タスク名'), 'テスト')
+  await userEvent.click(screen.getByRole('button', { name: '保存' }))
+  expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ title: 'テスト' }))
+})
+```
+
+## カバレッジ目標
+- 新規ファイル: 70% 以上
+- ユーティリティ関数: 90% 以上
+- API 層: 80% 以上

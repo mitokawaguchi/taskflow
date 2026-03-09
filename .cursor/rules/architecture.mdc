@@ -1,0 +1,37 @@
+---
+description: コンポーネント設計・ファイル分割・ルーティングの規約
+alwaysApply: true
+---
+
+# アーキテクチャ規約
+
+## ファイルサイズ制限
+- 1ファイル **200行以下** を厳守。超えたら即分割を提案すること
+- 1コンポーネント = 1ファイル。同一ファイルに複数コンポーネント定義禁止
+
+## ディレクトリ構造
+```
+src/
+├── pages/           # ルート単位のページコンポーネント
+├── components/      # 再利用可能な UI コンポーネント
+├── features/        # 機能単位（hooks + components + api）
+├── hooks/           # 共通カスタムフック
+├── lib/             # Supabase client 等の外部ライブラリ初期化
+├── types/           # TypeScript 型定義
+└── utils/           # 純粋関数ユーティリティ
+```
+
+## ルーティング
+- `useState` で画面遷移を管理しない。React Router を使うこと
+- URL が変わらない画面遷移は禁止
+
+## 状態管理
+- `useState` が 5個を超えたら useReducer または Zustand への移行を提案すること
+- Props が 3階層以上 drilling されていたら Context または状態管理ライブラリを使うこと
+
+## DRY
+- 同じ JSX パターンが 2箇所以上に出現したら共通コンポーネントに抽出すること
+- 定数の重複定義禁止。1箇所で定義し import すること
+
+## ID 生成
+- `Date.now()` を ID に使わない。`crypto.randomUUID()` を使うこと
