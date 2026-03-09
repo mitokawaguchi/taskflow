@@ -370,6 +370,14 @@ export async function signInWithPassword(email, password) {
   return data
 }
 
+/** 新規アカウント作成。メール確認が有効な場合は session が null になり確認メールが送られる */
+export async function signUpWithEmail(email, password) {
+  if (!supabase) throw new Error(CONFIG_MSG)
+  const { data, error } = await supabase.auth.signUp({ email, password })
+  if (error) throw error
+  return data
+}
+
 export async function signOut() {
   if (!supabase) return
   await supabase.auth.signOut()

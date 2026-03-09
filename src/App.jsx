@@ -13,7 +13,7 @@ import { PRIORITY, SORT_OPTIONS, priorityOrder, PRIORITY_KEYS } from './constant
 import { today, isToday, isOverdue, formatTodayDisplay, endDateLabel } from './utils'
 
 const PRIORITY_OPTIONS = Object.entries(PRIORITY).map(([key, { label }]) => ({ key, label }))
-import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, fetchCategories, fetchUsers, insertProject, updateProject, insertTask, updateTask, insertTemplate, insertRemember, updateRemember, deleteRemember, insertClient, insertCategory, insertUser, getAuthSession, signInWithPassword, signOut, subscribeAuth, claimExistingDataToAccount } from './api'
+import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, fetchCategories, fetchUsers, insertProject, updateProject, insertTask, updateTask, insertTemplate, insertRemember, updateRemember, deleteRemember, insertClient, insertCategory, insertUser, getAuthSession, signInWithPassword, signUpWithEmail, signOut, subscribeAuth, claimExistingDataToAccount } from './api'
 import MorningModal from './MorningModal'
 import TaskCard from './TaskCard'
 import TaskForm from './TaskForm'
@@ -129,31 +129,68 @@ function ProfileLoginForm({ onSuccess, onError }) {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [isSignUp, setIsSignUp] = useState(false)
+  const [signUpMessage, setSignUpMessage] = useState('')
 
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault()
     if (!email.trim() || !password) {
-      setError('メールとパスワードを入力してください')
+      setError(isSignUp ? 'メールとパスワードを入力してください（6文字以上推奨）' : 'メールとパスワードを入力してください')
+      return
+    }
+    if (isSignUp && password.length < 6) {
+      setError('パスワードは6文字以上にしてください')
       return
     }
     setError('')
+    setSignUpMessage('')
     setLoading(true)
     try {
-      await signInWithPassword(email.trim(), password)
-      onSuccess()
+      if (isSignUp) {
+        const data = await signUpWithEmail(email.trim(), password)
+        if (data?.session) {
+          onSuccess()
+        } else {
+          setSignUpMessage('確認メールを送りました。メール内のリンクから認証してください。')
+          onError?.('✅', 'アカウント作成', '確認メールを送りました')
+        }
+      } else {
+        await signInWithPassword(email.trim(), password)
+        onSuccess()
+      }
     } catch (e) {
-      const msg = e?.message ?? 'ログインに失敗しました'
+      const msg = e?.message ?? (isSignUp ? 'アカウント作成に失敗しました' : 'ログインに失敗しました')
       setError(msg)
-      onError?.('❌', 'ログイン', msg)
+      onError?.('❌', isSignUp ? 'アカウント作成' : 'ログイン', msg)
     } finally {
       setLoading(false)
     }
-  }, [email, password, onSuccess, onError])
+  }, [email, password, isSignUp, onSuccess, onError])
 
   return (
     <form onSubmit={handleSubmit} className="form-group">
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+        <button
+          type="button"
+          className={`btn btn-ghost btn-sm ${!isSignUp ? 'active' : ''}`}
+          onClick={() => { setIsSignUp(false); setError(''); setSignUpMessage('') }}
+          aria-pressed={!isSignUp}
+        >
+          ログイン
+        </button>
+        <button
+          type="button"
+          className={`btn btn-ghost btn-sm ${isSignUp ? 'active' : ''}`}
+          onClick={() => { setIsSignUp(true); setError(''); setSignUpMessage('') }}
+          aria-pressed={isSignUp}
+        >
+          アカウント作成
+        </button>
+      </div>
       <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 16 }}>
-        Supabase Auth でサインインします。未設定の場合はログインできません。
+        {isSignUp
+          ? 'メールとパスワードで新規アカウントを作成します（Supabase Auth）。'
+          : 'Supabase Auth でサインインします。'}
       </p>
       <div className="form-group">
         <label className="form-label" htmlFor="profile-login-email">メール</label>
@@ -164,7 +201,7 @@ function ProfileLoginForm({ onSuccess, onError }) {
           value={email}
           onChange={e => setEmail(e.target.value)}
           placeholder="email@example.com"
-          autoComplete="email"
+          autoComplete={isSignUp ? 'email' : 'email'}
           disabled={loading}
         />
       </div>
@@ -176,14 +213,16 @@ function ProfileLoginForm({ onSuccess, onError }) {
           className="form-input"
           value={password}
           onChange={e => setPassword(e.target.value)}
-          autoComplete="current-password"
+          placeholder={isSignUp ? '6文字以上' : undefined}
+          autoComplete={isSignUp ? 'new-password' : 'current-password'}
           disabled={loading}
         />
       </div>
       {error && <p style={{ fontSize: 13, color: 'var(--critical)', marginBottom: 12 }}>{error}</p>}
+      {signUpMessage && <p style={{ fontSize: 13, color: 'var(--accent)', marginBottom: 12 }}>{signUpMessage}</p>}
       <div className="modal-actions">
         <button type="submit" className="btn btn-primary" disabled={loading}>
-          {loading ? 'ログイン中…' : 'ログイン'}
+          {loading ? (isSignUp ? '作成中…' : 'ログイン中…') : (isSignUp ? 'アカウントを作成' : 'ログイン')}
         </button>
         <button type="button" className="btn btn-ghost" onClick={() => onSuccess()} aria-label="閉じる">
           閉じる（ログインしない）

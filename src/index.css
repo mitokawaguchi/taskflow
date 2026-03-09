@@ -362,6 +362,7 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(45,122,67,0.25); }
 .btn-ghost { background: var(--surface); color: var(--text-muted); border: 1px solid var(--border); }
 .btn-ghost:hover { color: var(--text); border-color: var(--text-muted); background: var(--surface3); }
+.btn-ghost.active { background: var(--surface3); color: var(--text); border-color: var(--accent); font-weight: 600; }
 .btn-sm { padding: 5px 12px; font-size: 12px; }
 
 .content { position: relative; min-width: 0; padding: 24px 28px; flex: 1; }
