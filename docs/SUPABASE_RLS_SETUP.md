@@ -1,4 +1,4 @@
-# RLS（Row Level Security）の設定と検証
+npm run test:run# RLS（Row Level Security）の設定と検証
 
 本番・チーム利用時は **必ず RLS を有効にしてください**。未設定のままでは anon key で他ユーザーのデータの読み書きが可能になります。
 

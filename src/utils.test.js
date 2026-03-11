@@ -1,5 +1,16 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { load, save, today, isToday, isOverdue, formatDate } from './utils'
+import {
+  load,
+  save,
+  today,
+  isToday,
+  isTomorrow,
+  isOverdue,
+  formatDate,
+  formatDateWithWeekday,
+  formatTodayDisplay,
+  endDateLabel,
+} from './utils'
 
 describe('utils', () => {
   describe('today', () => {
@@ -59,6 +70,64 @@ describe('utils', () => {
     })
     it('returns date and weekday for past', () => {
       expect(formatDate('2026-03-10')).toBe('3/10(火)')
+    })
+  })
+
+  describe('isTomorrow', () => {
+    it('returns true when date is tomorrow', () => {
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2026-03-15'))
+      expect(isTomorrow('2026-03-16')).toBe(true)
+      vi.useRealTimers()
+    })
+    it('returns false for today or other', () => {
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2026-03-15'))
+      expect(isTomorrow('2026-03-15')).toBe(false)
+      expect(isTomorrow('2026-03-17')).toBe(false)
+      vi.useRealTimers()
+    })
+    it('returns false for empty', () => {
+      expect(isTomorrow('')).toBe(false)
+      expect(isTomorrow(null)).toBe(false)
+    })
+  })
+
+  describe('formatDateWithWeekday', () => {
+    it('returns empty string for empty', () => {
+      expect(formatDateWithWeekday('')).toBe('')
+      expect(formatDateWithWeekday(null)).toBe('')
+    })
+    it('returns M/D(曜) format', () => {
+      expect(formatDateWithWeekday('2026-03-15')).toBe('3/15(日)')
+    })
+  })
+
+  describe('formatTodayDisplay', () => {
+    it('returns Japanese long date format', () => {
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2026-03-15'))
+      expect(formatTodayDisplay()).toMatch(/2026年3月15日/)
+      vi.useRealTimers()
+    })
+  })
+
+  describe('endDateLabel', () => {
+    it('returns empty for empty', () => {
+      expect(endDateLabel('')).toBe('')
+      expect(endDateLabel(null)).toBe('')
+    })
+    it('returns 今日まで when endDate is today', () => {
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2026-03-15'))
+      expect(endDateLabel('2026-03-15')).toBe('今日まで')
+      vi.useRealTimers()
+    })
+    it('returns date with weekday for other', () => {
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2026-03-15'))
+      expect(endDateLabel('2026-03-20')).toBe('3/20(金)')
+      vi.useRealTimers()
     })
   })
 

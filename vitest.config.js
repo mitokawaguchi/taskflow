@@ -8,5 +8,10 @@ export default defineConfig({
     setupFiles: ['./vitest.setup.js'],
     globals: true,
     include: ['src/**/*.{test,spec}.{js,jsx}'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text-summary', 'html'],
+      exclude: ['node_modules/', 'vitest.setup.js', '**/*.test.{js,jsx}', '**/*.spec.{js,jsx}'],
+    },
   },
 })

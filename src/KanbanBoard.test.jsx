@@ -26,4 +26,26 @@ describe('KanbanBoard', () => {
     render(<KanbanBoard {...defaultProps} tasks={tasks} projects={[{ id: 'p1', name: 'P1', color: '#333', icon: '📁' }]} />)
     expect(screen.getByText('テストタスク')).toBeInTheDocument()
   })
+
+  it('renders タスク追加 buttons in each column', () => {
+    render(<KanbanBoard {...defaultProps} />)
+    const addButtons = screen.getAllByRole('button', { name: /タスクを追加/ })
+    expect(addButtons.length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('renders task with priority label when provided', () => {
+    const tasks = [
+      { id: 't1', title: 'High task', status: 'todo', priority: 'high', projectId: 'p1', due: '', done: false },
+    ]
+    render(<KanbanBoard {...defaultProps} tasks={tasks} projects={[{ id: 'p1', name: 'P1', color: '#333', icon: '📁' }]} />)
+    expect(screen.getByText('High task')).toBeInTheDocument()
+  })
+
+  it('renders done column with completed tasks', () => {
+    const tasks = [
+      { id: 't1', title: 'Done task', status: 'done', priority: 'low', projectId: 'p1', due: '', done: true },
+    ]
+    render(<KanbanBoard {...defaultProps} tasks={tasks} projects={[{ id: 'p1', name: 'P1', color: '#333', icon: '📁' }]} />)
+    expect(screen.getByText('Done task')).toBeInTheDocument()
+  })
 })

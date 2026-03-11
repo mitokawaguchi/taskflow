@@ -116,6 +116,45 @@ describe('api', () => {
       expect(result[0].title).toBe('Task')
       expect(result[0].created).toBe(12345)
     })
+    it('maps status review and progress when in range (taskFromRow branches)', async () => {
+      const { supabase } = await import('./supabase')
+      const { fetchTasks } = await import('./api')
+      const row = {
+        id: 't2',
+        project_id: 'p1',
+        title: 'Review task',
+        desc: '',
+        priority: 'medium',
+        due: null,
+        done: false,
+        status: 'review',
+        progress: 50,
+        created: 999,
+      }
+      supabase.from.mockReturnValue(mockSelectOrder([row]))
+      const result = await fetchTasks()
+      expect(result[0].status).toBe('review')
+      expect(result[0].progress).toBe(50)
+    })
+    it('maps done true and status from row when status not in keys', async () => {
+      const { supabase } = await import('./supabase')
+      const { fetchTasks } = await import('./api')
+      const row = {
+        id: 't3',
+        project_id: 'p1',
+        title: 'Done task',
+        desc: '',
+        priority: 'low',
+        due: null,
+        done: true,
+        status: 'custom',
+        created: 1,
+      }
+      supabase.from.mockReturnValue(mockSelectOrder([row]))
+      const result = await fetchTasks()
+      expect(result[0].done).toBe(true)
+      expect(result[0].status).toBe('done')
+    })
   })
 
   describe('fetchTemplates', () => {
@@ -123,6 +162,62 @@ describe('api', () => {
       const { fetchTemplates } = await import('./api')
       const result = await fetchTemplates()
       expect(result).toEqual([])
+    })
+  })
+
+  describe('fetchCategories', () => {
+    it('returns empty array when no data', async () => {
+      const { fetchCategories } = await import('./api')
+      const result = await fetchCategories()
+      expect(result).toEqual([])
+    })
+    it('maps rows to app shape (categoryFromRow)', async () => {
+      const { supabase } = await import('./supabase')
+      const { fetchCategories } = await import('./api')
+      supabase.from.mockReturnValue(
+        mockSelectOrder([{ id: 'cat1', name: 'Work', color: '#333' }])
+      )
+      const result = await fetchCategories()
+      expect(result).toHaveLength(1)
+      expect(result[0]).toMatchObject({ id: 'cat1', name: 'Work', color: '#333' })
+    })
+  })
+
+  describe('fetchUsers', () => {
+    it('returns empty array when no data', async () => {
+      const { fetchUsers } = await import('./api')
+      const result = await fetchUsers()
+      expect(result).toEqual([])
+    })
+    it('maps rows to app shape (userFromRow)', async () => {
+      const { supabase } = await import('./supabase')
+      const { fetchUsers } = await import('./api')
+      supabase.from.mockReturnValue(
+        mockSelectOrder([{ id: 'u1', name: 'Alice', email: 'a@b.co', avatar_url: null }])
+      )
+      const result = await fetchUsers()
+      expect(result).toHaveLength(1)
+      expect(result[0]).toMatchObject({ id: 'u1', name: 'Alice', email: 'a@b.co' })
+      expect(result[0]).toHaveProperty('avatarUrl', '')
+    })
+  })
+
+  describe('fetchRemember', () => {
+    it('returns empty array when no data', async () => {
+      const { fetchRemember } = await import('./api')
+      const result = await fetchRemember()
+      expect(result).toEqual([])
+    })
+    it('maps rows to app shape (rememberFromRow)', async () => {
+      const { supabase } = await import('./supabase')
+      const { fetchRemember } = await import('./api')
+      supabase.from.mockReturnValue(
+        mockSelectOrder([{ id: 'r1', client_id: 'c1', body: 'Memo', created: 123 }])
+      )
+      const result = await fetchRemember()
+      expect(result).toHaveLength(1)
+      expect(result[0]).toMatchObject({ id: 'r1', clientId: 'c1', body: 'Memo' })
+      expect(result[0].created).toBe(123)
     })
   })
 

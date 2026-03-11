@@ -20,4 +20,25 @@ describe('ClientDetail', () => {
     render(<ClientDetail {...defaultProps} />)
     expect(screen.getByRole('region', { name: /テストクライアント.*覚えておくこと/ })).toBeInTheDocument()
   })
+
+  it('has add remember input and 追加 button', () => {
+    render(<ClientDetail {...defaultProps} />)
+    expect(screen.getByPlaceholderText(/言われたこと・覚えておきたいこと/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '追加' })).toBeInTheDocument()
+  })
+
+  it('shows empty message when no remembers', () => {
+    render(<ClientDetail {...defaultProps} />)
+    expect(screen.getByText(/まだありません/)).toBeInTheDocument()
+  })
+
+  it('shows remember list when remembers provided', () => {
+    render(
+      <ClientDetail
+        {...defaultProps}
+        remembers={[{ id: 'r1', clientId: 'c1', body: 'メモ本文', created: 1 }]}
+      />
+    )
+    expect(screen.getByText('メモ本文')).toBeInTheDocument()
+  })
 })
