@@ -8,6 +8,19 @@ function requireSupabase() {
   if (!supabase) throw new Error(CONFIG_MSG)
 }
 
+/** 日付を DB 用に正規化: 空・無効は null、文字列はそのまま、Date は YYYY-MM-DD */
+function normalizeDate(v) {
+  if (v == null || v === '') return null
+  if (typeof v === 'string') {
+    const s = v.trim()
+    return s ? s : null
+  }
+  if (v instanceof Date && !Number.isNaN(v.getTime())) {
+    return v.toISOString().slice(0, 10)
+  }
+  return null
+}
+
 // DB の行 → アプリで使う形に変換
 function taskFromRow(row) {
   if (!row) return null
@@ -177,17 +190,17 @@ export async function insertTask(task) {
   const status = task.status && TASK_STATUS_KEYS.includes(task.status) ? task.status : (task.done ? 'done' : 'todo')
   const row = {
     id: task.id,
-    project_id: task.projectId,
+    project_id: task.projectId ?? null,
     title: task.title,
     desc: task.desc ?? '',
     priority: task.priority ?? 'medium',
-    due: task.due || null,
+    due: normalizeDate(task.due),
     done: status === 'done',
     status,
-    start_date: task.startDate || null,
+    start_date: normalizeDate(task.startDate),
     progress: task.progress != null && task.progress >= 0 && task.progress <= 100 ? task.progress : null,
     category: task.category || null,
-    assignee_id: task.assigneeId || null,
+    assignee_id: task.assigneeId && String(task.assigneeId).trim() ? task.assigneeId : null,
     created: task.created,
   }
   if (ownerId) row.owner_id = ownerId
@@ -203,7 +216,7 @@ export async function updateTask(id, patch) {
   if (patch.desc !== undefined) row.desc = patch.desc
   if (patch.priority !== undefined) row.priority = patch.priority
   if (patch.projectId !== undefined) row.project_id = patch.projectId
-  if (patch.due !== undefined) row.due = patch.due || null
+  if (patch.due !== undefined) row.due = normalizeDate(patch.due)
   if (patch.done !== undefined) row.done = patch.done
   if (patch.status !== undefined) {
     row.status = TASK_STATUS_KEYS.includes(patch.status) ? patch.status : (patch.done ? 'done' : 'todo')
@@ -211,10 +224,10 @@ export async function updateTask(id, patch) {
   } else if (patch.done !== undefined) {
     row.status = patch.done ? 'done' : 'todo'
   }
-  if (patch.startDate !== undefined) row.start_date = patch.startDate || null
+  if (patch.startDate !== undefined) row.start_date = normalizeDate(patch.startDate)
   if (patch.progress !== undefined) row.progress = (patch.progress >= 0 && patch.progress <= 100) ? patch.progress : null
   if (patch.category !== undefined) row.category = patch.category || null
-  if (patch.assigneeId !== undefined) row.assignee_id = patch.assigneeId || null
+  if (patch.assigneeId !== undefined) row.assignee_id = patch.assigneeId && String(patch.assigneeId).trim() ? patch.assigneeId : null
   const { data, error } = await supabase.from('tf_tasks').update(row).eq('id', id).select().single()
   if (error) throw error
   return taskFromRow(data)

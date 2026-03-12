@@ -1,18 +1,39 @@
 # TaskFlow
 
-タスク・プロジェクト・クライアントを一括管理する Web アプリ。カンバン・ガントチャート・ダッシュボード対応。
+タスク・プロジェクト・クライアントを一元管理する Web アプリ。カンバン・ガントチャート・ダッシュボードを備え、Supabase で認証・データ永続化を行います。
 
 ## 技術スタック
 
-- **フロント**: React 18, Vite 5
-- **バックエンド / Auth**: Supabase (PostgreSQL, Auth, Row Level Security)
-- **UI**: CSS（BEM 風）、ダークモード対応
-- **D&D**: @dnd-kit（カンバン・プロジェクト並び替え）
-- **テスト**: Vitest, Testing Library
+| 領域 | 技術 |
+|------|------|
+| フロント | React 18, Vite 5 |
+| UI | カスタム CSS（ダークモード対応）、レスポンシブ |
+| バックエンド | Supabase（Auth, PostgreSQL） |
+| テスト | Vitest, Testing Library |
+
+## プロジェクト構成（抜粋）
+
+```
+taskflow/
+├── src/
+│   ├── App.jsx          # メインアプリ・ルート
+│   ├── api.js           # Supabase 呼び出し・owner_id フィルタ
+│   ├── TaskForm.jsx      # タスク作成・編集
+│   ├── KanbanBoard.jsx   # カンバン（DnD）
+│   ├── GanttChart.jsx    # ガント
+│   ├── Dashboard.jsx    # ダッシュボード
+│   └── ...
+├── docs/
+│   ├── SUPABASE_RLS_SETUP.md   # RLS 実行手順
+│   ├── SUPABASE_RLS_POLICIES.sql
+│   └── CODE_REVIEW.md          # 品質・スコア表
+├── .env.example
+└── package.json
+```
 
 ## セットアップ
 
-### 1. リポジトリのクローンと依存関係
+### 1. クローンと依存関係
 
 ```bash
 git clone <repo-url>
@@ -22,56 +43,63 @@ npm install
 
 ### 2. 環境変数
 
-`.env.example` をコピーして `.env` を作成し、Supabase の値を設定する。
+`.env.example` をコピーして `.env` を作成し、Supabase の値を設定します。
 
 ```bash
 cp .env.example .env
 ```
 
-`.env` に以下を設定（Supabase Dashboard → Project Settings → API で取得）:
+| 変数 | 必須 | 説明 |
+|------|------|------|
+| `VITE_SUPABASE_URL` | ✅ | Supabase プロジェクト URL（Settings → API） |
+| `VITE_SUPABASE_ANON_KEY` | ✅ | 匿名（anon）キー。RLS 有効化必須 |
 
-- `VITE_SUPABASE_URL` … プロジェクト URL
-- `VITE_SUPABASE_ANON_KEY` … anon (public) key
+本番（Vercel 等）ではダッシュボードの環境変数に同じキーを設定してください。
 
 ### 3. Supabase 側の準備
 
-1. [Supabase](https://supabase.com) でプロジェクトを作成
-2. **Authentication** で Email ログインを有効化（必要に応じてリダイレクト URL を設定。`docs/SUPABASE_AUTH_REDIRECT.md` 参照）
-3. **SQL Editor** で以下を**順に**実行:
-   - テーブル作成: `docs/` 内の各 `SUPABASE_*.sql`（プロジェクト・タスク・テンプレート・カテゴリ・ユーザー・クライアント・覚えておくこと など）
-   - 所有者用カラム: `docs/SUPABASE_OWNER_LINK.sql`
-   - **RLS（必須）**: `docs/SUPABASE_RLS_POLICIES.sql`  
-     → 未実行のままでは他ユーザーのデータが読み書き可能になるため、本番では必ず実行すること。**手順・検証方法は `docs/SUPABASE_RLS_SETUP.md` を参照**
+1. [Supabase](https://app.supabase.com) でプロジェクトを作成
+2. **SQL Editor** で `docs/` 内のスキーマ・RLS 用 SQL を実行
+3. 手順は **`docs/SUPABASE_RLS_SETUP.md`** を参照（RLS 未設定だと他ユーザーデータが参照・改ざん可能）
 
-### 4. 開発サーバー起動
+### 4. 起動
 
 ```bash
 npm run dev
 ```
 
-ビルド・テスト:
+表示された URL（例: http://localhost:5173）にアクセスします。
 
-```bash
-npm run build
-npm run test
-npm run test:run
-```
+## スクリプト
 
-## 主な機能
+| コマンド | 説明 |
+|----------|------|
+| `npm run dev` | 開発サーバー起動 |
+| `npm run build` | 本番ビルド（`dist/`） |
+| `npm run preview` | ビルドのプレビュー |
+| `npm run test` | テスト（watch） |
+| `npm run test:run` | テスト 1 回実行 |
+| `npm run test:coverage` | カバレッジ付きテスト |
 
-- プロジェクト・タスクの CRUD、並び替え
-- カンバン（D&D）、ガントチャート、ダッシュボード
-- クライアント・「覚えておくこと」メモ
-- テンプレート・カテゴリ
-- Supabase Auth によるログイン／ログアウト
+## トラブルシューティング
 
-## ドキュメント
+- **「Supabase の設定がありません」**  
+  `.env` に `VITE_SUPABASE_URL` と `VITE_SUPABASE_ANON_KEY` が設定されているか確認。Vite は先頭が `VITE_` の変数のみクライアントに渡します。
 
-- `docs/SUPABASE_RLS_SETUP.md` … **RLS の実行手順と検証**（本番前に必読）
-- `docs/OWNER_LINK_GUIDE.md` … ログインとデータ紐づけの流れ
-- `docs/SUPABASE_AUTH_REDIRECT.md` … 認証リダイレクト設定
-- `docs/CODE_REVIEW.md` … コードレビューと改善ロードマップ
+- **タスク・プロジェクトが保存できない / 弾かれる**  
+  - ログイン状態か確認。  
+  - Supabase で RLS を有効にしている場合、`docs/SUPABASE_RLS_POLICIES.sql` を実行済みか確認。  
+  - ブラウザの開発者ツール → Network で API のレスポンス（403/500 とメッセージ）を確認。
+
+- **ビルドエラー**  
+  `npm run build` を実行し、表示されるエラーに従って依存関係や Node バージョンを確認。
+
+## Contributing
+
+1. 機能追加・修正はブランチを切って作業
+2. `npm run test:run` でテスト通過を確認
+3. `docs/CODE_REVIEW.md` のチェックリスト・スコア表を意識した変更を推奨
 
 ## ライセンス
 
-MIT（`LICENSE` を参照）
+MIT — 詳細は [LICENSE](LICENSE) を参照してください。

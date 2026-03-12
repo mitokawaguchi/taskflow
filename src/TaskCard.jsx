@@ -1,4 +1,4 @@
-import { PRIORITY, getCategoryInfo } from './constants'
+import { getPriorityLabel, getCategoryInfo } from './constants'
 import { isOverdue, isToday, isTomorrow, formatDate } from './utils'
 
 export default function TaskCard({ task, projects, categories = [], users = [], projectsMap, usersMap, onToggle, onClick }) {
@@ -48,7 +48,7 @@ export default function TaskCard({ task, projects, categories = [], users = [], 
             {categoryInfo.label}
           </span>
         )}
-        <span className={`priority-badge ${task.priority}`}>{PRIORITY[task.priority]?.label ?? task.priority}</span>
+        <span className={`priority-badge ${task.priority}`}>{getPriorityLabel(task.priority)}</span>
         {task.due && (
           <span className={`due-badge ${over ? 'overdue' : tod || tom ? 'today-or-tomorrow' : ''}`} style={{ marginLeft: 'auto' }}>
             {formatDate(task.due)}

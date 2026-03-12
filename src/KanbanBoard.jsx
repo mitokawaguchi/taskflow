@@ -6,7 +6,7 @@ import {
   useDroppable,
   pointerWithin,
 } from '@dnd-kit/core'
-import { PRIORITY, TASK_STATUS, TASK_STATUS_KEYS, progressFromStatus, getCategoryInfo } from './constants'
+import { getPriorityLabel, TASK_STATUS, TASK_STATUS_KEYS, progressFromStatus, getCategoryInfo } from './constants'
 import { formatDate, isOverdue } from './utils'
 
 function KanbanCardContent({ task, projects, categories = [], users = [] }) {
@@ -53,7 +53,7 @@ function KanbanCardContent({ task, projects, categories = [], users = [] }) {
               📅 {formatDate(task.due)}
             </span>
           )}
-          <span className={`priority-badge ${task.priority}`}>{PRIORITY[task.priority]?.label ?? task.priority}</span>
+          <span className={`priority-badge ${task.priority}`}>{getPriorityLabel(task.priority)}</span>
         </div>
       </div>
     </>

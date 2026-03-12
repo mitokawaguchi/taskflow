@@ -187,7 +187,27 @@ export default function TaskForm({ task, projects, templates, categories = [], u
         </div>
         <div className="modal-actions">
           <button className="btn btn-ghost" onClick={onClose}>キャンセル</button>
-          <button className="btn btn-primary" onClick={() => { if (form.title.trim()) onSave({ ...form, title: truncateToMax(form.title, VALIDATION.taskTitle), desc: truncateToMax(form.desc, VALIDATION.taskDesc), startDate: form.startDate || null, category: form.category || null, assigneeId: form.assigneeId || null }) }} disabled={!form.title.trim()}>保存</button>
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              if (!form.title.trim()) return
+              const payload = {
+                title: truncateToMax(form.title, VALIDATION.taskTitle),
+                desc: truncateToMax(form.desc, VALIDATION.taskDesc),
+                priority: form.priority || 'medium',
+                projectId: form.projectId || null,
+                due: form.due && String(form.due).trim() ? String(form.due).trim() : null,
+                startDate: form.startDate && String(form.startDate).trim() ? String(form.startDate).trim() : null,
+                status: form.status || 'todo',
+                category: form.category && String(form.category).trim() ? form.category : null,
+                assigneeId: form.assigneeId && String(form.assigneeId).trim() ? form.assigneeId : null,
+              }
+              onSave(payload)
+            }}
+            disabled={!form.title.trim()}
+          >
+            保存
+          </button>
         </div>
       </div>
     </div>

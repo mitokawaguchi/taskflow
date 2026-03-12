@@ -8,7 +8,7 @@ import {
   useSensors,
 } from '@dnd-kit/core'
 import { arrayMove, SortableContext, rectSortingStrategy } from '@dnd-kit/sortable'
-import { PRIORITY, SORT_OPTIONS, priorityOrder, PRIORITY_KEYS, VALIDATION, truncateToMax } from './constants'
+import { PRIORITY, getPriorityLabel, SORT_OPTIONS, priorityOrder, PRIORITY_KEYS, VALIDATION, truncateToMax } from './constants'
 import { today, isToday, isOverdue, formatTodayDisplay, endDateLabel } from './utils'
 
 const PRIORITY_OPTIONS = Object.entries(PRIORITY).map(([key, { label }]) => ({ key, label }))
@@ -1098,7 +1098,7 @@ export default function App() {
                         <div className="card-header"><div className="card-title">{t.title}</div></div>
                         {t.desc && <div className="card-desc">{t.desc}</div>}
                         <div className="card-footer">
-                          <span className={`priority-badge ${t.priority}`}>{PRIORITY[t.priority]?.label ?? t.priority}</span>
+                          <span className={`priority-badge ${t.priority}`}>{getPriorityLabel(t.priority)}</span>
                           <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setEditTemplate(t); setShowTplForm(true) }}>
                             編集
                           </button>

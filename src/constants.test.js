@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import {
   PRIORITY,
+  getPriorityLabel,
+  getPriorityColor,
   SORT_OPTIONS,
   priorityOrder,
   DEFAULT_PROJECTS,
@@ -21,6 +23,30 @@ describe('constants', () => {
         expect(typeof v.label).toBe('string')
         expect(v.color).toMatch(/^#[0-9a-fA-F]+$/)
       }
+    })
+  })
+
+  describe('getPriorityLabel', () => {
+    it('returns label for valid key', () => {
+      expect(getPriorityLabel('critical')).toBe('緊急')
+      expect(getPriorityLabel('medium')).toBe('中')
+    })
+    it('returns key as string for unknown key (DB 不正値対策)', () => {
+      expect(getPriorityLabel('unknown')).toBe('unknown')
+    })
+    it('returns default for null/undefined', () => {
+      expect(getPriorityLabel(null)).toBe('中')
+      expect(getPriorityLabel(undefined)).toBe('中')
+    })
+  })
+
+  describe('getPriorityColor', () => {
+    it('returns color for valid key', () => {
+      expect(getPriorityColor('critical')).toBe(PRIORITY.critical.color)
+      expect(getPriorityColor('low')).toBe(PRIORITY.low.color)
+    })
+    it('returns medium color for unknown key', () => {
+      expect(getPriorityColor('invalid')).toBe(PRIORITY.medium.color)
     })
   })
 

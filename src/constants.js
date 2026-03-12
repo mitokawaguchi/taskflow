@@ -5,6 +5,16 @@ export const PRIORITY = {
   low:      { label: '低',   color: '#06d6a0' },
 }
 
+/** DB 不正値対策: 重要度キーからラベルを取得（未定義時はキーそのまま） */
+export function getPriorityLabel(priority) {
+  return PRIORITY[priority]?.label ?? (priority && String(priority)) ?? '中'
+}
+
+/** DB 不正値対策: 重要度キーから色を取得（未定義時は medium 相当） */
+export function getPriorityColor(priority) {
+  return PRIORITY[priority]?.color ?? PRIORITY.medium.color
+}
+
 /** カンバン用タスク状態 */
 export const TASK_STATUS = {
   todo:        { key: 'todo',        label: '未着手' },

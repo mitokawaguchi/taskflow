@@ -301,6 +301,53 @@ describe('api', () => {
       expect(result.id).toMatch(/^t-[0-9a-f-]{36}$/i)
       expect(result.projectId).toBe('p1')
     })
+
+    it('sets owner_id when session exists (TEST-002 / RLS)', async () => {
+      const { supabase } = await import('./supabase')
+      supabase.auth.getSession.mockResolvedValue({
+        data: { session: { user: { id: 'owner-uuid-123' } } },
+      })
+      const insertSpy = vi.fn((row) => ({
+        select: () => ({ single: () => Promise.resolve({ data: row, error: null }) }),
+      }))
+      supabase.from.mockReturnValue({ insert: insertSpy })
+      const { insertTask } = await import('./api')
+      await insertTask({
+        id: 't1',
+        projectId: 'p1',
+        title: 'T',
+        desc: '',
+        priority: 'medium',
+        due: null,
+        done: false,
+        created: 999,
+      })
+      expect(insertSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ owner_id: 'owner-uuid-123' })
+      )
+    })
+
+    it('does not set owner_id when session is null', async () => {
+      const { supabase } = await import('./supabase')
+      supabase.auth.getSession.mockResolvedValue({ data: { session: null } })
+      const insertSpy = vi.fn((row) => ({
+        select: () => ({ single: () => Promise.resolve({ data: row, error: null }) }),
+      }))
+      supabase.from.mockReturnValue({ insert: insertSpy })
+      const { insertTask } = await import('./api')
+      await insertTask({
+        id: 't1',
+        projectId: 'p1',
+        title: 'T',
+        desc: '',
+        priority: 'medium',
+        due: null,
+        done: false,
+        created: 999,
+      })
+      const call = insertSpy.mock.calls[0][0]
+      expect(call).not.toHaveProperty('owner_id')
+    })
   })
 
   describe('updateTask', () => {

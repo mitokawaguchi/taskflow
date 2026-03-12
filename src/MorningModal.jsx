@@ -1,4 +1,4 @@
-import { PRIORITY } from './constants'
+import { getPriorityLabel, getPriorityColor } from './constants'
 import { isToday, isTomorrow, isOverdue, formatDate } from './utils'
 
 export default function MorningModal({ tasks, projects, onClose }) {
@@ -23,7 +23,7 @@ export default function MorningModal({ tasks, projects, onClose }) {
           const proj = projects.find(p => p.id === t.projectId)
           return (
             <div key={t.id} className={`morning-task ${isOverdue(t.due) ? 'morning-task--overdue' : ''}`}>
-              <div className="dot" style={{ background: isOverdue(t.due) ? 'var(--critical)' : PRIORITY[t.priority].color }} />
+              <div className="dot" style={{ background: isOverdue(t.due) ? 'var(--critical)' : getPriorityColor(t.priority) }} />
               <div className="morning-task__body">
                 <div className="morning-task-title">{t.title}</div>
                 <div className="morning-task-meta">
@@ -38,8 +38,8 @@ export default function MorningModal({ tasks, projects, onClose }) {
               {isOverdue(t.due) ? (
                 <span className="morning-task-overdue-badge">期限超過</span>
               ) : (
-                <div style={{ fontSize:'11px', background:`${PRIORITY[t.priority].color}20`, color:PRIORITY[t.priority].color, padding:'2px 8px', borderRadius:'4px', fontFamily:'Sora,sans-serif', fontWeight:'700' }}>
-                  {PRIORITY[t.priority].label}
+                <div style={{ fontSize:'11px', background:`${getPriorityColor(t.priority)}20`, color: getPriorityColor(t.priority), padding:'2px 8px', borderRadius:'4px', fontFamily:'Sora,sans-serif', fontWeight:'700' }}>
+                  {getPriorityLabel(t.priority)}
                 </div>
               )}
             </div>
