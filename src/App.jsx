@@ -12,7 +12,7 @@ import { PRIORITY, getPriorityLabel, SORT_OPTIONS, priorityOrder, PRIORITY_KEYS,
 import { today, isToday, isOverdue, formatTodayDisplay, endDateLabel } from './utils'
 
 const PRIORITY_OPTIONS = Object.entries(PRIORITY).map(([key, { label }]) => ({ key, label }))
-import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, fetchCategories, fetchUsers, insertProject, updateProject, insertTask, updateTask, insertTemplate, updateTemplate, deleteTemplate, insertRemember, updateRemember, deleteRemember, insertClient, updateClient, deleteClient, insertUser, getAuthSession, signOut, subscribeAuth, updateAuthPassword, updateAuthUserMetadata } from './api'
+import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, fetchCategories, fetchUsers, insertProject, updateProject, insertTask, updateTask, insertTemplate, updateTemplate, deleteTemplate, insertRemember, updateRemember, deleteRemember, insertClient, updateClient, deleteClient, insertUser, getAuthSession, subscribeAuth } from './api'
 import MorningModal from './MorningModal'
 import TaskCard from './TaskCard'
 import TaskForm from './TaskForm'
@@ -25,12 +25,15 @@ import Toast from './Toast'
 import KanbanBoard from './KanbanBoard'
 import Dashboard from './Dashboard'
 import GanttChart from './GanttChart'
-import LoginScreen, { ProfileLoginForm, LegalLinks } from './components/LoginScreen'
+import LoginScreen, { LegalLinks } from './components/LoginScreen'
 import CategoriesView from './components/CategoriesView'
 import SettingsModal from './components/SettingsModal'
 import ClientDetailView from './components/ClientDetailView'
 import LegalPageView from './components/LegalPageView'
 import SortableProjectCard from './components/SortableProjectCard'
+import ProfileModal from './components/ProfileModal'
+import TemplatesListView from './components/TemplatesListView'
+import ClientsListView from './components/ClientsListView'
 import { getLegalPageFromHash } from './legalContent'
 
 const DUE_TODAY_CHECK_DELAY_MS = 2000
@@ -151,8 +154,8 @@ export default function App() {
             try {
               await Promise.all(overdueNotCritical.map(t => updateTask(t.id, { ...t, priority: 'critical' })))
               tasksToSet = ts.map(t => overdueNotCritical.some(u => u.id === t.id) ? { ...t, priority: 'critical' } : t)
-            } catch {
-              // 更新失敗時は取得したタスクのまま表示
+            } catch (e) {
+              if (!cancelled) addToast('⚠️', '期限超過タスクの更新に失敗しました', e?.message ?? '')
             }
           }
           setProjects(projs)
@@ -181,14 +184,24 @@ export default function App() {
 
   useEffect(() => {
     let cancelled = false
-    getAuthSession().then(session => {
-      if (!cancelled) {
-        setAuthUser(session?.user ?? null)
-        setAuthReady(true)
-      }
-    })
-    const unsub = subscribeAuth(session => setAuthUser(session?.user ?? null))
-    return () => { cancelled = true; unsub() }
+    getAuthSession()
+      .then((session) => {
+        if (!cancelled) {
+          setAuthUser(session?.user ?? null)
+          setAuthReady(true)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setAuthUser(null)
+          setAuthReady(true)
+        }
+      })
+    const unsub = subscribeAuth((session) => setAuthUser(session?.user ?? null))
+    return () => {
+      cancelled = true
+      unsub()
+    }
   }, [])
 
   useEffect(() => {
@@ -233,24 +246,37 @@ export default function App() {
     setKanbanAddStatus(null)
   }, [])
 
-  const saveTask = useCallback(async (form) => {
-    try {
-      if (editTask?.id) {
-        const updated = await updateTask(editTask.id, form)
-        setTasks(ts => ts.map(t => (t.id === updated.id ? updated : t)))
-        addToast('✏️', 'タスクを更新しました', form.title)
-      } else {
-        const status = form.status || 'todo'
-        const newTask = { ...form, id: `t-${crypto.randomUUID()}`, done: status === 'done', status, created: Date.now() }
-        const created = await insertTask(newTask)
-        setTasks(ts => [created, ...ts])
-        addToast('✅', 'タスクを追加しました', form.title)
+  const saveTask = useCallback(
+    async (form) => {
+      if (!form || typeof form.title !== 'string') {
+        addToast('❌', '保存できませんでした', 'タスク名が不正です')
+        return
       }
-      closeTaskForm()
-    } catch (e) {
-      addToast('❌', '保存できませんでした', e?.message ?? '')
-    }
-  }, [editTask?.id, addToast, closeTaskForm])
+      try {
+        if (editTask?.id) {
+          const updated = await updateTask(editTask.id, form)
+          setTasks((ts) => ts.map((t) => (t.id === updated.id ? updated : t)))
+          addToast('✏️', 'タスクを更新しました', form.title)
+        } else {
+          const status = form.status || 'todo'
+          const newTask = {
+            ...form,
+            id: `t-${crypto.randomUUID()}`,
+            done: status === 'done',
+            status,
+            created: Date.now(),
+          }
+          const created = await insertTask(newTask)
+          setTasks((ts) => [created, ...ts])
+          addToast('✅', 'タスクを追加しました', form.title)
+        }
+        closeTaskForm()
+      } catch (e) {
+        addToast('❌', '保存できませんでした', e?.message ?? '')
+      }
+    },
+    [editTask?.id, addToast, closeTaskForm]
+  )
 
   const toggleTask = useCallback(async (id) => {
     const task = tasks.find(t => t.id === id)
@@ -916,74 +942,13 @@ export default function App() {
                     + クライアント追加
                   </button>
                 </div>
-                {clients.length === 0 ? (
-                  <div className="empty-state">
-                    <div className="empty-icon">🤝</div>
-                    <p>クライアントがありません</p>
-                    <p className="text-muted-13-mt8">
-                      取引先・担当先を追加すると、そのクライアントごとに「今後に向けて覚えておくこと」をメモできます。プロジェクトとは別で残ります。
-                    </p>
-                    <button type="button" className="btn btn-primary" onClick={() => { setEditClient(null); setShowClientForm(true) }}>
-                      最初のクライアントを追加
-                    </button>
-                  </div>
-                ) : (
-                  <div className="projects-grid clients-grid">
-                    {clients.map(c => {
-                      const clientRemembers = remembers.filter(r => r.clientId === c.id)
-                      return (
-                        <div
-                          key={c.id}
-                          className="task-card"
-                          style={{
-                            cursor: 'default',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            minHeight: '140px',
-                            background: `${c.color}28`,
-                            borderColor: `${c.color}60`,
-                          }}
-                        >
-                          <div
-                            className="remember-client-label"
-                            style={{ background: `${c.color}22`, color: c.color, border: `2px solid ${c.color}66` }}
-                          >
-                            <span className="remember-client-icon">{c.icon}</span>
-                            <span className="remember-client-name">{c.name}</span>
-                          </div>
-                          {clientRemembers.length === 0 ? (
-                            <p className="remember-empty">まだありません</p>
-                          ) : (
-                            <ul className="remember-list">
-                              {clientRemembers.map(r => (
-                                <li key={r.id} className="remember-item" style={{ borderLeftColor: c.color }}>
-                                  <span className="remember-icon" aria-hidden>📌</span>
-                                  <span className="remember-body">{r.body}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                          <div className="card-footer card-footer-sep">
-                            <button
-                              type="button"
-                              className="btn btn-ghost btn-sm"
-                              onClick={() => { setEditClient(c); setShowClientForm(true) }}
-                            >
-                              設定
-                            </button>
-                            <button
-                              type="button"
-                              className="btn btn-ghost btn-sm"
-                              onClick={() => { setView('c:' + c.id); setSidebarOpen(false) }}
-                            >
-                              編集・追加
-                            </button>
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
+                <ClientsListView
+                  clients={clients}
+                  remembers={remembers}
+                  onAddClient={() => { setEditClient(null); setShowClientForm(true) }}
+                  onEditClient={(c) => { setEditClient(c); setShowClientForm(true) }}
+                  onOpenClientDetail={(id) => { setView('c:' + id); setSidebarOpen(false) }}
+                />
               </>
             )}
 
@@ -1083,33 +1048,12 @@ export default function App() {
                     + テンプレート作成
                   </button>
                 </div>
-                {templates.length === 0 ? (
-                  <div className="empty-state">
-                    <div className="empty-icon">📋</div>
-                    <p>テンプレートがありません</p>
-                    <button type="button" className="btn btn-primary" onClick={() => { setEditTemplate(null); setShowTplForm(true) }}>
-                      最初のテンプレートを作成
-                    </button>
-                  </div>
-                ) : (
-                  <div className="cards-grid">
-                    {templates.map((t) => (
-                      <div key={t.id} className="task-card medium">
-                        <div className="card-header"><div className="card-title">{t.title}</div></div>
-                        {t.desc && <div className="card-desc">{t.desc}</div>}
-                        <div className="card-footer">
-                          <span className={`priority-badge ${t.priority}`}>{getPriorityLabel(t.priority)}</span>
-                          <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setEditTemplate(t); setShowTplForm(true) }}>
-                            編集
-                          </button>
-                          <button type="button" className="btn btn-ghost btn-sm ml-auto" onClick={() => setShowTaskForm(true)}>
-                            このテンプレを使う
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <TemplatesListView
+                  templates={templates}
+                  onAddTemplate={() => { setEditTemplate(null); setShowTplForm(true) }}
+                  onEditTemplate={(t) => { setEditTemplate(t); setShowTplForm(true) }}
+                  onUseTemplate={() => setShowTaskForm(true)}
+                />
               </>
             )}
 
@@ -1368,132 +1312,22 @@ export default function App() {
       )}
 
       {showProfileModal && (
-        <div className="overlay" onClick={() => setShowProfileModal(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <h2 className="modal-title">プロフィール・ログイン</h2>
-            {authUser ? (
-              <>
-                <p className="text-muted-14-mb16">
-                  ログイン中: <strong>{authUser.email ?? authUser.id}</strong>
-                </p>
-                <div className="profile-settings">
-                  <h3 className="profile-settings__title">プロフィール設定</h3>
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="profile-display-name">表示名（任意）</label>
-                    <input
-                      id="profile-display-name"
-                      type="text"
-                      className="form-input"
-                      value={profileDisplayName}
-                      onChange={e => setProfileDisplayName(e.target.value)}
-                      placeholder="表示名"
-                      disabled={profileLoading}
-                    />
-                    <button
-                      type="button"
-                      className="btn btn-ghost btn-sm"
-                      style={{ marginTop: 6 }}
-                      disabled={profileLoading}
-                      onClick={async () => {
-                        setProfileError('')
-                        setProfileLoading(true)
-                        try {
-                          await updateAuthUserMetadata({ display_name: profileDisplayName.trim() || undefined })
-                          addToast('✅', '保存しました', '表示名を更新しました')
-                        } catch (e) {
-                          setProfileError(e?.message ?? '保存に失敗しました')
-                        } finally {
-                          setProfileLoading(false)
-                        }
-                      }}
-                    >
-                      保存
-                    </button>
-                  </div>
-                  <div className="form-group mt-16">
-                    <label className="form-label" htmlFor="profile-new-password">パスワードを変更</label>
-                    <input
-                      id="profile-new-password"
-                      type="password"
-                      className="form-input"
-                      value={profileNewPassword}
-                      onChange={e => { setProfileNewPassword(e.target.value); setProfileError('') }}
-                      placeholder="新しいパスワード（6文字以上）"
-                      disabled={profileLoading}
-                    />
-                    <input
-                      type="password"
-                      className="form-input"
-                      style={{ marginTop: 6 }}
-                      value={profileConfirmPassword}
-                      onChange={e => { setProfileConfirmPassword(e.target.value); setProfileError('') }}
-                      placeholder="確認"
-                      disabled={profileLoading}
-                    />
-                    <button
-                      type="button"
-                      className="btn btn-ghost btn-sm mt-6"
-                      disabled={profileLoading || !profileNewPassword || !profileConfirmPassword}
-                      onClick={async () => {
-                        setProfileError('')
-                        if (profileNewPassword.length < 6) {
-                          setProfileError('パスワードは6文字以上にしてください')
-                          return
-                        }
-                        if (profileNewPassword !== profileConfirmPassword) {
-                          setProfileError('確認が一致しません')
-                          return
-                        }
-                        setProfileLoading(true)
-                        try {
-                          await updateAuthPassword(profileNewPassword)
-                          setProfileNewPassword('')
-                          setProfileConfirmPassword('')
-                          addToast('✅', 'パスワードを変更しました', '')
-                        } catch (e) {
-                          setProfileError(e?.message ?? '変更に失敗しました')
-                        } finally {
-                          setProfileLoading(false)
-                        }
-                      }}
-                    >
-                      パスワードを変更
-                    </button>
-                  </div>
-                  {profileError && <p className="form-message form-message--error mt-8">{profileError}</p>}
-                </div>
-                <div className="modal-actions modal-actions--wrap">
-                  <button
-                    type="button"
-                    className="btn btn-ghost"
-                    onClick={async () => {
-                      setShowProfileModal(false)
-                      try {
-                        await signOut()
-                        setAuthUser(null)
-                      } catch (e) {
-                        addToast('❌', 'ログアウトに失敗しました', e?.message ?? '')
-                      }
-                    }}
-                  >
-                    ログアウト
-                  </button>
-                  <button type="button" className="btn btn-primary" onClick={() => setShowProfileModal(false)}>閉じる</button>
-                </div>
-              </>
-            ) : (
-              <>
-                <p className="form-message">
-                  外側をクリックしても閉じられます。
-                </p>
-                <ProfileLoginForm
-                  onSuccess={() => setShowProfileModal(false)}
-                  onError={addToast}
-                />
-              </>
-            )}
-          </div>
-        </div>
+        <ProfileModal
+          authUser={authUser}
+          profileDisplayName={profileDisplayName}
+          setProfileDisplayName={setProfileDisplayName}
+          profileNewPassword={profileNewPassword}
+          setProfileNewPassword={setProfileNewPassword}
+          profileConfirmPassword={profileConfirmPassword}
+          setProfileConfirmPassword={setProfileConfirmPassword}
+          profileLoading={profileLoading}
+          setProfileLoading={setProfileLoading}
+          profileError={profileError}
+          setProfileError={setProfileError}
+          onClose={() => setShowProfileModal(false)}
+          addToast={addToast}
+          setAuthUser={setAuthUser}
+        />
       )}
 
       <Toast toasts={toasts} />

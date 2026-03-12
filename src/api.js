@@ -186,6 +186,9 @@ export async function updateProject(id, patch) {
 // ── タスク追加・更新 ─────────────────────────────────────────
 export async function insertTask(task) {
   requireSupabase()
+  if (!task || typeof task.title !== 'string') {
+    throw new Error('タスク名は必須です')
+  }
   const ownerId = await getOwnerId()
   const status = task.status && TASK_STATUS_KEYS.includes(task.status) ? task.status : (task.done ? 'done' : 'todo')
   const row = {
@@ -211,6 +214,9 @@ export async function insertTask(task) {
 
 export async function updateTask(id, patch) {
   requireSupabase()
+  if (!id || !patch || typeof patch !== 'object') {
+    throw new Error('更新パラメータが不正です')
+  }
   const row = {}
   if (patch.title !== undefined) row.title = patch.title
   if (patch.desc !== undefined) row.desc = patch.desc
@@ -398,10 +404,15 @@ export async function deleteRemember(id) {
 }
 
 // ── 認証（Supabase Auth）──────────────────────────────────────
+/** 現在のセッションを取得。未設定・ネットワークエラー時は null を返しアプリはログイン画面を表示する */
 export async function getAuthSession() {
   if (!supabase) return null
-  const { data: { session } } = await supabase.auth.getSession()
-  return session
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    return session
+  } catch {
+    return null
+  }
 }
 
 export async function signInWithPassword(email, password) {

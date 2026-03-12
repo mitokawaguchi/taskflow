@@ -432,4 +432,35 @@ describe('api', () => {
       await expect(claimExistingDataToAccount()).rejects.toThrow('廃止されています')
     })
   })
+
+  describe('getAuthSession (根幹)', () => {
+    it('returns null when getSession throws', async () => {
+      const { supabase } = await import('./supabase')
+      supabase.auth.getSession.mockRejectedValueOnce(new Error('Network error'))
+      const { getAuthSession } = await import('./api')
+      const session = await getAuthSession()
+      expect(session).toBeNull()
+    })
+    it('returns session when getSession resolves', async () => {
+      const { supabase } = await import('./supabase')
+      const mockSession = { user: { id: 'u1', email: 'a@b.co' } }
+      supabase.auth.getSession.mockResolvedValueOnce({ data: { session: mockSession } })
+      const { getAuthSession } = await import('./api')
+      const session = await getAuthSession()
+      expect(session).toEqual(mockSession)
+    })
+  })
+
+  describe('insertTask / updateTask 必須チェック (根幹)', () => {
+    it('insertTask throws when task has no title', async () => {
+      const { insertTask } = await import('./api')
+      await expect(insertTask(null)).rejects.toThrow('タスク名は必須です')
+      await expect(insertTask({ id: 't1', projectId: 'p1' })).rejects.toThrow('タスク名は必須です')
+    })
+    it('updateTask throws when id or patch invalid', async () => {
+      const { updateTask } = await import('./api')
+      await expect(updateTask('', { title: 'x' })).rejects.toThrow('更新パラメータが不正です')
+      await expect(updateTask('t1', null)).rejects.toThrow('更新パラメータが不正です')
+    })
+  })
 })
