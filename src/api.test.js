@@ -394,13 +394,37 @@ describe('api', () => {
   })
 
   describe('deleteTemplate', () => {
-    it('does not throw', async () => {
+    it('does not throw when owner matches or null (SEC-005)', async () => {
       const { supabase } = await import('./supabase')
-      supabase.from.mockReturnValue({
-        delete: () => ({ eq: () => Promise.resolve({ error: null }) }),
+      supabase.auth.getSession.mockResolvedValue({ data: { session: { user: { id: 'me' } } } })
+      supabase.from.mockImplementation((table) => {
+        if (table === 'tf_templates') {
+          return {
+            select: () => ({
+              eq: () => ({
+                single: () => Promise.resolve({ data: { owner_id: 'me' }, error: null }),
+              }),
+            }),
+            delete: () => ({ eq: () => Promise.resolve({ error: null }) }),
+          }
+        }
+        return mockSelectOrder([])
       })
       const { deleteTemplate } = await import('./api')
       await expect(deleteTemplate('tpl1')).resolves.toBeUndefined()
+    })
+    it('throws when owner does not match (SEC-005)', async () => {
+      const { supabase } = await import('./supabase')
+      supabase.auth.getSession.mockResolvedValue({ data: { session: { user: { id: 'me' } } } })
+      supabase.from.mockReturnValue({
+        select: () => ({
+          eq: () => ({
+            single: () => Promise.resolve({ data: { owner_id: 'other-user' }, error: null }),
+          }),
+        }),
+      })
+      const { deleteTemplate } = await import('./api')
+      await expect(deleteTemplate('tpl1')).rejects.toThrow('権限がありません')
     })
   })
 
@@ -457,10 +481,40 @@ describe('api', () => {
       await expect(insertTask(null)).rejects.toThrow('タスク名は必須です')
       await expect(insertTask({ id: 't1', projectId: 'p1' })).rejects.toThrow('タスク名は必須です')
     })
+    it('insertTask throws when title exceeds VALIDATION.taskTitle (SEC-004)', async () => {
+      const { insertTask } = await import('./api')
+      const { VALIDATION } = await import('./constants')
+      const longTitle = 'x'.repeat(VALIDATION.taskTitle + 1)
+      await expect(
+        insertTask({ id: 't1', projectId: 'p1', title: longTitle, desc: '', priority: 'medium', due: null, done: false, created: 1 })
+      ).rejects.toThrow('文字以内にしてください')
+    })
     it('updateTask throws when id or patch invalid', async () => {
       const { updateTask } = await import('./api')
       await expect(updateTask('', { title: 'x' })).rejects.toThrow('更新パラメータが不正です')
       await expect(updateTask('t1', null)).rejects.toThrow('更新パラメータが不正です')
+    })
+  })
+
+  describe('SEC-004 入力長チェック', () => {
+    it('insertProject throws when name exceeds VALIDATION.projectName', async () => {
+      const { insertProject } = await import('./api')
+      const { VALIDATION } = await import('./constants')
+      const longName = 'x'.repeat(VALIDATION.projectName + 1)
+      await expect(
+        insertProject({ id: 'p1', name: longName, color: '#000', icon: '📁' })
+      ).rejects.toThrow('文字にしてください')
+    })
+  })
+
+  describe('SEC-005 ensureCanDelete', () => {
+    it('deleteTemplate throws when row not found', async () => {
+      const { supabase } = await import('./supabase')
+      supabase.from.mockReturnValue({
+        select: () => ({ eq: () => ({ single: () => Promise.resolve({ data: null, error: { code: 'PGRST116' } }) }) }),
+      })
+      const { deleteTemplate } = await import('./api')
+      await expect(deleteTemplate('nonexistent')).rejects.toThrow('削除対象が見つかりません')
     })
   })
 })

@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import { TASK_STATUS_KEYS } from './constants'
+import { TASK_STATUS_KEYS, VALIDATION } from './constants'
 
 const CONFIG_MSG =
   'Supabase の設定がありません。.env に VITE_SUPABASE_URL と VITE_SUPABASE_ANON_KEY を設定するか、Vercel の環境変数を確認してください。'
@@ -101,6 +101,16 @@ async function getOwnerId() {
   return session?.user?.id ?? null
 }
 
+/** SEC-005: 削除前に所有者を確認。RLS 未設定時も他人のデータを削除させない */
+async function ensureCanDelete(table, id) {
+  const ownerId = await getOwnerId()
+  const { data: row, error } = await supabase.from(table).select('owner_id').eq('id', id).single()
+  if (error || !row) throw new Error('削除対象が見つかりません')
+  if (row.owner_id != null && ownerId !== row.owner_id) {
+    throw new Error('このデータを削除する権限がありません')
+  }
+}
+
 // ── 取得 ─────────────────────────────────────────────────────
 export async function fetchProjects() {
   requireSupabase()
@@ -155,6 +165,9 @@ export async function fetchUsers() {
 // ── プロジェクト追加・更新 ─────────────────────────────────────
 export async function insertProject(project) {
   requireSupabase()
+  if (!project?.name || String(project.name).length > VALIDATION.projectName) {
+    throw new Error(`プロジェクト名は1〜${VALIDATION.projectName}文字にしてください`)
+  }
   const ownerId = await getOwnerId()
   const row = {
     id: project.id,
@@ -172,6 +185,9 @@ export async function insertProject(project) {
 
 export async function updateProject(id, patch) {
   requireSupabase()
+  if (patch.name !== undefined && String(patch.name).length > VALIDATION.projectName) {
+    throw new Error(`プロジェクト名は${VALIDATION.projectName}文字以内にしてください`)
+  }
   const row = {}
   if (patch.name !== undefined) row.name = patch.name
   if (patch.color !== undefined) row.color = patch.color
@@ -189,6 +205,8 @@ export async function insertTask(task) {
   if (!task || typeof task.title !== 'string') {
     throw new Error('タスク名は必須です')
   }
+  if (task.title.length > VALIDATION.taskTitle) throw new Error(`タスク名は${VALIDATION.taskTitle}文字以内にしてください`)
+  if (task.desc != null && String(task.desc).length > VALIDATION.taskDesc) throw new Error(`説明は${VALIDATION.taskDesc}文字以内にしてください`)
   const ownerId = await getOwnerId()
   const status = task.status && TASK_STATUS_KEYS.includes(task.status) ? task.status : (task.done ? 'done' : 'todo')
   const row = {
@@ -217,6 +235,8 @@ export async function updateTask(id, patch) {
   if (!id || !patch || typeof patch !== 'object') {
     throw new Error('更新パラメータが不正です')
   }
+  if (patch.title !== undefined && patch.title.length > VALIDATION.taskTitle) throw new Error(`タスク名は${VALIDATION.taskTitle}文字以内にしてください`)
+  if (patch.desc !== undefined && String(patch.desc).length > VALIDATION.taskDesc) throw new Error(`説明は${VALIDATION.taskDesc}文字以内にしてください`)
   const row = {}
   if (patch.title !== undefined) row.title = patch.title
   if (patch.desc !== undefined) row.desc = patch.desc
@@ -285,6 +305,8 @@ export async function insertCategory(category) {
 // ── テンプレート追加 ─────────────────────────────────────────
 export async function insertTemplate(template) {
   requireSupabase()
+  if (template.title != null && String(template.title).length > VALIDATION.templateTitle) throw new Error(`テンプレート名は${VALIDATION.templateTitle}文字以内にしてください`)
+  if (template.desc != null && String(template.desc).length > VALIDATION.templateDesc) throw new Error(`説明は${VALIDATION.templateDesc}文字以内にしてください`)
   const ownerId = await getOwnerId()
   const row = {
     id: template.id,
@@ -300,6 +322,8 @@ export async function insertTemplate(template) {
 
 export async function updateTemplate(id, patch) {
   requireSupabase()
+  if (patch.title !== undefined && String(patch.title).length > VALIDATION.templateTitle) throw new Error(`テンプレート名は${VALIDATION.templateTitle}文字以内にしてください`)
+  if (patch.desc !== undefined && String(patch.desc).length > VALIDATION.templateDesc) throw new Error(`説明は${VALIDATION.templateDesc}文字以内にしてください`)
   const row = {
     title: patch.title,
     desc: patch.desc ?? '',
@@ -312,6 +336,7 @@ export async function updateTemplate(id, patch) {
 
 export async function deleteTemplate(id) {
   requireSupabase()
+  await ensureCanDelete('tf_templates', id)
   const { error } = await supabase.from('tf_templates').delete().eq('id', id)
   if (error) throw error
 }
@@ -329,6 +354,7 @@ export async function fetchClients() {
 
 export async function insertClient(client) {
   requireSupabase()
+  if (!client?.name || String(client.name).length > VALIDATION.clientName) throw new Error(`クライアント名は1〜${VALIDATION.clientName}文字にしてください`)
   const ownerId = await getOwnerId()
   const row = { id: client.id, name: client.name, color: client.color, icon: client.icon }
   if (ownerId) row.owner_id = ownerId
@@ -339,6 +365,7 @@ export async function insertClient(client) {
 
 export async function updateClient(id, patch) {
   requireSupabase()
+  if (patch.name !== undefined && String(patch.name).length > VALIDATION.clientName) throw new Error(`クライアント名は${VALIDATION.clientName}文字以内にしてください`)
   const row = { name: patch.name, color: patch.color, icon: patch.icon }
   const { data, error } = await supabase.from('tf_clients').update(row).eq('id', id).select().single()
   if (error) throw error
@@ -347,6 +374,7 @@ export async function updateClient(id, patch) {
 
 export async function deleteClient(id) {
   requireSupabase()
+  await ensureCanDelete('tf_clients', id)
   const { error } = await supabase.from('tf_clients').delete().eq('id', id)
   if (error) throw error
 }
@@ -364,6 +392,7 @@ export async function fetchRemember() {
 
 export async function insertRemember(item) {
   requireSupabase()
+  if (item.body != null && String(item.body).length > VALIDATION.rememberBody) throw new Error(`メモは${VALIDATION.rememberBody}文字以内にしてください`)
   const ownerId = await getOwnerId()
   const row = {
     id: item.id,
@@ -390,6 +419,7 @@ export async function claimExistingDataToAccount() {
 
 export async function updateRemember(id, patch) {
   requireSupabase()
+  if (patch.body !== undefined && String(patch.body).length > VALIDATION.rememberBody) throw new Error(`メモは${VALIDATION.rememberBody}文字以内にしてください`)
   const row = {}
   if (patch.body !== undefined) row.body = patch.body
   const { data, error } = await supabase.from('tf_remember').update(row).eq('id', id).select().single()
@@ -399,6 +429,7 @@ export async function updateRemember(id, patch) {
 
 export async function deleteRemember(id) {
   requireSupabase()
+  await ensureCanDelete('tf_remember', id)
   const { error } = await supabase.from('tf_remember').delete().eq('id', id)
   if (error) throw error
 }

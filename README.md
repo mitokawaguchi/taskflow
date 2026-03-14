@@ -2,6 +2,10 @@
 
 タスク・プロジェクト・クライアントを一元管理する Web アプリ。カンバン・ガントチャート・ダッシュボードを備え、Supabase で認証・データ永続化を行います。
 
+> **⚠️ 本番環境では必ず RLS（Row Level Security）を有効にしてください。**  
+> RLS を設定しないと、anon key で他ユーザーのデータの参照・改ざん・削除が可能になります。  
+> 手順は [docs/SUPABASE_RLS_SETUP.md](docs/SUPABASE_RLS_SETUP.md) と `docs/SUPABASE_RLS_POLICIES.sql` を参照してください。
+
 ## 技術スタック
 
 | 領域 | 技術 |
