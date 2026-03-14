@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 import { updateTask, insertTask } from '../api'
+import { classifyApiError } from '../utils/apiError'
 
 /** タスクの保存・トグル・ステータス移動を集約。ARCH-001 */
 export function useTaskActions(tasks, setTasks, addToast, editTask, closeTaskForm) {
@@ -29,7 +30,9 @@ export function useTaskActions(tasks, setTasks, addToast, editTask, closeTaskFor
         }
         closeTaskForm()
       } catch (e) {
-        addToast('❌', '保存できませんでした', e?.message ?? '')
+        const kind = classifyApiError(e)
+        const msg = kind === 'network' ? 'ネットワークエラー。接続を確認してください。' : (e?.message ?? '')
+        addToast('❌', '保存できませんでした', msg)
       }
     },
     [editTask?.id, addToast, closeTaskForm]

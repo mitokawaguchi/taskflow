@@ -8,3 +8,16 @@ test('home loads and shows either login or main UI', async ({ page }) => {
   const hasTaskCount = await page.getByText(/件のタスク/).isVisible().catch(() => false)
   expect(hasLogin || hasTaskCount).toBe(true)
 })
+
+test('legal links are visible', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.getByRole('button', { name: '利用規約' })).toBeVisible({ timeout: 10000 })
+})
+
+test('view title or menu is visible when main UI shown', async ({ page }) => {
+  await page.goto('/')
+  await page.waitForLoadState('networkidle')
+  const body = await page.locator('body').textContent()
+  const hasUi = body && (body.includes('プロジェクト') || body.includes('カンバン') || body.includes('ログイン'))
+  expect(hasUi).toBe(true)
+})
