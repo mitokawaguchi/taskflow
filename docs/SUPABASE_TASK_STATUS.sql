@@ -9,7 +9,7 @@ UPDATE public.tf_tasks
   SET status = 'done'
   WHERE done = true AND (status IS NULL OR status = 'todo');
 
--- 有効な値に制限したい場合（オプション）:
--- ALTER TABLE public.tf_tasks
---   ADD CONSTRAINT tf_tasks_status_check
---   CHECK (status IN ('todo', 'in_progress', 'review', 'done'));
+-- 有効な値に制限（SEC-004）。既に TASKS_SCHEMA で定義済みの場合はスキップ可。
+ALTER TABLE public.tf_tasks DROP CONSTRAINT IF EXISTS tf_tasks_status_check;
+ALTER TABLE public.tf_tasks ADD CONSTRAINT tf_tasks_status_check
+  CHECK (status IN ('todo', 'in_progress', 'review', 'done'));

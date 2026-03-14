@@ -64,7 +64,7 @@ export default function ClientDetail({
                 <>
                   <input
                     type="text"
-                    className="form-input"
+                    className="form-input remember-edit-input"
                     value={editingBody}
                     onChange={e => setEditingBody(e.target.value)}
                     onKeyDown={e => {
@@ -74,7 +74,6 @@ export default function ClientDetail({
                       }
                       if (e.key === 'Escape') setEditingId(null)
                     }}
-                    className="form-input remember-edit-input"
                     autoFocus
                   />
                   <div className="flex-gap-8">

@@ -36,12 +36,12 @@ UPDATE public.tf_tasks
   SET status = 'done'
   WHERE done = true AND (status IS NULL OR status = 'todo');
 
--- 制約で有効値に限定（任意・既存データが全て valid な場合のみ）
--- ALTER TABLE public.tf_tasks
---   DROP CONSTRAINT IF EXISTS tf_tasks_status_check;
--- ALTER TABLE public.tf_tasks
---   ADD CONSTRAINT tf_tasks_status_check
---   CHECK (status IN ('todo', 'in_progress', 'review', 'done'));
+-- 制約で有効値に限定（SEC-004: サーバーサイドバリデーション）
+ALTER TABLE public.tf_tasks
+  DROP CONSTRAINT IF EXISTS tf_tasks_status_check;
+ALTER TABLE public.tf_tasks
+  ADD CONSTRAINT tf_tasks_status_check
+  CHECK (status IN ('todo', 'in_progress', 'review', 'done'));
 
 -- -----------------------------------------------------------------------------
 -- (3) ガント・進捗用の追加カラム
@@ -54,12 +54,12 @@ ALTER TABLE public.tf_tasks
 ALTER TABLE public.tf_tasks
   ADD COLUMN IF NOT EXISTS progress SMALLINT;
 
--- 0〜100 に制限（任意）
--- ALTER TABLE public.tf_tasks
---   DROP CONSTRAINT IF EXISTS tf_tasks_progress_range;
--- ALTER TABLE public.tf_tasks
---   ADD CONSTRAINT tf_tasks_progress_range
---   CHECK (progress IS NULL OR (progress >= 0 AND progress <= 100));
+-- 0〜100 に制限（SEC-004）
+ALTER TABLE public.tf_tasks
+  DROP CONSTRAINT IF EXISTS tf_tasks_progress_range;
+ALTER TABLE public.tf_tasks
+  ADD CONSTRAINT tf_tasks_progress_range
+  CHECK (progress IS NULL OR (progress >= 0 AND progress <= 100));
 
 -- -----------------------------------------------------------------------------
 -- カラム一覧（参照用）

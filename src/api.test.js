@@ -9,16 +9,20 @@ vi.mock('./supabase', () => ({
   },
 }))
 
-// Supabase の select().or().order().order() チェーンを再現（fetchProjects は .order().order() を使用）
+// Supabase の select().eq().order().order() / select().eq().order().limit() チェーンを再現
 function mockSelectOrder(data) {
   const promise = Promise.resolve({ data: data ?? [], error: null })
   const orderResult = {
-    order: () => promise,
+    order: () => orderResult,
+    limit: () => promise,
     then: promise.then.bind(promise),
     catch: promise.catch.bind(promise),
   }
   const chain = {
     or: function () {
+      return this
+    },
+    eq: function () {
       return this
     },
     order: () => orderResult,
@@ -91,6 +95,31 @@ describe('api', () => {
     })
   })
 
+  describe('fetchTasks owner filter (TEST-002)', () => {
+    it('when session is null, returns empty array without throwing', async () => {
+      const { supabase } = await import('./supabase')
+      supabase.auth.getSession.mockResolvedValueOnce({ data: { session: null } })
+      supabase.from.mockReturnValue(mockSelectOrder([]))
+      const { fetchTasks } = await import('./api')
+      const result = await fetchTasks()
+      expect(result).toEqual([])
+    })
+    it('when session has user, returns data with owner filter applied', async () => {
+      const { supabase } = await import('./supabase')
+      supabase.auth.getSession.mockResolvedValueOnce({
+        data: { session: { user: { id: 'u1' } } },
+      })
+      supabase.from.mockReturnValue(
+        mockSelectOrder([{ id: 't1', project_id: 'p1', title: 'T', desc: '', done: false, created: 1 }])
+      )
+      const { fetchTasks } = await import('./api')
+      const result = await fetchTasks()
+      expect(result).toHaveLength(1)
+      expect(result[0].title).toBe('T')
+      expect(supabase.from).toHaveBeenCalledWith('tf_tasks')
+    })
+  })
+
   describe('fetchTasks', () => {
     it('returns empty array when no data', async () => {
       const { fetchTasks } = await import('./api')
@@ -154,6 +183,25 @@ describe('api', () => {
       const result = await fetchTasks()
       expect(result[0].done).toBe(true)
       expect(result[0].status).toBe('done')
+    })
+    it('accepts limit option (PERF-001)', async () => {
+      const { supabase } = await import('./supabase')
+      const { fetchTasks } = await import('./api')
+      let limitArg
+      const orderResult = {
+        order: () => orderResult,
+        limit: (n) => {
+          limitArg = n
+          return Promise.resolve({ data: [], error: null })
+        },
+      }
+      const chain = {
+        or: () => chain,
+        order: () => orderResult,
+      }
+      supabase.from.mockReturnValue({ select: () => chain })
+      await fetchTasks({ limit: 100 })
+      expect(limitArg).toBe(100)
     })
   })
 

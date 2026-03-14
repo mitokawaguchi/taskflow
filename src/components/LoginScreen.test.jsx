@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import LoginScreen, { ProfileLoginForm, LegalLinks } from './LoginScreen'
+import LoginScreen from './LoginScreen'
+import { ProfileLoginForm } from './ProfileLoginForm'
+import { LegalLinks } from './LegalLinks'
 
 vi.mock('../api', () => ({
   signInWithPassword: vi.fn(() => Promise.resolve()),

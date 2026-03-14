@@ -1545,6 +1545,13 @@ select { appearance: none; }
   justify-content: center;
   min-height: 100vh;
 }
+.loading-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--text-muted);
+}
 .text-muted-sm {
   font-size: 11px;
   color: var(--text-muted);
@@ -1568,7 +1575,9 @@ select { appearance: none; }
 .mt-6 { margin-top: 6px; }
 .mt-8 { margin-top: 8px; }
 .mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
 .ml-auto { margin-left: auto; }
+.rounded-circle { border-radius: 50%; }
 .sidebar-section--pb8 { padding-bottom: 8px; }
 .sidebar-label-row { display: flex; align-items: center; justify-content: space-between; padding-right: 8px; }
 .sidebar-section--mt4 { margin-top: 4px; }

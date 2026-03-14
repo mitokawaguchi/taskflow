@@ -45,7 +45,7 @@ export default function SettingsModal({
         <h2 className="modal-title">設定</h2>
         <div className="form-group">
           <span className="form-label">表示モード</span>
-          <div className="theme-toggle" style={{ marginTop: 8 }}>
+          <div className="theme-toggle mt-8">
             <span className="theme-toggle__label">{theme === 'dark' ? 'ダーク' : 'ライト'}</span>
             <button
               type="button"
@@ -56,7 +56,7 @@ export default function SettingsModal({
           </div>
         </div>
 
-        <div className="form-group" style={{ marginTop: 24 }}>
+        <div className="form-group mt-24">
           <span className="form-label">チームメンバー</span>
           <p className="form-hint">タスクの担当者として選べるメンバーを追加します。</p>
           <ul className="settings-category-list" aria-label="チームメンバー">
@@ -67,7 +67,7 @@ export default function SettingsModal({
                 <li key={u.id} className="settings-category-item">
                   <span className="settings-user-avatar">
                     {u.avatarUrl ? (
-                      <img src={u.avatarUrl} alt="" width={24} height={24} style={{ borderRadius: '50%' }} />
+                      <img src={u.avatarUrl} alt="" width={24} height={24} className="rounded-circle" />
                     ) : (
                       '👤'
                     )}
@@ -110,9 +110,9 @@ export default function SettingsModal({
           </div>
         </div>
 
-        <div className="form-group" style={{ marginTop: 24 }}>
+        <div className="form-group mt-24">
           <span className="form-label">通知</span>
-          <div className="theme-toggle" style={{ marginTop: 8 }}>
+          <div className="theme-toggle mt-8">
             <span className="theme-toggle__label">期限リマインダー（今日が期限のタスクをお知らせ）</span>
             <button
               type="button"

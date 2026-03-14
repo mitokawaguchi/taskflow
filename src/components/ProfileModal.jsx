@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { ProfileLoginForm } from './LoginScreen'
+import { ProfileLoginForm } from './ProfileLoginForm'
 import { updateAuthUserMetadata, updateAuthPassword, signOut } from '../api'
 
 export default function ProfileModal({ authUser, onClose, addToast, setAuthUser }) {
@@ -41,8 +41,7 @@ export default function ProfileModal({ authUser, onClose, addToast, setAuthUser 
                 />
                 <button
                   type="button"
-                  className="btn btn-ghost btn-sm"
-                  style={{ marginTop: 6 }}
+                  className="btn btn-ghost btn-sm mt-6"
                   disabled={loading}
                   onClick={async () => {
                     setError('')
@@ -80,8 +79,7 @@ export default function ProfileModal({ authUser, onClose, addToast, setAuthUser 
                 />
                 <input
                   type="password"
-                  className="form-input"
-                  style={{ marginTop: 6 }}
+                  className="form-input mt-6"
                   value={confirmPassword}
                   onChange={(e) => {
                     setConfirmPassword(e.target.value)
