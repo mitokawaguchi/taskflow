@@ -19,9 +19,6 @@ import ProjectDetail from './ProjectDetail'
 import ClientForm from './ClientForm'
 import ClientDetail from './ClientDetail'
 import Toast from './Toast'
-const KanbanBoard = lazy(() => import('./KanbanBoard'))
-const Dashboard = lazy(() => import('./Dashboard'))
-const GanttChart = lazy(() => import('./GanttChart'))
 import LoginScreen from './components/LoginScreen'
 import { LegalLinks } from './components/LegalLinks'
 import CategoriesView from './components/CategoriesView'
@@ -35,6 +32,10 @@ import ProjectsOverview from './components/ProjectsOverview'
 import ProjectCard from './components/ProjectCard'
 import TaskListWithFilters from './components/TaskListWithFilters'
 import Sidebar from './components/Sidebar'
+import TopBar from './components/TopBar'
+import AppModals from './components/AppModals'
+import ContentArea from './components/ContentArea'
+import ContentAreaTasks from './components/ContentAreaTasks'
 import { getLegalPageFromHash } from './legalContent'
 
 function getViewFromPathname(pathname) {
