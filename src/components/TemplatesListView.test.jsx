@@ -31,8 +31,8 @@ describe('TemplatesListView', () => {
     )
     expect(screen.getByText('テンプレ1')).toBeInTheDocument()
     expect(screen.getByText('テンプレ2')).toBeInTheDocument()
-    expect(screen.getByText('編集')).toBeInTheDocument()
-    expect(screen.getByText('このテンプレを使う')).toBeInTheDocument()
+    expect(screen.getAllByText('編集')).toHaveLength(2)
+    expect(screen.getAllByText('このテンプレを使う')).toHaveLength(2)
   })
 
   it('calls onEditTemplate when 編集 is clicked', () => {

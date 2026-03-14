@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import { PRIORITY, TASK_STATUS, TASK_STATUS_KEYS, VALIDATION, truncateToMax, categoriesToOptions } from './constants'
 import { formatDate, isToday, isTomorrow } from './utils'
 import CalendarPicker from './CalendarPicker'
+import CategoryPicker from './components/CategoryPicker'
 
 const DEFAULT_FORM = {
   title: '',
@@ -37,16 +38,6 @@ function getInitialTaskForm(task, projects) {
 
 export default function TaskForm({ task, projects, templates, categories = [], users = [], onSave, onClose }) {
   const categoryOptions = categoriesToOptions(categories)
-  const [categoryOpen, setCategoryOpen] = useState(false)
-  const categoryPickerRef = useRef(null)
-  useEffect(() => {
-    if (!categoryOpen) return
-    const close = (e) => {
-      if (categoryPickerRef.current && !categoryPickerRef.current.contains(e.target)) setCategoryOpen(false)
-    }
-    document.addEventListener('click', close)
-    return () => document.removeEventListener('click', close)
-  }, [categoryOpen])
   const [form, setForm] = useState(() => getInitialTaskForm(task, projects))
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
@@ -121,52 +112,11 @@ export default function TaskForm({ task, projects, templates, categories = [], u
         </div>
         <div className="form-group">
           <label className="form-label">カテゴリ</label>
-          <div className="form-category-picker" ref={categoryPickerRef}>
-            <button
-              type="button"
-              className="form-category-picker__trigger"
-              onClick={() => setCategoryOpen(o => !o)}
-              aria-expanded={categoryOpen}
-              aria-haspopup="listbox"
-              aria-label="カテゴリを選択"
-            >
-              {form.category ? (() => {
-                const opt = categoryOptions.find(o => o.id === form.category)
-                return opt ? (
-                  <>
-                    <span className="form-category-picker__swatch" style={{ background: opt.color }} aria-hidden />
-                    <span>{opt.label}</span>
-                  </>
-                ) : (
-                  <span className="form-category-picker__empty">なし</span>
-                )
-              })() : (
-                <span className="form-category-picker__empty">なし</span>
-              )}
-            </button>
-            {categoryOpen && (
-              <ul className="form-category-picker__list" role="listbox">
-                <li role="option" aria-selected={!form.category}>
-                  <button type="button" className="form-category-picker__option" onClick={() => { set('category', ''); setCategoryOpen(false) }}>
-                    <span className="form-category-picker__swatch form-category-picker__swatch--none" aria-hidden />
-                    <span>なし</span>
-                  </button>
-                </li>
-                {categoryOptions.map((opt) => (
-                  <li key={opt.id} role="option" aria-selected={form.category === opt.id}>
-                    <button
-                      type="button"
-                      className="form-category-picker__option"
-                      onClick={() => { set('category', opt.id); setCategoryOpen(false) }}
-                    >
-                      <span className="form-category-picker__swatch" style={{ background: opt.color }} aria-hidden />
-                      <span>{opt.label}</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          <CategoryPicker
+            value={form.category}
+            onChange={(v) => set('category', v)}
+            options={categoryOptions}
+          />
         </div>
         <div className="form-group">
           <label className="form-label">担当者</label>

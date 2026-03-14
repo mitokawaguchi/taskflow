@@ -1,22 +1,20 @@
+import { useState, useEffect } from 'react'
 import { ProfileLoginForm } from './LoginScreen'
 import { updateAuthUserMetadata, updateAuthPassword, signOut } from '../api'
 
-export default function ProfileModal({
-  authUser,
-  profileDisplayName,
-  setProfileDisplayName,
-  profileNewPassword,
-  setProfileNewPassword,
-  profileConfirmPassword,
-  setProfileConfirmPassword,
-  profileLoading,
-  setProfileLoading,
-  profileError,
-  setProfileError,
-  onClose,
-  addToast,
-  setAuthUser,
-}) {
+export default function ProfileModal({ authUser, onClose, addToast, setAuthUser }) {
+  const [displayName, setDisplayName] = useState(
+    authUser?.user_metadata?.display_name ?? ''
+  )
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    setDisplayName(authUser?.user_metadata?.display_name ?? '')
+  }, [authUser])
+
   return (
     <div className="overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -36,28 +34,28 @@ export default function ProfileModal({
                   id="profile-display-name"
                   type="text"
                   className="form-input"
-                  value={profileDisplayName}
-                  onChange={(e) => setProfileDisplayName(e.target.value)}
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
                   placeholder="表示名"
-                  disabled={profileLoading}
+                  disabled={loading}
                 />
                 <button
                   type="button"
                   className="btn btn-ghost btn-sm"
                   style={{ marginTop: 6 }}
-                  disabled={profileLoading}
+                  disabled={loading}
                   onClick={async () => {
-                    setProfileError('')
-                    setProfileLoading(true)
+                    setError('')
+                    setLoading(true)
                     try {
                       await updateAuthUserMetadata({
-                        display_name: profileDisplayName.trim() || undefined,
+                        display_name: displayName.trim() || undefined,
                       })
                       addToast('✅', '保存しました', '表示名を更新しました')
                     } catch (e) {
-                      setProfileError(e?.message ?? '保存に失敗しました')
+                      setError(e?.message ?? '保存に失敗しました')
                     } finally {
-                      setProfileLoading(false)
+                      setLoading(false)
                     }
                   }}
                 >
@@ -72,63 +70,61 @@ export default function ProfileModal({
                   id="profile-new-password"
                   type="password"
                   className="form-input"
-                  value={profileNewPassword}
+                  value={newPassword}
                   onChange={(e) => {
-                    setProfileNewPassword(e.target.value)
-                    setProfileError('')
+                    setNewPassword(e.target.value)
+                    setError('')
                   }}
                   placeholder="新しいパスワード（6文字以上）"
-                  disabled={profileLoading}
+                  disabled={loading}
                 />
                 <input
                   type="password"
                   className="form-input"
                   style={{ marginTop: 6 }}
-                  value={profileConfirmPassword}
+                  value={confirmPassword}
                   onChange={(e) => {
-                    setProfileConfirmPassword(e.target.value)
-                    setProfileError('')
+                    setConfirmPassword(e.target.value)
+                    setError('')
                   }}
                   placeholder="確認"
-                  disabled={profileLoading}
+                  disabled={loading}
                 />
                 <button
                   type="button"
                   className="btn btn-ghost btn-sm mt-6"
                   disabled={
-                    profileLoading ||
-                    !profileNewPassword ||
-                    !profileConfirmPassword
+                    loading || !newPassword || !confirmPassword
                   }
                   onClick={async () => {
-                    setProfileError('')
-                    if (profileNewPassword.length < 6) {
-                      setProfileError('パスワードは6文字以上にしてください')
+                    setError('')
+                    if (newPassword.length < 6) {
+                      setError('パスワードは6文字以上にしてください')
                       return
                     }
-                    if (profileNewPassword !== profileConfirmPassword) {
-                      setProfileError('確認が一致しません')
+                    if (newPassword !== confirmPassword) {
+                      setError('確認が一致しません')
                       return
                     }
-                    setProfileLoading(true)
+                    setLoading(true)
                     try {
-                      await updateAuthPassword(profileNewPassword)
-                      setProfileNewPassword('')
-                      setProfileConfirmPassword('')
+                      await updateAuthPassword(newPassword)
+                      setNewPassword('')
+                      setConfirmPassword('')
                       addToast('✅', 'パスワードを変更しました', '')
                     } catch (e) {
-                      setProfileError(e?.message ?? '変更に失敗しました')
+                      setError(e?.message ?? '変更に失敗しました')
                     } finally {
-                      setProfileLoading(false)
+                      setLoading(false)
                     }
                   }}
                 >
                   パスワードを変更
                 </button>
               </div>
-              {profileError && (
+              {error && (
                 <p className="form-message form-message--error mt-8">
-                  {profileError}
+                  {error}
                 </p>
               )}
             </div>

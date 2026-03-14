@@ -442,7 +442,9 @@ describe('api', () => {
   describe('deleteClient', () => {
     it('does not throw', async () => {
       const { supabase } = await import('./supabase')
+      supabase.auth.getSession.mockResolvedValue({ data: { session: { user: { id: 'me' } } } })
       supabase.from.mockReturnValue({
+        select: () => ({ eq: () => ({ single: () => Promise.resolve({ data: { owner_id: 'me' }, error: null }) }) }),
         delete: () => ({ eq: () => Promise.resolve({ error: null }) }),
       })
       const { deleteClient } = await import('./api')

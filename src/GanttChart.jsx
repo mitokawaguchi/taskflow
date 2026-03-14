@@ -1,35 +1,12 @@
 import { useMemo, useState, useRef } from 'react'
-import { today, formatDate } from './utils'
+import { today, formatDate, getWeekStart, getWeekEnd, formatWeekLabel } from './utils'
+import GanttTooltip from './components/GanttTooltip'
 
 const ROW_HEIGHT = 36
 const DAY_WIDTH = 44
 const WEEK_WIDTH = 80
 
-/** 指定日の属する週の月曜日を YYYY-MM-DD で返す */
-function getWeekStart(dateStr) {
-  const d = new Date(dateStr + 'T12:00:00')
-  const day = d.getDay()
-  const diff = day === 0 ? 6 : day - 1
-  d.setDate(d.getDate() - diff)
-  return d.toISOString().slice(0, 10)
-}
-
-/** 月曜日 YYYY-MM-DD から日曜日を返す */
-function getWeekEnd(weekStartStr) {
-  const d = new Date(weekStartStr + 'T12:00:00')
-  d.setDate(d.getDate() + 6)
-  return d.toISOString().slice(0, 10)
-}
-
-/** 週開始日から「○月○週目」ラベルを返す（ツールチップ用に日付範囲も渡せる） */
-function formatWeekLabel(weekStartStr) {
-  const d = new Date(weekStartStr + 'T12:00:00')
-  const month = d.getMonth() + 1
-  const weekOfMonth = Math.ceil(d.getDate() / 7)
-  return `${month}月${weekOfMonth}週目`
-}
-
-export default function GanttChart({ tasks, projects, onEditTask }) {
+export default function GanttChart({ tasks, projects, projectsMap, onEditTask }) {
   const [range, setRange] = useState('month') // 'week' | 'month' | 'quarter'
 
   const { days, weeks, isQuarter } = useMemo(() => {
@@ -165,7 +142,7 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
                 )
               }),
               ...group.tasks.flatMap(t => {
-                const taskProj = projects.find(p => p.id === t.projectId)
+                const taskProj = projectsMap?.get(t.projectId) ?? projects.find(p => p.id === t.projectId)
                 const handleOpen = () => onEditTask?.(t)
                 const taskStart = t.startDate || t.due || todayStr
                 const taskEnd = t.due || todayStr
@@ -241,15 +218,12 @@ export default function GanttChart({ tasks, projects, onEditTask }) {
       </div>
       {tooltip && (
         <div ref={tooltipRef} className="gantt-tooltip" style={{ left: tooltip.x, top: tooltip.y }}>
-          <div className="gantt-tooltip__title">{tooltip.title}</div>
-          <div className="gantt-tooltip__date">
-            {tooltip.startDate && tooltip.startDate !== tooltip.endDate
-              ? `${formatDate(tooltip.startDate)} 〜 ${formatDate(tooltip.endDate)}`
-              : formatDate(tooltip.endDate)}
-          </div>
-          {tooltip.status && (
-            <div className="gantt-tooltip__status">状態: {tooltip.status}</div>
-          )}
+          <GanttTooltip
+            title={tooltip.title}
+            startDate={tooltip.startDate}
+            endDate={tooltip.endDate}
+            status={tooltip.status}
+          />
         </div>
       )}
     </div>

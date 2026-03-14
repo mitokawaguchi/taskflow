@@ -455,7 +455,7 @@ export async function signInWithPassword(email, password) {
 
 /** 新規アカウント作成。メール確認が有効な場合は session が null になり確認メールが送られる。
  * 確認メールのリンクは emailRedirectTo のURLへ飛ぶ。本番では Supabase の「サイトURL」も本番URLにすること。
- * 既存メールの場合は identities が空になるのでエラーを投げる。 */
+ * 既存メール時は API の error.code / error.message を第一に判定し、identities はフォールバック。 */
 export async function signUpWithEmail(email, password) {
   if (!supabase) throw new Error(CONFIG_MSG)
   const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/` : undefined
@@ -463,6 +463,15 @@ export async function signUpWithEmail(email, password) {
     { email, password },
     redirectTo ? { emailRedirectTo: redirectTo } : undefined
   )
+  const isAlreadyRegistered =
+    error &&
+    (error.code === 'user_already_registered' ||
+      /already registered|already exists|already in use/i.test(String(error.message || '')))
+  if (isAlreadyRegistered) {
+    const err = new Error('このメールアドレスは既に登録されています。')
+    err.code = 'user_already_registered'
+    throw err
+  }
   if (error) {
     throw error
   }

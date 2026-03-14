@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import {
   DndContext,
   DragOverlay,
@@ -9,12 +9,14 @@ import {
 import { getPriorityLabel, TASK_STATUS, TASK_STATUS_KEYS, progressFromStatus, getCategoryInfo } from './constants'
 import { formatDate, isOverdue } from './utils'
 
-function KanbanCardContent({ task, projects, categories = [], users = [] }) {
-  const proj = projects.find(p => p.id === task.projectId)
+function KanbanCardContent({ task, projects, categories = [], users = [], projectsMap, usersMap }) {
+  const proj = projectsMap?.get(task.projectId) ?? projects?.find(p => p.id === task.projectId)
   const progress = task.progress != null ? task.progress : progressFromStatus(task.status)
   const over = isOverdue(task.due)
   const categoryInfo = getCategoryInfo(task.category, categories)
-  const assignee = task.assigneeId ? users.find(u => u.id === task.assigneeId) : null
+  const assignee = task.assigneeId
+    ? (usersMap?.get(task.assigneeId) ?? users?.find(u => u.id === task.assigneeId))
+    : null
 
   return (
     <>
@@ -60,8 +62,17 @@ function KanbanCardContent({ task, projects, categories = [], users = [] }) {
   )
 }
 
-function KanbanCard({ task, projects, categories = [], users = [], onClick, isOverlay }) {
-  const content = <KanbanCardContent task={task} projects={projects} categories={categories} users={users} />
+function KanbanCard({ task, projects, categories = [], users = [], projectsMap, usersMap, onClick, isOverlay }) {
+  const content = (
+    <KanbanCardContent
+      task={task}
+      projects={projects}
+      categories={categories}
+      users={users}
+      projectsMap={projectsMap}
+      usersMap={usersMap}
+    />
+  )
 
   if (isOverlay) {
     return <div className="kanban-card kanban-card--overlay">{content}</div>
@@ -74,7 +85,7 @@ function KanbanCard({ task, projects, categories = [], users = [], onClick, isOv
   )
 }
 
-function DraggableKanbanCard({ task, projects, categories = [], users = [], onClick }) {
+function DraggableKanbanCard({ task, projects, categories = [], users = [], projectsMap, usersMap, onClick }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: task.id,
     data: { task },
@@ -102,7 +113,7 @@ function DraggableKanbanCard({ task, projects, categories = [], users = [], onCl
         role="button"
         tabIndex={0}
       >
-        <KanbanCardContent task={task} projects={projects} categories={categories} users={users} />
+        <KanbanCardContent task={task} projects={projects} categories={categories} users={users} projectsMap={projectsMap} usersMap={usersMap} />
       </div>
     </div>
   )
@@ -134,10 +145,10 @@ function DroppableColumn({ id, title, count, children, onAddTask }) {
   )
 }
 
-export default function KanbanBoard({ tasks, projects, categories = [], users = [], onMoveTask, onEditTask, onAddTask }) {
+export default function KanbanBoard({ tasks, projects, categories = [], users = [], projectsMap, usersMap, onMoveTask, onEditTask, onAddTask }) {
   const dragProcessedRef = useRef(null)
 
-  const byStatus = useCallback(() => {
+  const columns = useMemo(() => {
     const map = { todo: [], in_progress: [], review: [], done: [] }
     for (const t of tasks) {
       const s = TASK_STATUS_KEYS.includes(t.status) ? t.status : (t.done ? 'done' : 'todo')
@@ -173,7 +184,6 @@ export default function KanbanBoard({ tasks, projects, categories = [], users = 
     [tasks, onMoveTask]
   )
 
-  const columns = byStatus()
   const [activeId, setActiveId] = useState(null)
   const activeTask = activeId ? tasks.find(t => t.id === activeId) : null
 
@@ -199,6 +209,8 @@ export default function KanbanBoard({ tasks, projects, categories = [], users = 
                 projects={projects}
                 categories={categories}
                 users={users}
+                projectsMap={projectsMap}
+                usersMap={usersMap}
                 onClick={onEditTask}
               />
             ))}
@@ -207,7 +219,15 @@ export default function KanbanBoard({ tasks, projects, categories = [], users = 
       </div>
       <DragOverlay dropAnimation={null}>
         {activeTask ? (
-          <KanbanCard task={activeTask} projects={projects} categories={categories} users={users} isOverlay />
+          <KanbanCard
+            task={activeTask}
+            projects={projects}
+            categories={categories}
+            users={users}
+            projectsMap={projectsMap}
+            usersMap={usersMap}
+            isOverlay
+          />
         ) : null}
       </DragOverlay>
     </DndContext>

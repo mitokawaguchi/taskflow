@@ -83,21 +83,7 @@ export default function App() {
   const [authReady, setAuthReady] = useState(false)
   const [notifyReminderEnabled, setNotifyReminderEnabled] = useState(() => localStorage.getItem('taskflow_notify_reminder') !== 'false')
   const [showProfileModal, setShowProfileModal] = useState(false)
-  const [profileDisplayName, setProfileDisplayName] = useState('')
-  const [profileNewPassword, setProfileNewPassword] = useState('')
-  const [profileConfirmPassword, setProfileConfirmPassword] = useState('')
-  const [profileLoading, setProfileLoading] = useState(false)
-  const [profileError, setProfileError] = useState('')
   const [legalPage, setLegalPage] = useState(() => getLegalPageFromHash())
-
-  useEffect(() => {
-    if (showProfileModal && authUser) {
-      setProfileDisplayName(authUser.user_metadata?.display_name ?? '')
-      setProfileNewPassword('')
-      setProfileConfirmPassword('')
-      setProfileError('')
-    }
-  }, [showProfileModal, authUser])
 
   useEffect(() => {
     const onHash = () => setLegalPage(getLegalPageFromHash())
@@ -1004,6 +990,8 @@ export default function App() {
                   projects={projects}
                   categories={categories}
                   users={users}
+                  projectsMap={projectsMap}
+                  usersMap={usersMap}
                   onMoveTask={moveTaskStatus}
                   onEditTask={(task) => { setEditTask(task); setShowTaskForm(true) }}
                   onAddTask={openTaskFormForKanbanColumn}
@@ -1020,6 +1008,7 @@ export default function App() {
                 <GanttChart
                   tasks={tasksForBoard}
                   projects={projects}
+                  projectsMap={projectsMap}
                   onEditTask={(task) => { setEditTask(task); setShowTaskForm(true) }}
                 />
               </div>
@@ -1123,16 +1112,6 @@ export default function App() {
       {showProfileModal && (
         <ProfileModal
           authUser={authUser}
-          profileDisplayName={profileDisplayName}
-          setProfileDisplayName={setProfileDisplayName}
-          profileNewPassword={profileNewPassword}
-          setProfileNewPassword={setProfileNewPassword}
-          profileConfirmPassword={profileConfirmPassword}
-          setProfileConfirmPassword={setProfileConfirmPassword}
-          profileLoading={profileLoading}
-          setProfileLoading={setProfileLoading}
-          profileError={profileError}
-          setProfileError={setProfileError}
           onClose={() => setShowProfileModal(false)}
           addToast={addToast}
           setAuthUser={setAuthUser}

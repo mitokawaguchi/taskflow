@@ -1,11 +1,7 @@
-import {
-  DndContext,
-  DragOverlay,
-  closestCenter,
-} from '@dnd-kit/core'
+import { DndContext, DragOverlay, closestCenter } from '@dnd-kit/core'
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable'
-import { endDateLabel } from '../utils'
 import SortableProjectCard from './SortableProjectCard'
+import ProjectCardDragPreview from './ProjectCardDragPreview'
 
 export default function ProjectsOverview({
   showDone,
@@ -59,39 +55,9 @@ export default function ProjectsOverview({
           </div>
         </SortableContext>
         <DragOverlay dropAnimation={null}>
-          {dragActiveId ? (() => {
-            const item = activeProjects.find((x) => x.project.id === dragActiveId)
-            if (!item) return null
-            const { project: p, ptasks, pct } = item
-            return (
-              <div
-                className="project-card project-card-overlay"
-                style={{
-                  background: `${p.color}28`,
-                  border: `1px solid ${p.color}60`,
-                }}
-              >
-                <div className="project-card-header cursor-grabbing">
-                  <span className="project-card-drag-handle" aria-hidden>⋮⋮</span>
-                  <div className="project-icon" style={{ background: `${p.color}20` }}>{p.icon}</div>
-                  <div>
-                    <div className="project-name">{p.name}</div>
-                    <div className="project-count">
-                      {ptasks.filter((t) => !t.done).length} 件残り
-                      {p.endDate && <span className="project-due"> · {endDateLabel(p.endDate)}</span>}
-                    </div>
-                  </div>
-                </div>
-                <div className="project-progress">
-                  <div
-                    className="project-progress-fill"
-                    style={{ width: `${pct}%`, background: p.color }}
-                  />
-                </div>
-                <div className="project-pct-label">{pct}% 完了</div>
-              </div>
-            )
-          })() : null}
+          <ProjectCardDragPreview
+            item={dragActiveId ? activeProjects.find((x) => x.project.id === dragActiveId) : null}
+          />
         </DragOverlay>
       </DndContext>
       {completedProjects.length > 0 && (

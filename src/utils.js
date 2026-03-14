@@ -57,3 +57,27 @@ export function endDateLabel(endDate) {
   if (diff === 0) return '今日まで'
   return formatDateWithWeekday(endDate)
 }
+
+/** 指定日の属する週の月曜日を YYYY-MM-DD で返す（GanttChart 用） */
+export function getWeekStart(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00')
+  const day = d.getDay()
+  const diff = day === 0 ? 6 : day - 1
+  d.setDate(d.getDate() - diff)
+  return d.toISOString().slice(0, 10)
+}
+
+/** 月曜日 YYYY-MM-DD から日曜日を返す */
+export function getWeekEnd(weekStartStr) {
+  const d = new Date(weekStartStr + 'T12:00:00')
+  d.setDate(d.getDate() + 6)
+  return d.toISOString().slice(0, 10)
+}
+
+/** 週開始日から「○月○週目」ラベルを返す（Gantt ツールチップ用） */
+export function formatWeekLabel(weekStartStr) {
+  const d = new Date(weekStartStr + 'T12:00:00')
+  const month = d.getMonth() + 1
+  const weekOfMonth = Math.ceil(d.getDate() / 7)
+  return `${month}月${weekOfMonth}週目`
+}

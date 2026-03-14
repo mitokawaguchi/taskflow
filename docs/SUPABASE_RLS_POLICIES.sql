@@ -6,19 +6,19 @@
 -- 効果: 他ユーザーのデータの読み取り・更新・削除が DB レベルで不可になる
 -- =============================================================================
 
--- ヘルパー: 現在ユーザーが「見てよい行」＝ owner_id が自分 または NULL（未紐づけ）
+-- ヘルパー: 現在ユーザーが「見てよい行」＝ owner_id が自分（security.mdc 規約: owner_id IS NULL 禁止）
 CREATE OR REPLACE FUNCTION public.tf_owner_visible(owner_id_col UUID)
 RETURNS BOOLEAN AS $$
 BEGIN
-  RETURN owner_id_col = auth.uid() OR owner_id_col IS NULL;
+  RETURN owner_id_col = auth.uid();
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
--- ヘルパー: 挿入・更新時に owner_id が自分または NULL のみ許可
+-- ヘルパー: 挿入・更新時に owner_id が自分のみ許可
 CREATE OR REPLACE FUNCTION public.tf_owner_writable(owner_id_col UUID)
 RETURNS BOOLEAN AS $$
 BEGIN
-  RETURN owner_id_col = auth.uid() OR owner_id_col IS NULL;
+  RETURN owner_id_col = auth.uid();
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
