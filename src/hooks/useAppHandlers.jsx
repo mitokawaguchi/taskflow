@@ -10,7 +10,7 @@ import { useTaskActions } from './useTaskActions'
 import { useProjectActions } from './useProjectActions'
 import { useTemplateActions } from './useTemplateActions'
 import { useClientActions } from './useClientActions'
-import { today, isToday, isOverdue } from '../utils'
+import { isToday, isOverdue } from '../utils'
 import ProjectCard from '../components/ProjectCard'
 
 const DUE_TODAY_CHECK_DELAY_MS = 2000
