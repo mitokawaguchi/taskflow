@@ -60,7 +60,7 @@ export function useAppHandlers(data, ui, authUser) {
   )
 
   const taskFilters = useTaskFilters(tasks, view, ui.showDone, ui.searchQuery)
-  const { sort, setSort, filterProjectIds, filterPriorities, filterDueFrom, filterDueTo, filterPriorityFrom, filterPriorityTo, filterOpen, setFilterOpen, filterAssigneeId, setFilterAssigneeId, hasAnyFilter, sortedTasks, clearFilters: taskFiltersClear } = taskFilters
+  const { sort, setSort, filterProjectIds, setFilterProjectIds, filterPriorities, setFilterPriorities, filterDueFrom, setFilterDueFrom, filterDueTo, setFilterDueTo, filterPriorityFrom, setFilterPriorityFrom, filterPriorityTo, setFilterPriorityTo, filterOpen, setFilterOpen, filterAssigneeId, setFilterAssigneeId, hasAnyFilter, sortedTasks, clearFilters: taskFiltersClear } = taskFilters
 
   const { saveTask, toggleTask, moveTaskStatus } = useTaskActions(tasks, setTasks, ui.addToast, ui.editTask, ui.closeTaskForm)
   const openTaskFormForKanbanColumn = useCallback(
