@@ -9,6 +9,12 @@ export function requireSupabase(): void {
   if (!supabase) throw new Error(CONFIG_MSG)
 }
 
+/** requireSupabase 後に呼び出し。null でない Supabase クライアントを返す（型安全） */
+export function getSupabase(): NonNullable<typeof supabase> {
+  requireSupabase()
+  return supabase as NonNullable<typeof supabase>
+}
+
 /** 日付を DB 用に正規化: 空・無効は null、文字列はそのまま、Date は YYYY-MM-DD */
 export function normalizeDate(v: string | Date | null | undefined): string | null {
   if (v == null || v === '') return null
@@ -175,8 +181,9 @@ export async function getOwnerId(): Promise<string | null> {
 
 /** SEC-005: 削除前に所有者を確認。RLS 未設定時も他人のデータを削除させない */
 export async function ensureCanDelete(table: string, id: string): Promise<void> {
+  const db = getSupabase()
   const ownerId = await getOwnerId()
-  const { data: row, error } = await supabase.from(table).select('owner_id').eq('id', id).single()
+  const { data: row, error } = await db.from(table).select('owner_id').eq('id', id).single()
   if (error || !row) throw new Error('削除対象が見つかりません')
   if ((row as { owner_id: string | null }).owner_id != null && ownerId !== (row as { owner_id: string }).owner_id) {
     throw new Error('このデータを削除する権限がありません')

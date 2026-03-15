@@ -1,11 +1,10 @@
-import { supabase } from '../supabase'
-import { requireSupabase, getOwnerId, categoryFromRow } from './helpers'
+import { getSupabase, getOwnerId, categoryFromRow } from './helpers'
 import type { Category } from '../types'
 
 export async function fetchCategories(): Promise<Category[]> {
-  requireSupabase()
+  const db = getSupabase()
   const ownerId = await getOwnerId()
-  let q = supabase.from('tf_categories').select('*')
+  let q = db.from('tf_categories').select('*')
   if (ownerId) q = q.eq('owner_id', ownerId)
   const { data, error } = await q.order('id')
   if (error) throw error
@@ -14,7 +13,7 @@ export async function fetchCategories(): Promise<Category[]> {
 }
 
 export async function insertCategory(category: { id: string; name: string; color?: string }): Promise<Category> {
-  requireSupabase()
+  const db = getSupabase()
   const ownerId = await getOwnerId()
   const row: Record<string, unknown> = {
     id: category.id,
@@ -22,7 +21,7 @@ export async function insertCategory(category: { id: string; name: string; color
     color: category.color ?? '#6b7280',
   }
   if (ownerId) row.owner_id = ownerId
-  const { data, error } = await supabase.from('tf_categories').insert(row).select().single()
+  const { data, error } = await db.from('tf_categories').insert(row).select().single()
   if (error) throw error
   const result = categoryFromRow(data)
   if (!result) throw new Error('insertCategory: no data returned')

@@ -1,12 +1,10 @@
 /**
  * タスク系ビュー（カンバン・ダッシュボード・ガント・一覧）。ARCH-001: App.jsx 短縮のため抽出
  */
-import { lazy, Suspense } from 'react'
 import TaskListWithFilters from './TaskListWithFilters'
-
-const LazyKanban = lazy(() => import('../KanbanBoard'))
-const LazyDashboard = lazy(() => import('../Dashboard'))
-const LazyGantt = lazy(() => import('../GanttChart'))
+import KanbanBoard from '../KanbanBoard'
+import Dashboard from '../Dashboard'
+import GanttChart from '../GanttChart'
 
 export default function ContentAreaTasks({
   view,
@@ -48,46 +46,40 @@ export default function ContentAreaTasks({
   if (view === 'kanban') {
     return (
       <div className="kanban-view-wrap">
-        <Suspense fallback={<div className="loading-placeholder">読み込み中...</div>}>
-          <LazyKanban
-            tasks={tasksForBoard}
-            projects={projects}
-            categories={categories}
-            users={users}
-            projectsMap={projectsMap}
-            usersMap={usersMap}
-            onMoveTask={moveTaskStatus}
-            onEditTask={(task) => {
-              setEditTask(task)
-              setShowTaskForm(true)
-            }}
-            onAddTask={openTaskFormForKanbanColumn}
-          />
-        </Suspense>
+        <KanbanBoard
+          tasks={tasksForBoard}
+          projects={projects}
+          categories={categories}
+          users={users}
+          projectsMap={projectsMap}
+          usersMap={usersMap}
+          onMoveTask={moveTaskStatus}
+          onEditTask={(task) => {
+            setEditTask(task)
+            setShowTaskForm(true)
+          }}
+          onAddTask={openTaskFormForKanbanColumn}
+        />
       </div>
     )
   }
   if (view === 'dashboard') {
     return (
-      <Suspense fallback={<div className="loading-placeholder">読み込み中...</div>}>
-        <LazyDashboard tasks={tasksForBoard} projects={projects} />
-      </Suspense>
+      <Dashboard tasks={tasksForBoard} projects={projects} />
     )
   }
   if (view === 'gantt') {
     return (
       <div className="gantt-view-wrap">
-        <Suspense fallback={<div className="loading-placeholder">読み込み中...</div>}>
-          <LazyGantt
-            tasks={tasksForBoard}
-            projects={projects}
-            projectsMap={projectsMap}
-            onEditTask={(task) => {
-              setEditTask(task)
-              setShowTaskForm(true)
-            }}
-          />
-        </Suspense>
+        <GanttChart
+          tasks={tasksForBoard}
+          projects={projects}
+          projectsMap={projectsMap}
+          onEditTask={(task) => {
+            setEditTask(task)
+            setShowTaskForm(true)
+          }}
+        />
       </div>
     )
   }

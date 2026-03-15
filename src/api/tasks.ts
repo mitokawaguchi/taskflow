@@ -1,7 +1,8 @@
-import { supabase } from '../supabase'
 import { TASK_STATUS_KEYS, VALIDATION } from '../constants'
-import { requireSupabase, getOwnerId, normalizeDate, taskFromRow } from './helpers'
+import { getSupabase, getOwnerId, normalizeDate, taskFromRow } from './helpers'
 import type { Task } from '../types'
+
+type TaskRow = Parameters<typeof taskFromRow>[0]
 
 export interface FetchTasksOpts {
   limit?: number
@@ -10,21 +11,21 @@ export interface FetchTasksOpts {
 /** PERF-001: limit 指定で大量取得を抑制（デフォルト 500）。 */
 export async function fetchTasks(opts: FetchTasksOpts = {}): Promise<Task[]> {
   const { limit = 500 } = opts
-  requireSupabase()
+  const db = getSupabase()
   const ownerId = await getOwnerId()
-  let q = supabase.from('tf_tasks').select('*')
+  let q = db.from('tf_tasks').select('*')
   if (ownerId) q = q.eq('owner_id', ownerId)
   q = q.order('created', { ascending: false }).limit(Math.min(Math.max(1, limit), 2000))
   const { data, error } = await q
   if (error) throw error
   const rows = (data ?? []) as Array<Record<string, unknown>>
-  return rows.map((row) => taskFromRow(row as Parameters<typeof taskFromRow>[0])).filter((t): t is Task => t != null)
+  return rows.map((row) => taskFromRow((row as unknown) as TaskRow)).filter((t): t is Task => t != null)
 }
 
 export type TaskInsertInput = Pick<Task, 'id' | 'title'> & Partial<Omit<Task, 'id' | 'title'>>
 
 export async function insertTask(task: TaskInsertInput): Promise<Task> {
-  requireSupabase()
+  const db = getSupabase()
   if (!task || typeof task.title !== 'string') throw new Error('タスク名は必須です')
   if (task.title.length > VALIDATION.taskTitle) throw new Error(`タスク名は${VALIDATION.taskTitle}文字以内にしてください`)
   if (task.desc != null && String(task.desc).length > VALIDATION.taskDesc) throw new Error(`説明は${VALIDATION.taskDesc}文字以内にしてください`)
@@ -46,9 +47,9 @@ export async function insertTask(task: TaskInsertInput): Promise<Task> {
     created: task.created,
   }
   if (ownerId) row.owner_id = ownerId
-  const { data, error } = await supabase.from('tf_tasks').insert(row).select().single()
+  const { data, error } = await db.from('tf_tasks').insert(row).select().single()
   if (error) throw error
-  const result = taskFromRow(data as Parameters<typeof taskFromRow>[0])
+  const result = taskFromRow((data as unknown) as TaskRow)
   if (!result) throw new Error('insertTask: no data returned')
   return result
 }
@@ -58,7 +59,7 @@ export type TaskUpdatePatch = Partial<
 >
 
 export async function updateTask(id: string, patch: TaskUpdatePatch): Promise<Task> {
-  requireSupabase()
+  const db = getSupabase()
   if (!id || !patch || typeof patch !== 'object') throw new Error('更新パラメータが不正です')
   if (patch.title !== undefined && patch.title.length > VALIDATION.taskTitle) throw new Error(`タスク名は${VALIDATION.taskTitle}文字以内にしてください`)
   if (patch.desc !== undefined && String(patch.desc).length > VALIDATION.taskDesc) throw new Error(`説明は${VALIDATION.taskDesc}文字以内にしてください`)
@@ -76,12 +77,15 @@ export async function updateTask(id: string, patch: TaskUpdatePatch): Promise<Ta
     row.status = patch.done ? 'done' : 'todo'
   }
   if (patch.startDate !== undefined) row.start_date = normalizeDate(patch.startDate)
-  if (patch.progress !== undefined) row.progress = patch.progress >= 0 && patch.progress <= 100 ? patch.progress : null
+  if (patch.progress !== undefined) {
+    const p = patch.progress
+    row.progress = p != null && p >= 0 && p <= 100 ? p : null
+  }
   if (patch.category !== undefined) row.category = patch.category || null
   if (patch.assigneeId !== undefined) row.assignee_id = patch.assigneeId && String(patch.assigneeId).trim() ? patch.assigneeId : null
-  const { data, error } = await supabase.from('tf_tasks').update(row).eq('id', id).select().single()
+  const { data, error } = await db.from('tf_tasks').update(row).eq('id', id).select().single()
   if (error) throw error
-  const result = taskFromRow(data as Parameters<typeof taskFromRow>[0])
+  const result = taskFromRow((data as unknown) as TaskRow)
   if (!result) throw new Error('updateTask: no data returned')
   return result
 }

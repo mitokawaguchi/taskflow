@@ -1,23 +1,24 @@
-import { supabase } from '../supabase'
 import { VALIDATION } from '../constants'
-import { requireSupabase, getOwnerId, ensureCanDelete, rememberFromRow } from './helpers'
+import { getSupabase, getOwnerId, ensureCanDelete, rememberFromRow } from './helpers'
 import type { Remember } from '../types'
 
+type RememberRow = Parameters<typeof rememberFromRow>[0]
+
 export async function fetchRemember(): Promise<Remember[]> {
-  requireSupabase()
+  const db = getSupabase()
   const ownerId = await getOwnerId()
-  let q = supabase.from('tf_remember').select('*')
+  let q = db.from('tf_remember').select('*')
   if (ownerId) q = q.eq('owner_id', ownerId)
   const { data, error } = await q.order('created', { ascending: false })
   if (error) throw error
   const rows = (data ?? []) as Array<Record<string, unknown>>
-  return rows.map((row) => rememberFromRow(row as Parameters<typeof rememberFromRow>[0])).filter((r): r is Remember => r != null)
+  return rows.map((row) => rememberFromRow((row as unknown) as RememberRow)).filter((r): r is Remember => r != null)
 }
 
 export type RememberInsertInput = Pick<Remember, 'id' | 'clientId' | 'body'> & Partial<Pick<Remember, 'created'>>
 
 export async function insertRemember(item: RememberInsertInput): Promise<Remember> {
-  requireSupabase()
+  const db = getSupabase()
   if (item.body != null && String(item.body).length > VALIDATION.rememberBody) throw new Error(`メモは${VALIDATION.rememberBody}文字以内にしてください`)
   const ownerId = await getOwnerId()
   const row: Record<string, unknown> = {
@@ -27,9 +28,9 @@ export async function insertRemember(item: RememberInsertInput): Promise<Remembe
     created: item.created,
   }
   if (ownerId) row.owner_id = ownerId
-  const { data, error } = await supabase.from('tf_remember').insert(row).select().single()
+  const { data, error } = await db.from('tf_remember').insert(row).select().single()
   if (error) throw error
-  const result = rememberFromRow(data as Parameters<typeof rememberFromRow>[0])
+  const result = rememberFromRow((data as unknown) as RememberRow)
   if (!result) throw new Error('insertRemember: no data returned')
   return result
 }
@@ -44,20 +45,20 @@ export async function claimExistingDataToAccount(): Promise<never> {
 export type RememberUpdatePatch = Partial<Pick<Remember, 'body'>>
 
 export async function updateRemember(id: string, patch: RememberUpdatePatch): Promise<Remember> {
-  requireSupabase()
+  const db = getSupabase()
   if (patch.body !== undefined && String(patch.body).length > VALIDATION.rememberBody) throw new Error(`メモは${VALIDATION.rememberBody}文字以内にしてください`)
   const row: Record<string, unknown> = {}
   if (patch.body !== undefined) row.body = patch.body
-  const { data, error } = await supabase.from('tf_remember').update(row).eq('id', id).select().single()
+  const { data, error } = await db.from('tf_remember').update(row).eq('id', id).select().single()
   if (error) throw error
-  const result = rememberFromRow(data as Parameters<typeof rememberFromRow>[0])
+  const result = rememberFromRow((data as unknown) as RememberRow)
   if (!result) throw new Error('updateRemember: no data returned')
   return result
 }
 
 export async function deleteRemember(id: string): Promise<void> {
-  requireSupabase()
+  const db = getSupabase()
   await ensureCanDelete('tf_remember', id)
-  const { error } = await supabase.from('tf_remember').delete().eq('id', id)
+  const { error } = await db.from('tf_remember').delete().eq('id', id)
   if (error) throw error
 }

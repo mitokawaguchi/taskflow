@@ -10,6 +10,14 @@ export function useTaskActions(tasks, setTasks, addToast, editTask, closeTaskFor
         addToast('❌', '保存できませんでした', 'タスク名が不正です')
         return
       }
+      if (!editTask?.id) {
+        const start = form.startDate != null && String(form.startDate).trim()
+        const due = form.due != null && String(form.due).trim()
+        if (!start || !due) {
+          addToast('❌', '保存できませんでした', '開始日と期限を入力してください')
+          return
+        }
+      }
       try {
         if (editTask?.id) {
           const updated = await updateTask(editTask.id, form)

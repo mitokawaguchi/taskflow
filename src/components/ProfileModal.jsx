@@ -10,6 +10,7 @@ export default function ProfileModal({ authUser, onClose, addToast, setAuthUser 
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
   useEffect(() => {
     setDisplayName(authUser?.user_metadata?.display_name ?? '')
@@ -127,24 +128,49 @@ export default function ProfileModal({ authUser, onClose, addToast, setAuthUser 
               )}
             </div>
             <div className="modal-actions modal-actions--wrap">
-              <button
-                type="button"
-                className="btn btn-ghost"
-                onClick={async () => {
-                  onClose()
-                  try {
-                    await signOut()
-                    setAuthUser(null)
-                  } catch (e) {
-                    addToast('❌', 'ログアウトに失敗しました', e?.message ?? '')
-                  }
-                }}
-              >
-                ログアウト
-              </button>
-              <button type="button" className="btn btn-primary" onClick={onClose}>
-                閉じる
-              </button>
+              {showLogoutConfirm ? (
+                <>
+                  <p className="text-muted-14-mb16">ログアウトしますか？</p>
+                  <div className="flex-gap-6-wrap">
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={async () => {
+                        setShowLogoutConfirm(false)
+                        onClose()
+                        try {
+                          await signOut()
+                          setAuthUser(null)
+                        } catch (e) {
+                          addToast('❌', 'ログアウトに失敗しました', e?.message ?? '')
+                        }
+                      }}
+                    >
+                      はい
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-ghost"
+                      onClick={() => setShowLogoutConfirm(false)}
+                    >
+                      いいえ
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    className="btn btn-ghost"
+                    onClick={() => setShowLogoutConfirm(true)}
+                  >
+                    ログアウト
+                  </button>
+                  <button type="button" className="btn btn-primary" onClick={onClose}>
+                    閉じる
+                  </button>
+                </>
+              )}
             </div>
           </>
         ) : (

@@ -1,432 +1,37 @@
-import { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
-import { priorityOrder, VALIDATION } from './constants'
-import { useAuth } from './hooks/useAuth'
-import { useTaskFilters } from './hooks/useTaskFilters'
-import { useTaskActions } from './hooks/useTaskActions'
-import { useProjectActions } from './hooks/useProjectActions'
-import { useTemplateActions } from './hooks/useTemplateActions'
-import { useClientActions } from './hooks/useClientActions'
-import { today, isToday, isOverdue } from './utils'
-import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, fetchCategories, fetchUsers, insertProject, insertTask, updateTask, insertUser } from './api'
 import MorningModal from './MorningModal'
-import TaskCard from './TaskCard'
-import TaskForm from './TaskForm'
-import ProjectForm from './ProjectForm'
-import TemplateForm from './TemplateForm'
-import ProjectDetail from './ProjectDetail'
-import ClientForm from './ClientForm'
-import ClientDetail from './ClientDetail'
 import Toast from './Toast'
 import LoginScreen from './components/LoginScreen'
-import { LegalLinks } from './components/LegalLinks'
-import CategoriesView from './components/CategoriesView'
-import SettingsModal from './components/SettingsModal'
-import ClientDetailView from './components/ClientDetailView'
 import LegalPageView from './components/LegalPageView'
-import ProfileModal from './components/ProfileModal'
-import TemplatesListView from './components/TemplatesListView'
-import ClientsListView from './components/ClientsListView'
-import ProjectsOverview from './components/ProjectsOverview'
-import ProjectCard from './components/ProjectCard'
-import TaskListWithFilters from './components/TaskListWithFilters'
 import Sidebar from './components/Sidebar'
 import TopBar from './components/TopBar'
 import AppModals from './components/AppModals'
 import ContentArea from './components/ContentArea'
 import ContentAreaTasks from './components/ContentAreaTasks'
-import { getLegalPageFromHash } from './legalContent'
-
-function getViewFromPathname(pathname) {
-  if (pathname === '/') return 'projects'
-  if (pathname === '/all' || pathname === '/tasks') return 'all'
-  if (pathname === '/today') return 'today'
-  if (pathname === '/overdue') return 'overdue'
-  if (pathname === '/kanban') return 'kanban'
-  if (pathname === '/dashboard') return 'dashboard'
-  if (pathname === '/gantt') return 'gantt'
-  if (pathname === '/templates') return 'templates'
-  if (pathname === '/clients') return 'clients'
-  if (pathname === '/categories') return 'categories'
-  const pMatch = pathname.match(/^\/projects\/([^/]+)/)
-  if (pMatch) return `p:${pMatch[1]}`
-  const cMatch = pathname.match(/^\/clients\/([^/]+)/)
-  if (cMatch) return `c:${cMatch[1]}`
-  return 'projects'
-}
-
-const DUE_TODAY_CHECK_DELAY_MS = 2000
-const DUE_TODAY_NOTIFY_THROTTLE_MS = 60 * 60 * 1000 // 1時間に1回まで
-const DUE_TODAY_NOTIFY_STORAGE_KEY = 'taskflow_due_today_notified_at'
-const TOAST_DURATION_MS = 2400
+import { useApp } from './hooks/useApp'
+import { today } from './utils'
 
 export default function App() {
-  const [tasks, setTasks] = useState([])
-  const [projects, setProjects] = useState([])
-  const [templates, setTemplates] = useState([])
-  const [clients, setClients] = useState([])
-  const [remembers, setRemembers] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [showClientForm, setShowClientForm] = useState(false)
-  const [editClient, setEditClient] = useState(null)
-  const location = useLocation()
-  const navigate = useNavigate()
-  const view = useMemo(() => getViewFromPathname(location.pathname), [location.pathname])
-  const setView = useCallback((v) => {
-    if (v === 'projects') navigate('/')
-    else if (v === 'all') navigate('/all')
-    else if (v === 'today') navigate('/today')
-    else if (v === 'overdue') navigate('/overdue')
-    else if (v === 'kanban') navigate('/kanban')
-    else if (v === 'dashboard') navigate('/dashboard')
-    else if (v === 'gantt') navigate('/gantt')
-    else if (v === 'templates') navigate('/templates')
-    else if (v === 'clients') navigate('/clients')
-    else if (v === 'categories') navigate('/categories')
-    else if (v.startsWith('p:')) navigate(`/projects/${v.slice(2)}`)
-    else if (v.startsWith('c:')) navigate(`/clients/${v.slice(2)}`)
-    else navigate('/')
-  }, [navigate])
-  const { authUser, setAuthUser, authReady } = useAuth()
-  const [sidebarProjectsOpen, setSidebarProjectsOpen] = useState(true)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [showTaskForm, setShowTaskForm] = useState(false)
-  const [editTask, setEditTask] = useState(null)
-  const [taskFormProjectId, setTaskFormProjectId] = useState(null)
-  const [showProjForm, setShowProjForm] = useState(false)
-  const [editProject, setEditProject] = useState(null)
-  const [showTplForm, setShowTplForm] = useState(false)
-  const [editTemplate, setEditTemplate] = useState(null)
-  const [toasts, setToasts] = useState([])
-  const [showDone, setShowDone] = useState(false)
-  const [notifGranted, setNotifGranted] = useState(false)
-  const [showMorning, setShowMorning] = useState(() => localStorage.getItem('tf_morning') !== today())
-  const [theme, setTheme] = useState(() => localStorage.getItem('taskflow_theme') || 'light')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [showSettings, setShowSettings] = useState(false)
-  const [categories, setCategories] = useState([])
-  const [users, setUsers] = useState([])
-  const [notifyReminderEnabled, setNotifyReminderEnabled] = useState(() => localStorage.getItem('taskflow_notify_reminder') !== 'false')
-  const [showProfileModal, setShowProfileModal] = useState(false)
-  const [legalPage, setLegalPage] = useState(() => getLegalPageFromHash())
+  const app = useApp()
 
-  const taskFilters = useTaskFilters(tasks, view, showDone, searchQuery)
-  const {
-    sort,
-    setSort,
-    filterProjectIds,
-    setFilterProjectIds,
-    filterPriorities,
-    setFilterPriorities,
-    filterDueFrom,
-    setFilterDueFrom,
-    filterDueTo,
-    setFilterDueTo,
-    filterPriorityFrom,
-    setFilterPriorityFrom,
-    filterPriorityTo,
-    setFilterPriorityTo,
-    filterOpen,
-    setFilterOpen,
-    filterAssigneeId,
-    setFilterAssigneeId,
-    hasAnyFilter,
-    sortedTasks,
-    clearFilters: taskFiltersClear,
-  } = taskFilters
-
-  useEffect(() => {
-    const onHash = () => setLegalPage(getLegalPageFromHash())
-    window.addEventListener('hashchange', onHash)
-    return () => window.removeEventListener('hashchange', onHash)
-  }, [])
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark')
-    localStorage.setItem('taskflow_theme', theme)
-  }, [theme])
-
-  const addToast = useCallback((icon, title, msg) => {
-    const id = crypto.randomUUID()
-    setToasts(prev => [...prev, { id, icon, title, msg }])
-    setTimeout(() => setToasts(prev => prev.filter(x => x.id !== id)), TOAST_DURATION_MS)
-  }, [])
-
-  useEffect(() => {
-    if (!authUser) {
-      setLoading(false)
-      return
-    }
-    let cancelled = false
-    setLoading(true)
-    async function load() {
-      try {
-        const [projs, ts, tpls, clis, rems] = await Promise.all([fetchProjects(), fetchTasks(), fetchTemplates(), fetchClients(), fetchRemember()])
-        let cats = []
-        let usrs = []
-        try {
-          cats = await fetchCategories()
-        } catch (e) {
-          if (!cancelled) addToast('⚠️', 'カテゴリの読み込みに失敗しました', e?.message ?? '')
-        }
-        try {
-          usrs = await fetchUsers()
-        } catch (e) {
-          if (!cancelled) addToast('⚠️', '担当者の読み込みに失敗しました', e?.message ?? '')
-        }
-        if (!cancelled) {
-          let tasksToSet = ts
-          // CODE-008: 期限超過の priority 上げは本来 DB トリガー or Cron で行うべき。クライアントのみだと未開封時は反映されず複数デバイスで競合する。
-          const overdueNotCritical = ts.filter(t => !t.done && isOverdue(t.due) && t.priority !== 'critical')
-          if (overdueNotCritical.length > 0) {
-            try {
-              await Promise.all(overdueNotCritical.map(t => updateTask(t.id, { ...t, priority: 'critical' })))
-              tasksToSet = ts.map(t => overdueNotCritical.some(u => u.id === t.id) ? { ...t, priority: 'critical' } : t)
-            } catch (e) {
-              if (!cancelled) addToast('⚠️', '期限超過タスクの更新に失敗しました', e?.message ?? '')
-            }
-          }
-          setProjects(projs)
-          setTasks(tasksToSet)
-          setTemplates(tpls)
-          setClients(clis)
-          setRemembers(rems)
-          setCategories(cats)
-          setUsers(usrs)
-        }
-      } catch (e) {
-        if (!cancelled) addToast('❌', '読み込みエラー', e?.message ?? 'データを取得できませんでした')
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-    load()
-    return () => { cancelled = true }
-  }, [authUser, addToast])
-
-  useEffect(() => {
-    if (typeof globalThis.window !== 'undefined' && 'Notification' in globalThis && globalThis.Notification.permission === 'granted') {
-      setNotifGranted(true)
-    }
-  }, [])
-
-  useEffect(() => {
-    localStorage.setItem('taskflow_notify_reminder', notifyReminderEnabled ? 'true' : 'false')
-  }, [notifyReminderEnabled])
-
-
-  useEffect(() => {
-    const checkDueToday = () => {
-      const dueToday = tasks.filter(t => !t.done && isToday(t.due))
-      if (dueToday.length === 0) return
-      if (!notifyReminderEnabled) return
-      const now = Date.now()
-      const lastAt = Number.parseInt(localStorage.getItem(DUE_TODAY_NOTIFY_STORAGE_KEY) ?? '0', 10)
-      if (now - lastAt < DUE_TODAY_NOTIFY_THROTTLE_MS) return
-      localStorage.setItem(DUE_TODAY_NOTIFY_STORAGE_KEY, String(now))
-      addToast('⚠️', `今日が期限: ${dueToday.length}件`, dueToday.map(t => t.title).join('、'))
-      if (notifGranted) {
-        new globalThis.Notification('TaskFlow — 今日の期限', { body: dueToday.map(t => t.title).join('\n') })
-        if ('vibrate' in navigator) navigator.vibrate([200, 100, 200, 100, 400])
-      }
-    }
-    const timer = setTimeout(checkDueToday, DUE_TODAY_CHECK_DELAY_MS)
-    return () => clearTimeout(timer)
-  }, [tasks, notifGranted, addToast, notifyReminderEnabled])
-
-  const requestNotif = useCallback(async () => {
-    if (typeof globalThis.Notification === 'undefined') return
-    const permission = await globalThis.Notification.requestPermission()
-    if (permission === 'granted') {
-      setNotifGranted(true)
-      addToast('🔔', '通知が有効になりました', '期限が近いタスクをお知らせします')
-    }
-  }, [addToast])
-
-  const [kanbanAddStatus, setKanbanAddStatus] = useState(null)
-
-  const closeTaskForm = useCallback(() => {
-    setShowTaskForm(false)
-    setEditTask(null)
-    setTaskFormProjectId(null)
-    setKanbanAddStatus(null)
-  }, [])
-
-  const { saveTask, toggleTask, moveTaskStatus } = useTaskActions(
-    tasks,
-    setTasks,
-    addToast,
-    editTask,
-    closeTaskForm
-  )
-
-  const openTaskFormForKanbanColumn = useCallback((columnStatus) => {
-    setKanbanAddStatus(columnStatus)
-    setEditTask(null)
-    setTaskFormProjectId(null)
-    setShowTaskForm(true)
-  }, [])
-
-  const { saveTemplate, removeTemplate } = useTemplateActions(
-    setTemplates,
-    addToast,
-    setShowTplForm,
-    setEditTemplate
-  )
-
-  const { saveClient, removeClient, addRemember, updateRememberItem, removeRemember } = useClientActions(
-    remembers,
-    setClients,
-    setRemembers,
-    addToast,
-    setShowClientForm,
-    setEditClient,
-    location.pathname,
-    navigate
-  )
-
-  const todayCount   = tasks.filter(t => !t.done && isToday(t.due)).length
-  const overdueCount = tasks.filter(t => !t.done && isOverdue(t.due)).length
-
-  const viewTitle = useCallback(() => {
-    if (view === 'all') return 'すべてのタスク'
-    if (view === 'today') return '今日のタスク'
-    if (view === 'overdue') return '期限超過'
-    if (view === 'kanban') return 'カンバン'
-    if (view === 'dashboard') return 'ダッシュボード'
-    if (view === 'gantt') return 'タイムライン'
-    if (view === 'projects') return 'プロジェクト'
-    if (view === 'templates') return 'テンプレート'
-    if (view === 'clients') return '覚えておくこと'
-    if (view === 'categories') return 'カテゴリ'
-    if (view.startsWith('c:')) return clients.find(c => c.id === view.slice(2))?.name ?? 'クライアント'
-    if (view.startsWith('p:')) return projects.find(p => p.id === view.slice(2))?.name ?? ''
-    return ''
-  }, [view, projects, clients])
-
-  const openTaskFormForProject = useCallback((projectId) => {
-    setTaskFormProjectId(projectId)
-    setShowTaskForm(true)
-  }, [])
-
-  const { activeProjects, completedProjects } = useMemo(() => {
-    const withStats = (projects || []).map(p => {
-      const ptasks = (tasks || []).filter(t => t.projectId === p.id).slice().sort(
-        (a, b) => (priorityOrder[a.priority] ?? 2) - (priorityOrder[b.priority] ?? 2)
-      )
-      const done = ptasks.filter(t => t.done).length
-      const pct = ptasks.length ? Math.round((done / ptasks.length) * 100) : 0
-      return { project: p, ptasks, pct }
-    })
-    return {
-      activeProjects: withStats.filter(({ ptasks, pct }) => ptasks.length === 0 || pct < 100),
-      completedProjects: withStats.filter(({ ptasks, pct }) => ptasks.length > 0 && pct === 100),
-    }
-  }, [projects, tasks])
-
-  const { saveProject, updateProjectEndDate, handleProjectDragEnd } = useProjectActions(
-    projects,
-    setProjects,
-    activeProjects,
-    completedProjects,
-    addToast,
-    editProject,
-    setShowProjForm,
-    setEditProject
-  )
-
-  const renderProjectCard = useCallback(
-    ({ project, ptasks, pct }) => (
-      <ProjectCard
-        key={project.id}
-        project={project}
-        ptasks={ptasks}
-        pct={pct}
-        onViewProject={(id) => setView(`p:${id}`)}
-        onToggleTask={toggleTask}
-        onAddTask={openTaskFormForProject}
-      />
-    ),
-    [toggleTask, openTaskFormForProject, setView]
-  )
-
-  const [dragActiveId, setDragActiveId] = useState(null)
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
-  )
-
-  const isProjectView = view.startsWith('p:')
-  const currentProject = isProjectView ? projects.find(p => p.id === view.slice(2)) : null
-  const isMainView = ['kanban', 'gantt', 'dashboard', 'all', 'today', 'overdue', 'projects', 'templates'].includes(view) || isProjectView
-  const viewTabs = [
-    { key: 'kanban', label: 'カンバン', icon: '📌' },
-    { key: 'gantt', label: 'タイムライン', icon: '📅' },
-    { key: 'dashboard', label: 'インサイト', icon: '📊' },
-  ]
-  const activeFilterCount = [filterProjectIds.length, filterPriorities.length, filterDueFrom, filterDueTo, filterPriorityFrom, filterPriorityTo, filterAssigneeId].filter(Boolean).length
-  const tasksForBoard = useMemo(() => {
-    let list = tasks
-    if (searchQuery.trim()) {
-      const q = searchQuery.trim().toLowerCase()
-      list = list.filter(t => (t.title && t.title.toLowerCase().includes(q)) || (t.notes && String(t.notes).toLowerCase().includes(q)))
-    }
-    if (currentProject) list = list.filter(t => t.projectId === currentProject.id)
-    return list
-  }, [tasks, searchQuery, currentProject])
-
-  const taskFormInitialTask = useMemo(() => {
-    if (editTask) return editTask
-    const projectId = taskFormProjectId ?? (isProjectView ? view.slice(2) : null)
-    const status = kanbanAddStatus ?? null
-    return (projectId || status) ? { projectId: projectId || null, status } : null
-  }, [editTask, taskFormProjectId, isProjectView, view, kanbanAddStatus])
-
-  /** 担当者選択用：自分（ログインユーザー）を必ず含める */
-  const usersForTaskForm = useMemo(() => {
-    if (!authUser) return users
-    const exists = users.some(u => u.id === authUser.id)
-    if (exists) return users
-    const me = {
-      id: authUser.id,
-      name: authUser.user_metadata?.display_name || authUser.email || '自分',
-      email: authUser.email ?? '',
-    }
-    return [me, ...users]
-  }, [users, authUser])
-
-  /** PERF-002: TaskCard 内の O(n) find を避けるため Map を1回だけ生成 */
-  const projectsMap = useMemo(() => new Map(projects.map(p => [p.id, p])), [projects])
-  const usersMap = useMemo(() => new Map(users.map(u => [u.id, u])), [users])
-
-  // ── Render ───────────────────────────────────────────────
-  if (!authReady) {
+  if (!app.authReady) {
     return (
       <div className="app app-loading">
         <p className="text-muted">認証確認中...</p>
       </div>
     )
   }
-
-  if (legalPage) {
-    return (
-      <LegalPageView
-        pageKey={legalPage}
-        onBack={() => { window.location.hash = '' }}
-      />
-    )
+  if (app.legalPage) {
+    return <LegalPageView pageKey={app.legalPage} onBack={() => { window.location.hash = '' }} />
   }
-
-  if (authReady && !authUser) {
+  if (!app.authUser) {
     return (
       <>
-        <LoginScreen onError={addToast} />
-        <Toast toasts={toasts} />
+        <LoginScreen onError={app.addToast} />
+        <Toast toasts={app.toasts} />
       </>
     )
   }
-
-  if (loading) {
+  if (app.loading) {
     return (
       <div className="app app-loading">
         <p className="text-muted">読み込み中...</p>
@@ -436,364 +41,88 @@ export default function App() {
 
   return (
     <>
-      {showMorning && (
-        <MorningModal tasks={tasks} projects={projects} onClose={() => {
-          setShowMorning(false); localStorage.setItem('tf_morning', today())
-        }} />
-      )}
-
-      <div className={`app ${sidebarOpen ? 'sidebar-open' : ''}`}>
-        {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} aria-hidden="true" />}
-
-        <Sidebar
-          tasks={tasks}
-          projects={projects}
-          users={users}
-          view={view}
-          setView={setView}
-          todayCount={todayCount}
-          overdueCount={overdueCount}
-          sidebarOpen={sidebarOpen}
-          setSidebarOpen={setSidebarOpen}
-          sidebarProjectsOpen={sidebarProjectsOpen}
-          setSidebarProjectsOpen={setSidebarProjectsOpen}
-          notifGranted={notifGranted}
-          requestNotif={requestNotif}
-          onAddProject={() => { setEditProject(null); setShowProjForm(true) }}
-          filterAssigneeId={filterAssigneeId}
-          setFilterAssigneeId={setFilterAssigneeId}
-          setFilterOpen={setFilterOpen}
-          onOpenSettings={() => { setShowSettings(true); setSidebarOpen(false) }}
-          onOpenProfile={() => { setShowProfileModal(true); setSidebarOpen(false) }}
-          onShowMorning={() => setShowMorning(true)}
+      {app.showMorning && (
+        <MorningModal
+          tasks={app.tasks}
+          projects={app.projects}
+          onClose={() => { app.setShowMorning(false); localStorage.setItem('tf_morning', today()) }}
         />
-
-        {/* ── MAIN ── */}
+      )}
+      <div className={`app ${app.sidebarOpen ? 'sidebar-open' : ''}`}>
+        {app.sidebarOpen && (
+          <div className="sidebar-backdrop" onClick={() => app.setSidebarOpen(false)} aria-hidden="true" />
+        )}
+        <Sidebar
+          tasks={app.tasks} projects={app.projects} users={app.users} view={app.view} setView={app.setView}
+          todayCount={app.todayCount} overdueCount={app.overdueCount} sidebarOpen={app.sidebarOpen} setSidebarOpen={app.setSidebarOpen}
+          sidebarProjectsOpen={app.sidebarProjectsOpen} setSidebarProjectsOpen={app.setSidebarProjectsOpen}
+          notifGranted={app.notifGranted} requestNotif={app.requestNotif}
+          onAddProject={() => { app.setEditProject(null); app.setShowProjForm(true) }}
+          filterAssigneeId={app.filterAssigneeId} setFilterAssigneeId={app.setFilterAssigneeId} setFilterOpen={app.setFilterOpen}
+          onOpenSettings={() => { app.setShowSettings(true); app.setSidebarOpen(false) }}
+          onOpenProfile={() => { app.setShowProfileModal(true); app.setSidebarOpen(false) }}
+          onShowMorning={() => app.setShowMorning(true)}
+        />
         <div className="main">
-          <div className="topbar">
-            {(isProjectView || view.startsWith('c:')) && (
-              <button type="button" className="btn btn-ghost btn-sm topbar-back" onClick={() => setView(isProjectView ? 'projects' : 'clients')} aria-label="一覧に戻る">
-                ← 戻る
-              </button>
-            )}
-            <button type="button" className="hamburger" onClick={() => setSidebarOpen(true)} aria-label="メニュー">☰</button>
-            <div className="topbar-title">{viewTitle()}</div>
-
-            {isMainView && (
-              <div className="topbar-tabs" role="tablist" aria-label="ビュー切替">
-                {viewTabs.map((tab) => (
-                  <button
-                    key={tab.key}
-                    type="button"
-                    role="tab"
-                    aria-selected={view === tab.key}
-                    className={`topbar-tab ${view === tab.key ? 'topbar-tab--active' : ''}`}
-                    onClick={() => setView(tab.key)}
-                  >
-                    <span className="topbar-tab__icon">{tab.icon}</span>
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            <div className="topbar-right">
-              <div className="theme-toggle" role="group" aria-label="表示モード">
-                <span className="theme-toggle__label">{theme === 'dark' ? 'ダーク' : 'ライト'}</span>
-                <button
-                  type="button"
-                  className="theme-toggle__switch"
-                  aria-pressed={theme === 'dark'}
-                  aria-label={theme === 'dark' ? 'ダークモード（クリックでライトに）' : 'ライトモード（クリックでダークに）'}
-                  onClick={() => setTheme(t => (t === 'dark' ? 'light' : 'dark'))}
-                />
-              </div>
-              {view !== 'clients' && !view.startsWith('c:') && (
-                <>
-                  {(view === 'all' || view === 'today' || view === 'overdue') && (
-                    <>
-                      <button
-                        type="button"
-                        className="btn btn-ghost btn-sm topbar-filter-btn"
-                        onClick={() => setFilterOpen(o => !o)}
-                        aria-label="フィルター"
-                      >
-                        フィルター
-                        {activeFilterCount > 0 && <span className="topbar-filter-badge">{activeFilterCount}</span>}
-                      </button>
-                      <label className="topbar-search-wrap">
-                        <span className="topbar-search-icon" aria-hidden>🔍</span>
-                        <input
-                          type="search"
-                          className="topbar-search"
-                          placeholder="タスクを検索..."
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          aria-label="タスクを検索"
-                        />
-                      </label>
-                    </>
-                  )}
-                  <button
-                    type="button"
-                    className="topbar-icon-btn"
-                    onClick={() => setShowMorning(true)}
-                    aria-label="通知"
-                    title="今日のタスク・朝の確認"
-                  >
-                    🔔
-                    {(todayCount > 0 || overdueCount > 0) && <span className="topbar-icon-dot" />}
-                  </button>
-                  <button
-                    type="button"
-                    className="topbar-avatar"
-                    onClick={() => setShowProfileModal(true)}
-                    aria-label="プロフィール・設定"
-                    title="プロフィール"
-                  >
-                    👤
-                  </button>
-                </>
-              )}
-              {view !== 'clients' && !view.startsWith('c:') && view !== 'projects' && view !== 'categories' && (
-                <button className="btn btn-ghost btn-sm" onClick={() => setShowDone(!showDone)}>
-                  {showDone ? '完了を非表示' : '完了を表示'}
-                </button>
-              )}
-              {!isProjectView && view !== 'projects' && view !== 'templates' && view !== 'clients' && !view.startsWith('c:') && (
-                <button type="button" className="btn btn-primary" onClick={() => setShowTaskForm(true)}>+ 追加</button>
-              )}
-            </div>
-          </div>
-
+          <TopBar
+            view={app.view} isProjectView={app.isProjectView} setView={app.setView} viewTitle={app.viewTitle} viewTabs={app.viewTabs}
+            isMainView={app.isMainView} theme={app.theme} setTheme={app.setTheme} setSidebarOpen={app.setSidebarOpen}
+            setFilterOpen={app.setFilterOpen} activeFilterCount={app.activeFilterCount} searchQuery={app.searchQuery} setSearchQuery={app.setSearchQuery}
+            todayCount={app.todayCount} overdueCount={app.overdueCount} onShowMorning={() => app.setShowMorning(true)}
+            onShowProfile={() => app.setShowProfileModal(true)} showDone={app.showDone} setShowDone={app.setShowDone}
+            onAddTask={() => app.setShowTaskForm(true)}
+          />
           <div className="content">
-            <div key={view} className="content-view">
-            {/* PROJECT DETAIL */}
-            {isProjectView && currentProject && (
-              <ProjectDetail
-                project={currentProject}
-                tasks={tasks}
-                projects={projects}
-                categories={categories}
-                users={users}
-                projectsMap={projectsMap}
-                usersMap={usersMap}
-                onToggle={toggleTask}
-                onEditTask={setEditTask}
-                onAddTask={() => setShowTaskForm(true)}
-                onEditProject={() => { setEditProject(currentProject); setShowProjForm(true) }}
-                onUpdateProjectEndDate={updateProjectEndDate}
-                sort={sort}
-                setSort={setSort}
-                showDone={showDone}
-              />
-            )}
-
-            {/* 覚えておくこと（クライアントごと・プロジェクトと別） */}
-            {view === 'clients' && (
-              <>
-                <div className="toolbar-row">
-                  <button type="button" className="btn btn-primary" onClick={() => { setEditClient(null); setShowClientForm(true) }}>
-                    + クライアント追加
-                  </button>
-                </div>
-                <ClientsListView
-                  clients={clients}
-                  remembers={remembers}
-                  onAddClient={() => { setEditClient(null); setShowClientForm(true) }}
-                  onEditClient={(c) => { setEditClient(c); setShowClientForm(true) }}
-                  onOpenClientDetail={(id) => { setView('c:' + id); setSidebarOpen(false) }}
+            <div key={app.view} className="content-view">
+              {['kanban', 'dashboard', 'gantt', 'all', 'today', 'overdue'].includes(app.view) ? (
+                <ContentAreaTasks
+                  view={app.view} tasksForBoard={app.tasksForBoard} projects={app.projects} categories={app.categories} users={app.users}
+                  projectsMap={app.projectsMap} usersMap={app.usersMap} moveTaskStatus={app.moveTaskStatus}
+                  setEditTask={app.setEditTask} setShowTaskForm={app.setShowTaskForm} openTaskFormForKanbanColumn={app.openTaskFormForKanbanColumn}
+                  filterOpen={app.filterOpen} setFilterOpen={app.setFilterOpen} hasAnyFilter={app.hasAnyFilter}
+                  filterProjectIds={app.filterProjectIds} setFilterProjectIds={app.setFilterProjectIds}
+                  filterPriorities={app.filterPriorities} setFilterPriorities={app.setFilterPriorities}
+                  filterAssigneeId={app.filterAssigneeId} setFilterAssigneeId={app.setFilterAssigneeId}
+                  filterDueFrom={app.filterDueFrom} setFilterDueFrom={app.setFilterDueFrom} filterDueTo={app.filterDueTo} setFilterDueTo={app.setFilterDueTo}
+                  filterPriorityFrom={app.filterPriorityFrom} setFilterPriorityFrom={app.setFilterPriorityFrom}
+                  filterPriorityTo={app.filterPriorityTo} setFilterPriorityTo={app.setFilterPriorityTo}
+                  sort={app.sort} setSort={app.setSort} sortedTasks={app.sortedTasks} taskFiltersClear={app.taskFiltersClear}
+                  onAddTask={() => app.setShowTaskForm(true)} onEditTask={(t) => { app.setEditTask(t); app.setShowTaskForm(true) }} onToggleTask={app.toggleTask}
                 />
-              </>
-            )}
-
-            {view === 'categories' && (
-              <CategoriesView categories={categories} setCategories={setCategories} addToast={addToast} />
-            )}
-
-            {view.startsWith('c:') && (
-              <ClientDetailView
-                clientId={view.slice(2)}
-                clients={clients}
-                remembers={remembers}
-                onBack={() => setView('clients')}
-                onAddRemember={addRemember}
-                onUpdateRemember={updateRememberItem}
-                onDeleteRemember={removeRemember}
-              />
-            )}
-
-            {/* PROJECTS OVERVIEW */}
-            {view === 'projects' && (
-              <ProjectsOverview
-                showDone={showDone}
-                setShowDone={setShowDone}
-                onAddProject={() => { setEditProject(null); setShowProjForm(true) }}
-                sensors={sensors}
-                onDragStart={setDragActiveId}
-                onDragEnd={(e) => handleProjectDragEnd(e, setDragActiveId)}
-                activeProjects={activeProjects}
-                completedProjects={completedProjects}
-                dragActiveId={dragActiveId}
-                renderProjectCard={renderProjectCard}
-                setView={setView}
-                toggleTask={toggleTask}
-                openTaskFormForProject={openTaskFormForProject}
-              />
-            )}
-
-            {/* TEMPLATES */}
-            {view === 'templates' && (
-              <>
-                <div className="toolbar-row">
-                  <button type="button" className="btn btn-primary" onClick={() => { setEditTemplate(null); setShowTplForm(true) }}>
-                    + テンプレート作成
-                  </button>
-                </div>
-                <TemplatesListView
-                  templates={templates}
-                  onAddTemplate={() => { setEditTemplate(null); setShowTplForm(true) }}
-                  onEditTemplate={(t) => { setEditTemplate(t); setShowTplForm(true) }}
-                  onUseTemplate={() => setShowTaskForm(true)}
+              ) : (
+                <ContentArea
+                  view={app.view} isProjectView={app.isProjectView} currentProject={app.currentProject}
+                  tasks={app.tasks} projects={app.projects} categories={app.categories} users={app.users}
+                  projectsMap={app.projectsMap} usersMap={app.usersMap} toggleTask={app.toggleTask}
+                  setEditTask={app.setEditTask} setShowTaskForm={app.setShowTaskForm} setEditProject={app.setEditProject} setShowProjForm={app.setShowProjForm}
+                  updateProjectEndDate={app.updateProjectEndDate} sort={app.sort} setSort={app.setSort} showDone={app.showDone} setShowDone={app.setShowDone}
+                  clients={app.clients} remembers={app.remembers} setEditClient={app.setEditClient} setShowClientForm={app.setShowClientForm}
+                  setView={app.setView} setSidebarOpen={app.setSidebarOpen} addRemember={app.addRemember} updateRememberItem={app.updateRememberItem} removeRemember={app.removeRemember}
+                  setCategories={app.setCategories} addToast={app.addToast} sensors={app.sensors} setDragActiveId={app.setDragActiveId} handleProjectDragEnd={app.handleProjectDragEnd}
+                  activeProjects={app.activeProjects} completedProjects={app.completedProjects} dragActiveId={app.dragActiveId}
+                  renderProjectCard={app.renderProjectCard} openTaskFormForProject={app.openTaskFormForProject}
+                  templates={app.templates} setEditTemplate={app.setEditTemplate} setShowTplForm={app.setShowTplForm}
                 />
-              </>
-            )}
-
-            {/* ALL / TODAY / OVERDUE TASKS */}
-            {view === 'kanban' && (
-              <div className="kanban-view-wrap">
-                <Suspense fallback={<div className="loading-placeholder">読み込み中...</div>}>
-                <KanbanBoard
-                  tasks={tasksForBoard}
-                  projects={projects}
-                  categories={categories}
-                  users={users}
-                  projectsMap={projectsMap}
-                  usersMap={usersMap}
-                  onMoveTask={moveTaskStatus}
-                  onEditTask={(task) => { setEditTask(task); setShowTaskForm(true) }}
-                  onAddTask={openTaskFormForKanbanColumn}
-                />
-                </Suspense>
-              </div>
-            )}
-
-            {view === 'dashboard' && (
-              <Suspense fallback={<div className="loading-placeholder">読み込み中...</div>}>
-                <Dashboard tasks={tasksForBoard} projects={projects} />
-              </Suspense>
-            )}
-
-            {view === 'gantt' && (
-              <div className="gantt-view-wrap">
-                <Suspense fallback={<div className="loading-placeholder">読み込み中...</div>}>
-                <GanttChart
-                  tasks={tasksForBoard}
-                  projects={projects}
-                  projectsMap={projectsMap}
-                  onEditTask={(task) => { setEditTask(task); setShowTaskForm(true) }}
-                />
-                </Suspense>
-              </div>
-            )}
-
-            {(view === 'all' || view === 'today' || view === 'overdue') && (
-              <TaskListWithFilters
-                filterOpen={filterOpen}
-                setFilterOpen={setFilterOpen}
-                hasAnyFilter={hasAnyFilter}
-                filterProjectIds={filterProjectIds}
-                setFilterProjectIds={setFilterProjectIds}
-                filterPriorities={filterPriorities}
-                setFilterPriorities={setFilterPriorities}
-                filterAssigneeId={filterAssigneeId}
-                setFilterAssigneeId={setFilterAssigneeId}
-                filterDueFrom={filterDueFrom}
-                setFilterDueFrom={setFilterDueFrom}
-                filterDueTo={filterDueTo}
-                setFilterDueTo={setFilterDueTo}
-                filterPriorityFrom={filterPriorityFrom}
-                setFilterPriorityFrom={setFilterPriorityFrom}
-                filterPriorityTo={filterPriorityTo}
-                setFilterPriorityTo={setFilterPriorityTo}
-                sort={sort}
-                setSort={setSort}
-                projects={projects}
-                users={users}
-                categories={categories}
-                projectsMap={projectsMap}
-                usersMap={usersMap}
-                sortedTasks={sortedTasks}
-                onAddTask={() => setShowTaskForm(true)}
-                onEditTask={(t) => { setEditTask(t); setShowTaskForm(true) }}
-                onToggleTask={toggleTask}
-                onClearFilters={taskFiltersClear}
-              />
-            )}
-
+              )}
             </div>
           </div>
         </div>
       </div>
-
-      {(showTaskForm || editTask) && (
-        <TaskForm
-          task={taskFormInitialTask}
-          projects={projects}
-          templates={templates}
-          categories={categories}
-          users={usersForTaskForm}
-          onSave={saveTask}
-          onClose={closeTaskForm}
-        />
-      )}
-      {showProjForm && (
-        <ProjectForm
-          project={editProject}
-          onSave={saveProject}
-          onClose={() => { setShowProjForm(false); setEditProject(null) }}
-        />
-      )}
-      {showTplForm && (
-        <TemplateForm
-          template={editTemplate}
-          onSave={saveTemplate}
-          onDelete={removeTemplate}
-          onClose={() => { setShowTplForm(false); setEditTemplate(null) }}
-        />
-      )}
-      {showClientForm && (
-        <ClientForm
-          client={editClient}
-          onSave={saveClient}
-          onDelete={removeClient}
-          onClose={() => { setShowClientForm(false); setEditClient(null) }}
-        />
-      )}
-
-      {showSettings && (
-        <SettingsModal
-          theme={theme}
-          setTheme={setTheme}
-          onClose={() => setShowSettings(false)}
-          users={users}
-          setUsers={setUsers}
-          notifyReminderEnabled={notifyReminderEnabled}
-          setNotifyReminderEnabled={setNotifyReminderEnabled}
-          addToast={addToast}
-        />
-      )}
-
-      {showProfileModal && (
-        <ProfileModal
-          authUser={authUser}
-          onClose={() => setShowProfileModal(false)}
-          addToast={addToast}
-          setAuthUser={setAuthUser}
-        />
-      )}
-
-      <Toast toasts={toasts} />
+      <AppModals
+        showTaskForm={app.showTaskForm} editTask={app.editTask} taskFormInitialTask={app.taskFormInitialTask}
+        projects={app.projects} templates={app.templates} categories={app.categories} usersForTaskForm={app.usersForTaskForm}
+        onSaveTask={app.saveTask} onCloseTaskForm={app.closeTaskForm}
+        showProjForm={app.showProjForm} editProject={app.editProject} onSaveProject={app.saveProject}
+        onCloseProjForm={() => { app.setShowProjForm(false); app.setEditProject(null) }}
+        showTplForm={app.showTplForm} editTemplate={app.editTemplate} onSaveTemplate={app.saveTemplate} onRemoveTemplate={app.removeTemplate}
+        onCloseTplForm={() => { app.setShowTplForm(false); app.setEditTemplate(null) }}
+        showClientForm={app.showClientForm} editClient={app.editClient} onSaveClient={app.saveClient} onRemoveClient={app.removeClient}
+        onCloseClientForm={() => { app.setShowClientForm(false); app.setEditClient(null) }}
+        showSettings={app.showSettings} theme={app.theme} setTheme={app.setTheme} onCloseSettings={() => app.setShowSettings(false)}
+        users={app.users} setUsers={app.setUsers} notifyReminderEnabled={app.notifyReminderEnabled} setNotifyReminderEnabled={app.setNotifyReminderEnabled}
+        addToast={app.addToast} showProfileModal={app.showProfileModal} authUser={app.authUser}
+        onCloseProfile={() => app.setShowProfileModal(false)} setAuthUser={app.setAuthUser} toasts={app.toasts}
+      />
     </>
   )
 }
