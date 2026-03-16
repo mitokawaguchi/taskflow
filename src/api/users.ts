@@ -18,7 +18,7 @@ export async function ensureCurrentUserInTfUsers(): Promise<void> {
   } = await db.auth.getSession()
   const u = session?.user
   const name = (u?.user_metadata?.full_name ?? u?.email ?? '自分').toString().trim() || '自分'
-  const email = u?.email ?? null
+  const email = u?.email ?? undefined
   await insertUser({ id: ownerId, name, email, created: Date.now() })
 }
 
