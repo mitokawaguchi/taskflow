@@ -11,6 +11,15 @@ export default function TaskCard({ task, projects, categories = [], users = [], 
 
   return (
     <div className={`task-card ${task.priority} ${task.done ? 'done' : ''}`} onClick={onClick}>
+      {assignee && (
+        <span className="card-assignee-corner" title={assignee.name} aria-label={`担当: ${assignee.name}`}>
+          {assignee.avatarUrl ? (
+            <img src={assignee.avatarUrl} alt="" width={20} height={20} className="card-assignee-avatar" />
+          ) : (
+            <span className="card-assignee-dot" aria-hidden>👤</span>
+          )}
+        </span>
+      )}
       {proj && (
         <div className="card-project-banner" style={{ background: `${proj.color}28`, color: proj.color, border: `1px solid ${proj.color}55` }}>
           <span>{proj.icon}</span>
@@ -30,18 +39,6 @@ export default function TaskCard({ task, projects, categories = [], users = [], 
       </div>
       {task.desc && <div className="card-desc">{task.desc}</div>}
       <div className="card-footer">
-        <span className="card-assignee-slot" title={assignee ? assignee.name : ''}>
-          {assignee ? (
-            <>
-              {assignee.avatarUrl ? (
-                <img src={assignee.avatarUrl} alt="" width={16} height={16} className="card-assignee-avatar" />
-              ) : (
-                <span className="card-assignee-icon" aria-hidden>👤</span>
-              )}
-              <span className="card-assignee-name">{assignee.name}</span>
-            </>
-          ) : null}
-        </span>
         {categoryInfo && (
           <span
             className="category-badge"

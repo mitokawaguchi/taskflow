@@ -14,6 +14,15 @@ export function KanbanCardContent({ task, projects, categories = [], users = [],
     <>
       <div className={`kanban-card__bar kanban-card__bar--${task.priority}`} />
       <div className="kanban-card__body">
+        {assignee && (
+          <span className="kanban-card__assignee-corner" title={assignee.name} aria-label={`担当: ${assignee.name}`}>
+            {assignee.avatarUrl ? (
+              <img src={assignee.avatarUrl} alt="" width={18} height={18} className="kanban-card__assignee-avatar" />
+            ) : (
+              <span className="kanban-card__assignee-dot" aria-hidden>👤</span>
+            )}
+          </span>
+        )}
         <div className="kanban-card__title">{task.title}</div>
         {categoryInfo && (
           <span
@@ -31,18 +40,6 @@ export function KanbanCardContent({ task, projects, categories = [], users = [],
             {proj.icon} {proj.name}
           </div>
         )}
-        <div className="kanban-card__assignee-slot" title={assignee ? assignee.name : ''}>
-          {assignee ? (
-            <>
-              {assignee.avatarUrl ? (
-                <img src={assignee.avatarUrl} alt="" width={14} height={14} className="kanban-card__assignee-avatar" />
-              ) : (
-                <span className="kanban-card__assignee-icon" aria-hidden>👤</span>
-              )}
-              <span className="kanban-card__assignee-name">{assignee.name}</span>
-            </>
-          ) : null}
-        </div>
         <div className="kanban-card__progress">
           <div className="kanban-card__progress-bar" style={{ width: `${progress}%` }} />
           <span className="kanban-card__progress-text">{progress}%</span>

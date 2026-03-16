@@ -704,22 +704,25 @@ input.card-check:checked {
 .sidebar-team-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .sidebar-team-avatar:hover { border-color: var(--accent); }
 .sidebar-team-avatar.active { border-color: var(--accent); background: var(--accent-bg); }
-/* 担当者: 常に同じ幅のスロットでレイアウト崩れを防止。担当者名を表示 */
-.card-assignee-slot {
-  display: inline-flex; align-items: center; gap: 4px;
-  min-width: 80px; max-width: 120px; font-size: 11px; color: var(--text-muted);
-  flex-shrink: 0;
+/* 担当者: カード端に小さく表示。メイン情報（プロジェクト・タスク名・重要度・期限）の邪魔をしない */
+.card-assignee-corner {
+  position: absolute; top: 10px; right: 10px;
+  display: flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--surface3); border: 1px solid var(--border);
+  z-index: 1;
 }
-.card-assignee-avatar { border-radius: 50%; vertical-align: middle; flex-shrink: 0; }
-.card-assignee-icon { flex-shrink: 0; }
-.card-assignee-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.kanban-card__assignee-slot {
-  font-size: 11px; color: var(--text-muted); margin-top: 4px; min-height: 18px;
-  display: flex; align-items: center; gap: 4px; flex-shrink: 0;
+.card-assignee-avatar { border-radius: 50%; width: 20px; height: 20px; object-fit: cover; }
+.card-assignee-dot { font-size: 11px; line-height: 1; }
+.kanban-card__assignee-corner {
+  position: absolute; top: 6px; right: 6px;
+  display: flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--surface3); border: 1px solid var(--border);
+  z-index: 1;
 }
-.kanban-card__assignee-avatar { border-radius: 50%; flex-shrink: 0; }
-.kanban-card__assignee-icon { flex-shrink: 0; }
-.kanban-card__assignee-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kanban-card__assignee-avatar { border-radius: 50%; width: 18px; height: 18px; object-fit: cover; }
+.kanban-card__assignee-dot { font-size: 10px; line-height: 1; }
 .form-label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.8px; }
 .form-label--emphasis { font-size: 14px; text-transform: none; letter-spacing: 0; color: var(--text); }
 .form-due-display { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
@@ -1258,7 +1261,7 @@ select { appearance: none; }
 .kanban-card__bar--high { background: var(--high); }
 .kanban-card__bar--medium { background: var(--medium); }
 .kanban-card__bar--low { background: var(--low); }
-.kanban-card__body { padding-left: 10px; }
+.kanban-card__body { position: relative; padding-left: 10px; }
 .kanban-card__title { font-size: 13px; font-weight: 600; margin-bottom: 6px; line-height: 1.3; }
 .kanban-card__meta { font-size: 11px; margin-bottom: 6px; }
 .kanban-card__progress {
