@@ -2,6 +2,14 @@ import { TASK_STATUS_KEYS, VALIDATION } from '../constants'
 import { getSupabase, getOwnerId, normalizeDate, taskFromRow } from './helpers'
 import type { Task } from '../types'
 
+/** assignee_id が tf_users に存在するか確認。存在しなければ null を返す（FK 制約違反を防ぐ） */
+async function resolveAssigneeId(assigneeId: string | null | undefined): Promise<string | null> {
+  if (!assigneeId || !String(assigneeId).trim()) return null
+  const db = getSupabase()
+  const { data } = await db.from('tf_users').select('id').eq('id', assigneeId.trim()).maybeSingle()
+  return data?.id ?? null
+}
+
 type TaskRow = Parameters<typeof taskFromRow>[0]
 
 export interface FetchTasksOpts {
@@ -31,6 +39,7 @@ export async function insertTask(task: TaskInsertInput): Promise<Task> {
   if (task.desc != null && String(task.desc).length > VALIDATION.taskDesc) throw new Error(`説明は${VALIDATION.taskDesc}文字以内にしてください`)
   const ownerId = await getOwnerId()
   const status = task.status && TASK_STATUS_KEYS.includes(task.status) ? task.status : (task.done ? 'done' : 'todo')
+  const rawAssigneeId = task.assigneeId && String(task.assigneeId).trim() ? task.assigneeId : null
   const row: Record<string, unknown> = {
     id: task.id,
     project_id: task.projectId ?? null,
@@ -43,7 +52,7 @@ export async function insertTask(task: TaskInsertInput): Promise<Task> {
     start_date: normalizeDate(task.startDate),
     progress: task.progress != null && task.progress >= 0 && task.progress <= 100 ? task.progress : null,
     category: task.category || null,
-    assignee_id: task.assigneeId && String(task.assigneeId).trim() ? task.assigneeId : null,
+    assignee_id: await resolveAssigneeId(rawAssigneeId),
     created: task.created,
   }
   if (ownerId) row.owner_id = ownerId
@@ -82,7 +91,7 @@ export async function updateTask(id: string, patch: TaskUpdatePatch): Promise<Ta
     row.progress = p != null && p >= 0 && p <= 100 ? p : null
   }
   if (patch.category !== undefined) row.category = patch.category || null
-  if (patch.assigneeId !== undefined) row.assignee_id = patch.assigneeId && String(patch.assigneeId).trim() ? patch.assigneeId : null
+  if (patch.assigneeId !== undefined) row.assignee_id = await resolveAssigneeId(patch.assigneeId)
   const { data, error } = await db.from('tf_tasks').update(row).eq('id', id).select().single()
   if (error) throw error
   const result = taskFromRow((data as unknown) as TaskRow)

@@ -3,7 +3,27 @@ import type { User } from '../types'
 
 type UserRow = Parameters<typeof userFromRow>[0]
 
+/**
+ * ログインユーザーが tf_users にいなければ 1 件だけ登録する。
+ * 担当者に「自分」を選べるようにするため。設定画面で事前登録不要。
+ */
+export async function ensureCurrentUserInTfUsers(): Promise<void> {
+  const db = getSupabase()
+  const ownerId = await getOwnerId()
+  if (!ownerId) return
+  const { data: existing } = await db.from('tf_users').select('id').eq('id', ownerId).maybeSingle()
+  if (existing) return
+  const {
+    data: { session },
+  } = await db.auth.getSession()
+  const u = session?.user
+  const name = (u?.user_metadata?.full_name ?? u?.email ?? '自分').toString().trim() || '自分'
+  const email = u?.email ?? null
+  await insertUser({ id: ownerId, name, email, created: Date.now() })
+}
+
 export async function fetchUsers(): Promise<User[]> {
+  await ensureCurrentUserInTfUsers()
   const db = getSupabase()
   const ownerId = await getOwnerId()
   let q = db.from('tf_users').select('*')
