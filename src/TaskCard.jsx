@@ -30,12 +30,18 @@ export default function TaskCard({ task, projects, categories = [], users = [], 
       </div>
       {task.desc && <div className="card-desc">{task.desc}</div>}
       <div className="card-footer">
-        {assignee && (
-          <span className="card-assignee" title={assignee.name}>
-            {assignee.avatarUrl ? <img src={assignee.avatarUrl} alt="" width={16} height={16} className="card-assignee-avatar" /> : '👤'}
-            <span>{assignee.name}</span>
-          </span>
-        )}
+        <span className="card-assignee-slot" title={assignee ? assignee.name : ''}>
+          {assignee ? (
+            <>
+              {assignee.avatarUrl ? (
+                <img src={assignee.avatarUrl} alt="" width={16} height={16} className="card-assignee-avatar" />
+              ) : (
+                <span className="card-assignee-icon" aria-hidden>👤</span>
+              )}
+              <span className="card-assignee-name">{assignee.name}</span>
+            </>
+          ) : null}
+        </span>
         {categoryInfo && (
           <span
             className="category-badge"

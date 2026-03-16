@@ -31,16 +31,18 @@ export function KanbanCardContent({ task, projects, categories = [], users = [],
             {proj.icon} {proj.name}
           </div>
         )}
-        {assignee && (
-          <div className="kanban-card__assignee">
-            {assignee.avatarUrl ? (
-              <img src={assignee.avatarUrl} alt="" width={14} height={14} style={{ borderRadius: '50%' }} />
-            ) : (
-              '👤'
-            )}
-            <span>{assignee.name}</span>
-          </div>
-        )}
+        <div className="kanban-card__assignee-slot" title={assignee ? assignee.name : ''}>
+          {assignee ? (
+            <>
+              {assignee.avatarUrl ? (
+                <img src={assignee.avatarUrl} alt="" width={14} height={14} className="kanban-card__assignee-avatar" />
+              ) : (
+                <span className="kanban-card__assignee-icon" aria-hidden>👤</span>
+              )}
+              <span className="kanban-card__assignee-name">{assignee.name}</span>
+            </>
+          ) : null}
+        </div>
         <div className="kanban-card__progress">
           <div className="kanban-card__progress-bar" style={{ width: `${progress}%` }} />
           <span className="kanban-card__progress-text">{progress}%</span>
