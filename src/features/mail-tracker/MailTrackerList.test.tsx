@@ -14,7 +14,7 @@ const mailSample = {
 
 describe('MailTrackerList', () => {
   it('件数を表示', () => {
-    render(
+    const { container } = render(
       <MailTrackerList
         tab="all"
         onTabChange={vi.fn()}
@@ -25,7 +25,9 @@ describe('MailTrackerList', () => {
         onRefresh={vi.fn()}
       />,
     )
-    expect(screen.getByText(/表示中:\s*1/)).toBeTruthy()
+    const countLine = container.querySelector('.mt-count')
+    expect(countLine).not.toBeNull()
+    expect(countLine).toHaveTextContent(/表示中:\s*1/)
   })
 
   it('手動更新で onRefresh', () => {
