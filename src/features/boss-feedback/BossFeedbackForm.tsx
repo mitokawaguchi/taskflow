@@ -16,7 +16,7 @@ export function BossFeedbackForm({ form, editingId, onFieldChange, onSubmit, onC
   const title = editingId ? '指摘を編集' : '指摘を追加'
 
   return (
-    <section id="boss-feedback-form" className="bf-section bf-form-section" aria-labelledby="bf-form-heading">
+    <section id="boss-feedback-form" className="bf-section bf-panel bf-form-section" aria-labelledby="bf-form-heading">
       <h2 id="bf-form-heading" className="bf-heading">
         {title}
       </h2>

@@ -8,6 +8,7 @@ import ClientDetailView from './ClientDetailView'
 import ProjectsOverview from './ProjectsOverview'
 import TemplatesListView from './TemplatesListView'
 import BossFeedbackScreen from '../features/boss-feedback/BossFeedbackScreen'
+import MailTrackerScreen from '../features/mail-tracker/MailTrackerScreen'
 
 export default function ContentArea({
   view,
@@ -148,6 +149,9 @@ export default function ContentArea({
   }
   if (view === 'boss-feedback') {
     return <BossFeedbackScreen addToast={addToast} />
+  }
+  if (view === 'mail-tracker') {
+    return <MailTrackerScreen addToast={addToast} />
   }
   return null
 }

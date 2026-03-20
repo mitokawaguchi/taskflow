@@ -25,7 +25,7 @@ export function BossFeedbackList({
   onDelete,
 }: Readonly<Props>) {
   return (
-    <section className="bf-section" aria-labelledby="bf-list-heading">
+    <section className="bf-section bf-panel" aria-labelledby="bf-list-heading">
       <h2 id="bf-list-heading" className="bf-heading">
         指摘一覧
         {loading && <span className="text-muted">（読み込み中…）</span>}
@@ -91,7 +91,9 @@ export function BossFeedbackList({
             <tbody>
               {items.map((row) => (
                 <tr key={row.id}>
-                  <td>{row.category}</td>
+                  <td>
+                    <span className="bf-cat">{row.category}</span>
+                  </td>
                   <td className="bf-table__desc">{row.description}</td>
                   <td>{row.frequency}</td>
                   <td>{row.projectName ?? '—'}</td>

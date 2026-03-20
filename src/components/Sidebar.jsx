@@ -160,6 +160,16 @@ export default function Sidebar({
         </button>
         <button
           type="button"
+          className={`sidebar-item ${view === 'mail-tracker' ? 'active' : ''}`}
+          onClick={() => {
+            setView('mail-tracker')
+            setSidebarOpen(false)
+          }}
+        >
+          <span className="icon">✉️</span>未返信メール
+        </button>
+        <button
+          type="button"
           className={`sidebar-item ${view === 'clients' || view.startsWith('c:') ? 'active' : ''}`}
           onClick={() => {
             setView('clients')

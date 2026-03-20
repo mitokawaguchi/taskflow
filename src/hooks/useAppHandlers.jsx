@@ -29,6 +29,7 @@ function getViewFromPathname(pathname) {
   if (pathname === '/clients') return 'clients'
   if (pathname === '/categories') return 'categories'
   if (pathname === '/boss-feedback') return 'boss-feedback'
+  if (pathname === '/mail-tracker') return 'mail-tracker'
   const pMatch = pathname.match(/^\/projects\/([^/]+)/)
   if (pMatch) return `p:${pMatch[1]}`
   const cMatch = pathname.match(/^\/clients\/([^/]+)/)
@@ -100,6 +101,7 @@ export function useAppHandlers(data, ui, authUser) {
     if (view === 'clients') return '覚えておくこと'
     if (view === 'categories') return 'カテゴリ'
     if (view === 'boss-feedback') return '上司の指摘DB'
+    if (view === 'mail-tracker') return '未返信メール'
     if (view.startsWith('c:')) return data.clients.find((c) => c.id === view.slice(2))?.name ?? 'クライアント'
     if (view.startsWith('p:')) return projects.find((p) => p.id === view.slice(2))?.name ?? ''
     return ''

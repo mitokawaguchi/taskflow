@@ -727,18 +727,35 @@ input.card-check:checked {
 .form-label--emphasis { font-size: 14px; text-transform: none; letter-spacing: 0; color: var(--text); }
 .form-due-display { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
 .form-due-display--urgent { color: var(--critical); font-weight: 700; }
-.form-input, .form-select, .form-textarea {
+.form-input, .form-select, .form-textarea,
+.input {
   width: 100%; padding: 10px 14px;
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 6px; color: var(--text);
   font-size: 14px;
   transition: border-color 0.15s; outline: none;
+  font-family: inherit;
 }
-.form-textarea { resize: vertical; min-height: 80px; }
-.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
-.form-input::placeholder, .form-textarea::placeholder { color: var(--text-muted); }
+.form-textarea,
+.input.textarea { resize: vertical; min-height: 80px; }
+.form-input:focus, .form-select:focus, .form-textarea:focus,
+.input:focus { border-color: var(--accent); }
+.form-input::placeholder, .form-textarea::placeholder,
+.input::placeholder { color: var(--text-muted); }
 .form-select option { background: var(--surface2); }
 select { appearance: none; }
+select.form-select,
+select.input {
+  cursor: pointer;
+  padding-right: 36px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+html.dark select.form-select,
+html.dark select.input {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a0a4b4' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+}
 
 /* カテゴリ選択（色＋名前） */
 .form-category-picker { position: relative; width: 100%; }
@@ -1686,27 +1703,117 @@ select { appearance: none; }
   .project-card-tasks { max-height: 120px; }
 }
 
-/* 上司の指摘 DB（boss_feedback） */
-.bf-screen { max-width: 1100px; margin: 0 auto; }
-.bf-lead { margin-bottom: 16px; font-size: 13px; }
-.bf-section { margin-bottom: 28px; }
-.bf-heading { font-size: 18px; font-weight: 600; margin-bottom: 12px; }
-.bf-toolbar {
-  display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin-bottom: 12px;
+/* 上司の指摘 DB（boss_feedback）・メールトラッカー等の共通シート */
+.bf-screen {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
-.bf-field { display: flex; flex-direction: column; gap: 4px; min-width: 120px; }
-.bf-field--grow { flex: 1; min-width: 200px; }
+.bf-lead {
+  margin: 0;
+  padding: 14px 18px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-muted);
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  border-left: 3px solid var(--accent);
+}
+.bf-section { margin-bottom: 0; }
+.bf-panel {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 22px 22px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+html.dark .bf-panel { box-shadow: 0 2px 16px rgba(0, 0, 0, 0.35); }
+.bf-heading {
+  font-family: 'Sora', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 14px;
+  color: var(--text);
+}
+.bf-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  align-items: flex-end;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.bf-field { display: flex; flex-direction: column; gap: 6px; min-width: 140px; }
+.bf-field--grow { flex: 1; min-width: 200px; max-width: 480px; }
 .bf-field--block { width: 100%; }
-.bf-field--checkbox { flex-direction: row; align-items: center; gap: 8px; min-width: auto; }
-.bf-label { font-size: 12px; color: var(--text-muted); }
-.bf-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+.bf-field--checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  min-width: auto;
+  padding: 8px 4px 8px 0;
+}
+.bf-field--checkbox input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.bf-field--checkbox span { font-size: 13px; color: var(--text); }
+.bf-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+.bf-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface2);
+}
 .bf-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .bf-table th, .bf-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
-.bf-table th { background: var(--surface3); font-weight: 600; }
+.bf-table tbody tr:last-child td { border-bottom: none; }
+.bf-table th { background: var(--surface3); font-weight: 600; font-size: 12px; }
 .bf-table__desc { max-width: 360px; word-break: break-word; }
 .bf-table__actions { white-space: nowrap; }
-.bf-form-section { padding-top: 8px; border-top: 1px solid var(--border); }
-.bf-form { display: flex; flex-direction: column; gap: 12px; max-width: 640px; }
-.bf-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.bf-cat {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--accent-glow);
+  color: var(--accent-hover);
+  border: 1px solid rgba(58, 143, 82, 0.25);
+}
+html.dark .bf-cat { border-color: rgba(58, 143, 82, 0.4); }
+.bf-panel .empty-state {
+  margin: 8px 0 4px;
+  padding: 48px 20px;
+  background: var(--bg);
+  border-radius: 8px;
+  border: 1px dashed var(--border);
+}
+.bf-form-section { padding-top: 0; border-top: none; }
+.bf-form { display: flex; flex-direction: column; gap: 14px; max-width: none; }
+.bf-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 @media (max-width: 640px) { .bf-form-row { grid-template-columns: 1fr; } }
-.bf-form-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.bf-form-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+
+/* 未返信メールトラッカー */
+.mt-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.mt-section { margin-top: 8px; }
+.mt-count { font-size: 22px; font-weight: 700; margin-bottom: 12px; }
+.mt-count strong { color: var(--accent); }
+.mt-p { font-size: 13px; margin-bottom: 10px; line-height: 1.5; }
+.mt-link { color: var(--accent); text-decoration: underline; }
+.mt-table-wrap { margin-top: 8px; }
+.mt-cell-from { max-width: 220px; word-break: break-all; font-size: 12px; }
+.mt-row--stale { background: var(--critical-bg); color: var(--text); }
+.mt-row--stale a { color: var(--critical); font-weight: 600; }
