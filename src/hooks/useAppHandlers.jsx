@@ -101,7 +101,7 @@ export function useAppHandlers(data, ui, authUser) {
     if (view === 'clients') return '覚えておくこと'
     if (view === 'categories') return 'カテゴリ'
     if (view === 'boss-feedback') return '上司の指摘DB'
-    if (view === 'mail-tracker') return '未返信メール'
+    if (view === 'mail-tracker') return '未返信'
     if (view.startsWith('c:')) return data.clients.find((c) => c.id === view.slice(2))?.name ?? 'クライアント'
     if (view.startsWith('p:')) return projects.find((p) => p.id === view.slice(2))?.name ?? ''
     return ''

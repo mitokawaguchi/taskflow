@@ -1,5 +1,7 @@
 # Gmail API（未返信メールトラッカー）セットアップ
 
+> まず全体のチェックリストは [MAIL_TRACKER_QUICKSTART.md](./MAIL_TRACKER_QUICKSTART.md) を参照。
+
 ## 1. Google Cloud Console
 
 1. [Google Cloud Console](https://console.cloud.google.com/) にログイン。

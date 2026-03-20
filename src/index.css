@@ -1808,6 +1808,7 @@ html.dark .bf-cat { border-color: rgba(58, 143, 82, 0.4); }
 
 /* 未返信メールトラッカー */
 .mt-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.mt-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .mt-section { margin-top: 8px; }
 .mt-count { font-size: 22px; font-weight: 700; margin-bottom: 12px; }
 .mt-count strong { color: var(--accent); }

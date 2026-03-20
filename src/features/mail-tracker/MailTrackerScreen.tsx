@@ -1,6 +1,11 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+import { useAuth } from '../../hooks/useAuth'
 import { buildGmailOAuthUrl } from './gmail-auth'
+import { filterByTab, mergeInboxRowsOldestFirst } from './inbox-merge'
+import type { InboxTab } from './chatwork-unread-types'
+import { MailTrackerGmailTokenPanel } from './MailTrackerGmailTokenPanel'
 import { MailTrackerList } from './MailTrackerList'
+import { useChatworkUnread } from './useChatworkUnread'
 import { useMailTracker } from './hooks'
 
 type Props = {
@@ -10,9 +15,12 @@ type Props = {
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined
 const redirectUri = import.meta.env.VITE_GOOGLE_REDIRECT_URI as string | undefined
 
-/** Gmail 未返信トラッカー画面（トークンは OAuth 後に別途保存する想定／開発は sessionStorage） */
+/** Gmail + Chatwork 未返信（メールは開発用トークン、CW は Edge） */
 export default function MailTrackerScreen({ addToast }: Readonly<Props>) {
+  const { authUser } = useAuth()
+  const [tab, setTab] = useState<InboxTab>('all')
   const mt = useMailTracker(addToast)
+  const cw = useChatworkUnread(addToast, authUser?.id)
 
   const oauthUrl = useMemo(() => {
     if (!clientId || !redirectUri) return null
@@ -23,38 +31,32 @@ export default function MailTrackerScreen({ addToast }: Readonly<Props>) {
     }
   }, [])
 
+  const merged = useMemo(
+    () => mergeInboxRowsOldestFirst(mt.items, cw.items),
+    [mt.items, cw.items],
+  )
+  const rows = useMemo(() => filterByTab(merged, tab), [merged, tab])
+
+  const handleRefresh = useCallback(() => {
+    void Promise.all([mt.reload(), cw.reload()])
+  }, [mt.reload, cw.reload])
+
   return (
     <div className="bf-screen">
       <p className="text-muted bf-lead">
-        Gmail API で未返信候補を一覧します。トークンはブラウザの sessionStorage にのみ保持します（本番は Edge
-        Function で安全に扱うことを推奨）。
+        Gmail は API で未返信候補を一覧します。Chatwork は To メンション宛で自分がまだ返信していないスレッドを、最大
+        15 ルームまで Edge Function 経由で取得します。
       </p>
-      <section className="bf-section">
-        <h2 className="bf-heading">アクセストークン</h2>
-        <p className="text-muted mt-p">
-          OAuth の code→token 交換はクライアントに client_secret を置けないため、本番では Supabase Edge
-          Function を用意してください。開発時は Google OAuth ツール等で取得した短期トークンを貼り付け可能です。
-        </p>
-        {oauthUrl && (
-          <p className="mt-p">
-            <a className="mt-link" href={oauthUrl} target="_blank" rel="noopener noreferrer">
-              Google で認証（同意画面を開く）
-            </a>
-          </p>
-        )}
-        <label className="bf-field bf-field--block">
-          <span className="bf-label">アクセストークン（開発用）</span>
-          <input
-            type="password"
-            className="input"
-            autoComplete="off"
-            value={mt.token}
-            onChange={(e) => mt.saveToken(e.target.value)}
-            placeholder="ya29..."
-          />
-        </label>
-      </section>
-      <MailTrackerList loading={mt.loading} items={mt.items} onRefresh={mt.reload} />
+      <MailTrackerGmailTokenPanel oauthUrl={oauthUrl} token={mt.token} onTokenChange={mt.saveToken} />
+      <MailTrackerList
+        tab={tab}
+        onTabChange={setTab}
+        rows={rows}
+        counts={{ mail: mt.items.length, chatwork: cw.items.length }}
+        loadingMail={mt.loading}
+        loadingChatwork={cw.loading}
+        onRefresh={handleRefresh}
+      />
     </div>
   )
 }

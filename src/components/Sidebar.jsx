@@ -166,7 +166,7 @@ export default function Sidebar({
             setSidebarOpen(false)
           }}
         >
-          <span className="icon">✉️</span>未返信メール
+          <span className="icon">✉️</span>未返信
         </button>
         <button
           type="button"
