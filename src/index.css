@@ -1685,3 +1685,28 @@ select { appearance: none; }
   .project-name { font-size: 13px; }
   .project-card-tasks { max-height: 120px; }
 }
+
+/* 上司の指摘 DB（boss_feedback） */
+.bf-screen { max-width: 1100px; margin: 0 auto; }
+.bf-lead { margin-bottom: 16px; font-size: 13px; }
+.bf-section { margin-bottom: 28px; }
+.bf-heading { font-size: 18px; font-weight: 600; margin-bottom: 12px; }
+.bf-toolbar {
+  display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin-bottom: 12px;
+}
+.bf-field { display: flex; flex-direction: column; gap: 4px; min-width: 120px; }
+.bf-field--grow { flex: 1; min-width: 200px; }
+.bf-field--block { width: 100%; }
+.bf-field--checkbox { flex-direction: row; align-items: center; gap: 8px; min-width: auto; }
+.bf-label { font-size: 12px; color: var(--text-muted); }
+.bf-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+.bf-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.bf-table th, .bf-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+.bf-table th { background: var(--surface3); font-weight: 600; }
+.bf-table__desc { max-width: 360px; word-break: break-word; }
+.bf-table__actions { white-space: nowrap; }
+.bf-form-section { padding-top: 8px; border-top: 1px solid var(--border); }
+.bf-form { display: flex; flex-direction: column; gap: 12px; max-width: 640px; }
+.bf-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 640px) { .bf-form-row { grid-template-columns: 1fr; } }
+.bf-form-actions { display: flex; gap: 8px; flex-wrap: wrap; }

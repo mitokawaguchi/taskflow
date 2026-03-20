@@ -150,6 +150,16 @@ export default function Sidebar({
         </button>
         <button
           type="button"
+          className={`sidebar-item ${view === 'boss-feedback' ? 'active' : ''}`}
+          onClick={() => {
+            setView('boss-feedback')
+            setSidebarOpen(false)
+          }}
+        >
+          <span className="icon">📝</span>上司の指摘
+        </button>
+        <button
+          type="button"
           className={`sidebar-item ${view === 'clients' || view.startsWith('c:') ? 'active' : ''}`}
           onClick={() => {
             setView('clients')

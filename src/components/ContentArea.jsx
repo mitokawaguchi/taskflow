@@ -7,6 +7,7 @@ import CategoriesView from './CategoriesView'
 import ClientDetailView from './ClientDetailView'
 import ProjectsOverview from './ProjectsOverview'
 import TemplatesListView from './TemplatesListView'
+import BossFeedbackScreen from '../features/boss-feedback/BossFeedbackScreen'
 
 export default function ContentArea({
   view,
@@ -144,6 +145,9 @@ export default function ContentArea({
         />
       </>
     )
+  }
+  if (view === 'boss-feedback') {
+    return <BossFeedbackScreen addToast={addToast} />
   }
   return null
 }

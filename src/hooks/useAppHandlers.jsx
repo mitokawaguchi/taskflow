@@ -28,6 +28,7 @@ function getViewFromPathname(pathname) {
   if (pathname === '/templates') return 'templates'
   if (pathname === '/clients') return 'clients'
   if (pathname === '/categories') return 'categories'
+  if (pathname === '/boss-feedback') return 'boss-feedback'
   const pMatch = pathname.match(/^\/projects\/([^/]+)/)
   if (pMatch) return `p:${pMatch[1]}`
   const cMatch = pathname.match(/^\/clients\/([^/]+)/)
@@ -52,6 +53,7 @@ export function useAppHandlers(data, ui, authUser) {
       else if (v === 'templates') navigate('/templates')
       else if (v === 'clients') navigate('/clients')
       else if (v === 'categories') navigate('/categories')
+      else if (v === 'boss-feedback') navigate('/boss-feedback')
       else if (v.startsWith('p:')) navigate(`/projects/${v.slice(2)}`)
       else if (v.startsWith('c:')) navigate(`/clients/${v.slice(2)}`)
       else navigate('/')
@@ -97,6 +99,7 @@ export function useAppHandlers(data, ui, authUser) {
     if (view === 'templates') return 'テンプレート'
     if (view === 'clients') return '覚えておくこと'
     if (view === 'categories') return 'カテゴリ'
+    if (view === 'boss-feedback') return '上司の指摘DB'
     if (view.startsWith('c:')) return data.clients.find((c) => c.id === view.slice(2))?.name ?? 'クライアント'
     if (view.startsWith('p:')) return projects.find((p) => p.id === view.slice(2))?.name ?? ''
     return ''
