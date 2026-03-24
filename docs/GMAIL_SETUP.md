@@ -1,6 +1,29 @@
 # Gmail API（未返信メールトラッカー）セットアップ
 
-> まず全体のチェックリストは [MAIL_TRACKER_QUICKSTART.md](./MAIL_TRACKER_QUICKSTART.md) を参照。
+> まず全体のチェックリストは [MAIL_TRACKER_QUICKSTART.md](./MAIL_TRACKER_QUICKSTART.md) を参照。  
+> **複数 Gmail 連携**の設計案は [GMAIL_MULTI_ACCOUNT_DESIGN.md](./GMAIL_MULTI_ACCOUNT_DESIGN.md)。
+
+## 本番の「ドメイン」とリダイレクト URI（読み方）
+
+URL は次の形です。
+
+```text
+https://ホスト名/パス/…
+```
+
+- **ホスト名**（よく「ドメイン」と呼ぶ部分）: `https://` の直後から、**次の `/` の手前**まで。
+- **承認済みのリダイレクト URI** に Google Cloud に登録するのは、**ホスト名だけではなく**、`/mail-tracker` まで含めた **完全な URL** です。
+
+TaskFlow を Vercel（例: [taskflow-alpha-ebon.vercel.app](https://taskflow-alpha-ebon.vercel.app/)）に置いている場合の対応表:
+
+| 項目 | 値 |
+|------|-----|
+| ホスト名 | `taskflow-alpha-ebon.vercel.app` |
+| 未返信画面の URL 全体 | `https://taskflow-alpha-ebon.vercel.app/mail-tracker` |
+| Google Console の **承認済みのリダイレクト URI** | 上と **同じ文字列** |
+| `.env` の `VITE_GOOGLE_REDIRECT_URI` | 上と **同じ文字列**（スペル・末尾スラッシュも一致） |
+
+別の Vercel プロジェクトやカスタムドメインにした場合は、`taskflow-alpha-ebon.vercel.app` の部分だけ差し替えてください。
 
 ## 1. Google Cloud Console
 
@@ -21,7 +44,7 @@
 2. アプリケーションの種類: **ウェブアプリケーション**。
 3. **承認済みのリダイレクト URI** に、本アプリの URL を追加。例:
    - ローカル: `http://localhost:5173/mail-tracker`
-   - 本番: `https://＜Vercel のドメイン＞/mail-tracker`
+   - 本番（Vercel の例）: `https://taskflow-alpha-ebon.vercel.app/mail-tracker`
 4. 作成後、**クライアント ID** をコピー → `.env` の `VITE_GOOGLE_CLIENT_ID` に設定。
 5. **クライアント シークレット**はブラウザだけの SPA では安全に使えないため、**code を token に交換する処理は Supabase Edge Function** などサーバー側に置くことを推奨。
 

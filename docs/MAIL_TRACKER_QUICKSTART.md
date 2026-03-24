@@ -8,7 +8,7 @@
 |----------|------|
 | Google Cloud | プロジェクト作成 → **Gmail API を有効化** |
 | OAuth 同意画面 | スコープ `https://www.googleapis.com/auth/gmail.readonly` |
-| OAuth クライアント（Web） | **承認済みリダイレクト URI** に `http://localhost:5173/mail-tracker`（本番は自サイト URL） |
+| OAuth クライアント（Web） | **承認済みリダイレクト URI** に、ローカルなら `http://localhost:5173/mail-tracker`、本番なら例: `https://taskflow-alpha-ebon.vercel.app/mail-tracker`（ホスト名の読み方は [GMAIL_SETUP.md](./GMAIL_SETUP.md) 冒頭の表） |
 | `.env` | `VITE_GOOGLE_CLIENT_ID` / `VITE_GOOGLE_REDIRECT_URI`（URI は Console と **完全一致**） |
 | 画面 | **開発用**: 短期アクセストークンを「Gmail アクセストークン」欄に貼る（または同意画面から取得） |
 

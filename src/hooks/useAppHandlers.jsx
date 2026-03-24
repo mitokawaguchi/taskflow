@@ -55,6 +55,7 @@ export function useAppHandlers(data, ui, authUser) {
       else if (v === 'clients') navigate('/clients')
       else if (v === 'categories') navigate('/categories')
       else if (v === 'boss-feedback') navigate('/boss-feedback')
+      else if (v === 'mail-tracker') navigate('/mail-tracker')
       else if (v.startsWith('p:')) navigate(`/projects/${v.slice(2)}`)
       else if (v.startsWith('c:')) navigate(`/clients/${v.slice(2)}`)
       else navigate('/')
