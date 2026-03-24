@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom/vitest'
 
 // テスト用 localStorage（jsdom のものに clear が無い場合があるため）
 const store = {}
