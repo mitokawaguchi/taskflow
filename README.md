@@ -21,7 +21,7 @@
 taskflow/
 ├── src/
 │   ├── App.jsx          # メインアプリ・ルート
-│   ├── api.js           # Supabase 呼び出し・owner_id フィルタ
+│   ├── api/             # Supabase 呼び出し・owner_id フィルタ（TypeScript モジュール）
 │   ├── TaskForm.jsx      # タスク作成・編集
 │   ├── KanbanBoard.jsx   # カンバン（DnD）
 │   ├── GanttChart.jsx    # ガント
