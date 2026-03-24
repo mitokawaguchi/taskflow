@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/lang/ja/).
 ### Added
 - GitHub Actions CI（typecheck / build / unit test）
 - CONTRIBUTING.md
-- ロードマップ（CODE_REVIEW.md 内 Target: 9/10）
+- 品質・ロードマップ（内部ドキュメントで管理）
 
 ### Changed
 - App.jsx: useTaskActions, useProjectActions, useTemplateActions, useClientActions, Sidebar, ProjectCard で短縮

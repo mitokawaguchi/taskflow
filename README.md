@@ -29,8 +29,7 @@ taskflow/
 │   └── ...
 ├── docs/
 │   ├── SUPABASE_RLS_SETUP.md   # RLS 実行手順
-│   ├── SUPABASE_RLS_POLICIES.sql
-│   └── CODE_REVIEW.md          # 品質・スコア表
+│   └── SUPABASE_RLS_POLICIES.sql
 ├── .env.example
 └── package.json
 ```
@@ -102,7 +101,7 @@ npm run dev
 
 1. 機能追加・修正はブランチを切って作業
 2. `npm run test:run` でテスト通過を確認
-3. `docs/CODE_REVIEW.md` のチェックリスト・スコア表を意識した変更を推奨
+3. 型・テスト・セキュリティ（RLS・環境変数）を意識した変更を推奨（詳細は CONTRIBUTING.md）
 
 ## ライセンス
 
