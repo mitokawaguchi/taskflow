@@ -1,6 +1,6 @@
 import { KanbanCardContent } from './KanbanCardContent'
 
-export function KanbanCard({ task, projects, categories = [], users = [], projectsMap, usersMap, onClick, isOverlay }) {
+export function KanbanCard({ task, projects, categories = [], users = [], projectsMap, usersMap, onClick, isOverlay, onToggleDone }) {
   const content = (
     <KanbanCardContent
       task={task}
@@ -9,6 +9,7 @@ export function KanbanCard({ task, projects, categories = [], users = [], projec
       users={users}
       projectsMap={projectsMap}
       usersMap={usersMap}
+      onToggleDone={onToggleDone}
     />
   )
 

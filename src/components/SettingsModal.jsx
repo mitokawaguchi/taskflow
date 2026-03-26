@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { insertUser, fetchUsers } from '../api'
+import { insertUser, fetchUsers, updateUser } from '../api'
 
 export default function SettingsModal({
   theme,
@@ -13,7 +13,9 @@ export default function SettingsModal({
 }) {
   const [newUserName, setNewUserName] = useState('')
   const [newUserEmail, setNewUserEmail] = useState('')
+  const [newUserAvatarUrl, setNewUserAvatarUrl] = useState('')
   const [addingUser, setAddingUser] = useState(false)
+  const [updatingAvatarUserId, setUpdatingAvatarUserId] = useState('')
 
   const handleAddUser = useCallback(async () => {
     const name = newUserName.trim()
@@ -24,20 +26,37 @@ export default function SettingsModal({
         id: `u-${crypto.randomUUID()}`,
         name,
         email: newUserEmail.trim() || null,
-        avatarUrl: '',
+        avatarUrl: newUserAvatarUrl.trim() || '',
         created: Date.now(),
       })
       const list = await fetchUsers()
       setUsers(list)
       setNewUserName('')
       setNewUserEmail('')
+      setNewUserAvatarUrl('')
       addToast('✅', 'メンバーを追加しました', name)
     } catch (e) {
       addToast('❌', '追加できませんでした', e?.message ?? 'tf_users テーブルを確認してください')
     } finally {
       setAddingUser(false)
     }
-  }, [newUserName, newUserEmail, setUsers, addToast])
+  }, [newUserName, newUserEmail, newUserAvatarUrl, setUsers, addToast])
+
+  const handleEditAvatar = useCallback(async (user) => {
+    const nextAvatarUrl = globalThis.prompt('アバター画像URLを入力してください（空欄で初期アイコンに戻す）', user.avatarUrl ?? '')
+    if (nextAvatarUrl == null) return
+    setUpdatingAvatarUserId(user.id)
+    try {
+      await updateUser(user.id, { avatarUrl: nextAvatarUrl.trim() })
+      const list = await fetchUsers()
+      setUsers(list)
+      addToast('✅', 'アバターを更新しました', user.name)
+    } catch (e) {
+      addToast('❌', 'アバター更新に失敗しました', e?.message ?? '')
+    } finally {
+      setUpdatingAvatarUserId('')
+    }
+  }, [setUsers, addToast])
 
   return (
     <div className="overlay" onClick={onClose}>
@@ -76,6 +95,14 @@ export default function SettingsModal({
                     {u.name}
                     {u.email ? ` (${u.email})` : ''}
                   </span>
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-sm ml-auto"
+                    onClick={() => handleEditAvatar(u)}
+                    disabled={updatingAvatarUserId === u.id}
+                  >
+                    {updatingAvatarUserId === u.id ? '更新中…' : 'アバター設定'}
+                  </button>
                 </li>
               ))
             )}
@@ -89,6 +116,15 @@ export default function SettingsModal({
               onChange={(e) => setNewUserName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddUser()}
               aria-label="メンバー名"
+            />
+            <input
+              type="url"
+              className="form-input"
+              placeholder="アバターURL（任意）"
+              value={newUserAvatarUrl}
+              onChange={(e) => setNewUserAvatarUrl(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleAddUser()}
+              aria-label="アバターURL"
             />
             <input
               type="email"

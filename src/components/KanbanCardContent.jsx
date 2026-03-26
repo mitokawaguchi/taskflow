@@ -1,7 +1,7 @@
 import { getPriorityLabel, progressFromStatus, getCategoryInfo } from '../constants'
 import { formatDate, isOverdue } from '../utils'
 
-export function KanbanCardContent({ task, projects, categories = [], users = [], projectsMap, usersMap }) {
+export function KanbanCardContent({ task, projects, categories = [], users = [], projectsMap, usersMap, onToggleDone }) {
   const proj = projectsMap?.get(task.projectId) ?? projects?.find((p) => p.id === task.projectId)
   const progress = task.progress != null ? task.progress : progressFromStatus(task.status)
   const over = isOverdue(task.due)
@@ -23,23 +23,38 @@ export function KanbanCardContent({ task, projects, categories = [], users = [],
             )}
           </span>
         )}
-        <div className="kanban-card__title">{task.title}</div>
-        {categoryInfo && (
-          <span
-            className="kanban-card__category"
-            style={{
-              background: `${categoryInfo.color}20`,
-              color: categoryInfo.color,
+        <div className="kanban-card__title-row">
+          <input
+            type="checkbox"
+            className="kanban-card__check"
+            checked={!!task.done}
+            onChange={(e) => {
+              e.stopPropagation()
+              onToggleDone?.(task.id)
             }}
-          >
-            {categoryInfo.label}
-          </span>
-        )}
-        {proj && (
-          <div className="kanban-card__meta" style={{ color: proj.color }}>
-            {proj.icon} {proj.name}
-          </div>
-        )}
+            onClick={(e) => e.stopPropagation()}
+            aria-label={`${task.title}を${task.done ? '未完了に' : '完了に'}する`}
+          />
+          <div className={`kanban-card__title ${task.done ? 'done' : ''}`}>{task.title}</div>
+        </div>
+        <div className="kanban-card__meta-row">
+          {categoryInfo && (
+            <span
+              className="kanban-card__category"
+              style={{
+                background: `${categoryInfo.color}20`,
+                color: categoryInfo.color,
+              }}
+            >
+              {categoryInfo.label}
+            </span>
+          )}
+          {proj && (
+            <div className="kanban-card__meta" style={{ color: proj.color }}>
+              {proj.icon} {proj.name}
+            </div>
+          )}
+        </div>
         <div className="kanban-card__progress">
           <div className="kanban-card__progress-bar" style={{ width: `${progress}%` }} />
           <span className="kanban-card__progress-text">{progress}%</span>

@@ -1,7 +1,9 @@
 import MorningModal from './MorningModal'
 import Toast from './Toast'
 import LoginScreen from './components/LoginScreen'
+import { PublicDemoPage } from './components/PublicDemoPage'
 import LegalPageView from './components/LegalPageView'
+import { getIsPublicDemoMode } from './config/publicDemoMode'
 import Sidebar from './components/Sidebar'
 import TopBar from './components/TopBar'
 import AppModals from './components/AppModals'
@@ -24,6 +26,15 @@ export default function App() {
     return <LegalPageView pageKey={app.legalPage} onBack={() => { window.location.hash = '' }} />
   }
   if (!app.authUser) {
+    if (getIsPublicDemoMode()) {
+      const repoUrl = import.meta.env.VITE_PUBLIC_REPO_URL
+      return (
+        <>
+          <PublicDemoPage repositoryUrl={typeof repoUrl === 'string' ? repoUrl : undefined} />
+          <Toast toasts={app.toasts} />
+        </>
+      )
+    }
     return (
       <>
         <LoginScreen onError={app.addToast} />

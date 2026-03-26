@@ -1,6 +1,7 @@
 import type { User } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
 import { getAuthSession, subscribeAuth } from '../api'
+import { getIsPublicDemoMode } from '../config/publicDemoMode'
 
 /** 認証状態（authUser, authReady）と購読を集約。ARCH-003 */
 export function useAuth() {
@@ -8,6 +9,11 @@ export function useAuth() {
   const [authReady, setAuthReady] = useState(false)
 
   useEffect(() => {
+    if (getIsPublicDemoMode()) {
+      setAuthUser(null)
+      setAuthReady(true)
+      return
+    }
     let cancelled = false
     getAuthSession()
       .then((session) => {

@@ -59,6 +59,7 @@ export default function ContentAreaTasks({
             setShowTaskForm(true)
           }}
           onAddTask={openTaskFormForKanbanColumn}
+          onToggleTask={onToggleTask}
         />
       </div>
     )

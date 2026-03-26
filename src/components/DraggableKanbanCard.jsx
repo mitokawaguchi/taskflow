@@ -1,7 +1,7 @@
 import { useDraggable } from '@dnd-kit/core'
 import { KanbanCardContent } from './KanbanCardContent'
 
-export function DraggableKanbanCard({ task, projects, categories = [], users = [], projectsMap, usersMap, onClick }) {
+export function DraggableKanbanCard({ task, projects, categories = [], users = [], projectsMap, usersMap, onClick, onToggleDone }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: task.id,
     data: { task },
@@ -39,6 +39,7 @@ export function DraggableKanbanCard({ task, projects, categories = [], users = [
           users={users}
           projectsMap={projectsMap}
           usersMap={usersMap}
+          onToggleDone={onToggleDone}
         />
       </div>
     </div>

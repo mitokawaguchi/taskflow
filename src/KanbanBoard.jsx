@@ -15,6 +15,7 @@ export default function KanbanBoard({
   onMoveTask,
   onEditTask,
   onAddTask,
+  onToggleTask,
 }) {
   const dragProcessedRef = useRef(null)
 
@@ -86,6 +87,7 @@ export default function KanbanBoard({
                 projectsMap={projectsMap}
                 usersMap={usersMap}
                 onClick={onEditTask}
+                onToggleDone={onToggleTask}
               />
             ))}
           </DroppableColumn>
@@ -101,6 +103,7 @@ export default function KanbanBoard({
             projectsMap={projectsMap}
             usersMap={usersMap}
             isOverlay
+            onToggleDone={onToggleTask}
           />
         ) : null}
       </DragOverlay>
