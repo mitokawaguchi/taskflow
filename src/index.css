@@ -549,6 +549,7 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   padding-right: 42px;
+  padding-bottom: 18px;
 }
 .task-card.critical { background: var(--critical-bg); border-color: var(--critical-border); }
 .task-card.high { background: var(--high-bg); border-color: var(--high-border); }
@@ -600,7 +601,7 @@ input.card-check:checked {
 .card-title { font-size: 14px; font-weight: 600; line-height: 1.3; flex: 1; }
 .card-title.done { text-decoration: line-through; color: var(--text-muted); }
 .card-desc { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px; }
-.card-footer { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.card-footer { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding-right: 30px; }
 
 .priority-badge {
   font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
@@ -709,25 +710,27 @@ input.card-check:checked {
 .sidebar-team-avatar.active { border-color: var(--accent); background: var(--accent-bg); }
 /* 担当者: カード端に小さく表示。メイン情報（プロジェクト・タスク名・重要度・期限）の邪魔をしない */
 .card-assignee-corner {
-  position: static;
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
   display: flex; align-items: center; justify-content: center;
-  width: 22px; height: 22px; border-radius: 50%;
+  width: 18px; height: 18px; border-radius: 50%;
   background: var(--surface3); border: 1px solid var(--border);
-  margin-left: auto;
-  margin-bottom: 8px;
+  z-index: 2;
 }
-.card-assignee-avatar { border-radius: 50%; width: 20px; height: 20px; object-fit: cover; }
-.card-assignee-dot { font-size: 11px; line-height: 1; }
+.card-assignee-avatar { border-radius: 50%; width: 16px; height: 16px; object-fit: cover; }
+.card-assignee-dot { font-size: 9px; line-height: 1; }
 .kanban-card__assignee-corner {
-  position: static;
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
   display: flex; align-items: center; justify-content: center;
-  width: 20px; height: 20px; border-radius: 50%;
+  width: 18px; height: 18px; border-radius: 50%;
   background: var(--surface3); border: 1px solid var(--border);
-  margin-left: auto;
-  margin-bottom: 6px;
+  z-index: 2;
 }
-.kanban-card__assignee-avatar { border-radius: 50%; width: 18px; height: 18px; object-fit: cover; }
-.kanban-card__assignee-dot { font-size: 10px; line-height: 1; }
+.kanban-card__assignee-avatar { border-radius: 50%; width: 16px; height: 16px; object-fit: cover; }
+.kanban-card__assignee-dot { font-size: 9px; line-height: 1; }
 .form-label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.8px; }
 .form-label--emphasis { font-size: 14px; text-transform: none; letter-spacing: 0; color: var(--text); }
 .form-due-display { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
@@ -1344,6 +1347,7 @@ html.dark select.input {
   flex-wrap: wrap;
   margin-top: 8px;
   padding-top: 8px;
+  padding-right: 28px;
   border-top: 1px solid var(--border);
 }
 .kanban-card__due { font-size: 12px; color: var(--text-muted); }
