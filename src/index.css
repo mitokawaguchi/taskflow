@@ -512,18 +512,28 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 .cards-grid--compact { gap: 6px; }
 .cards-grid--compact .task-card {
   display: grid;
-  grid-template-columns: 1fr auto;
-  grid-template-rows: auto auto;
-  gap: 2px 12px;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 4px;
   padding: 6px 10px 6px 12px;
   border-radius: 8px;
   min-height: 0;
-  align-items: center;
+  align-items: start;
+  padding-right: 28px;
+  padding-bottom: 22px;
 }
 .cards-grid--compact .task-card::before { width: 2px; border-radius: 8px 0 0 8px; }
 .cards-grid--compact .task-card:hover { transform: none; }
 .cards-grid--compact .card-project-banner {
-  grid-column: 1; padding: 2px 6px; font-size: 10px; margin-bottom: 0;
+  grid-column: 1;
+  padding: 2px 6px;
+  font-size: 10px;
+  margin-bottom: 0;
+  width: auto;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .cards-grid--compact .card-header { grid-column: 1; margin-bottom: 0; gap: 6px; align-items: center; }
 .cards-grid--compact .card-title { font-size: 12px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex: 1; min-width: 0; }
@@ -531,9 +541,11 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 .cards-grid--compact .card-check.checked::after { font-size: 9px; }
 .cards-grid--compact .card-desc { grid-column: 1; font-size: 11px; margin-bottom: 0; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; padding-left: 20px; }
 .cards-grid--compact .card-footer {
-  grid-column: 2; grid-row: 1 / -1;
+  grid-column: 1;
+  grid-row: auto;
   display: flex; flex-direction: row; align-items: center; gap: 4px;
-  min-height: 0; flex-wrap: nowrap; margin-left: 8px; justify-content: flex-end;
+  min-height: 0; flex-wrap: wrap; margin-left: 0; justify-content: flex-start;
+  padding-right: 20px;
 }
 .cards-grid--compact .priority-badge { font-size: 9px; padding: 1px 5px; }
 .cards-grid--compact .due-badge { font-size: 12px; font-weight: 600; padding: 2px 6px; }
