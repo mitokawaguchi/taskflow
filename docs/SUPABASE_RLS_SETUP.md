@@ -4,7 +4,7 @@
 
 ## 前提
 
-1. 全テーブル（`tf_projects`, `tf_tasks`, `tf_templates`, `tf_categories`, `tf_users`, `tf_clients`, `tf_remember`）が作成済みであること  
+1. 全テーブル（`tf_projects`, `tf_tasks`, `tf_templates`, `tf_categories`, `tf_users`, `tf_clients`, `tf_remember`, `tf_notes`）が作成済みであること（メモ帳は `docs/SUPABASE_TF_NOTES.sql`）  
 2. **`docs/SUPABASE_OWNER_LINK.sql` を実行済み**であること（各テーブルに `owner_id` が存在すること）
 
 ## 実行手順（推奨）
@@ -29,7 +29,7 @@ WHERE schemaname = 'public' AND tablename LIKE 'tf_%'
 ORDER BY tablename, policyname;
 ```
 
-期待: 各テーブルに `_select`, `_insert`, `_update`, `_delete` の 4 ポリシーずつ、計 28 本程度。
+期待: 各テーブルに `_select`, `_insert`, `_update`, `_delete` の 4 ポリシーずつ、計 32 本程度（`tf_notes` を含む）。
 
 ### 2. 動作確認の考え方
 

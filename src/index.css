@@ -1938,3 +1938,93 @@ html.dark .bf-cat { border-color: rgba(58, 143, 82, 0.4); }
 .mt-cell-from { max-width: 220px; word-break: break-all; font-size: 12px; }
 .mt-row--stale { background: var(--critical-bg); color: var(--text); }
 .mt-row--stale a { color: var(--critical); font-weight: 600; }
+
+/* メモ帳（tldraw） */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.notes-screen { max-width: 720px; }
+.notes-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.notes-list__item {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.notes-list__link {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 12px 14px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: var(--text);
+}
+.notes-list__link:hover { background: var(--surface3); }
+.notes-list__title { font-weight: 600; font-size: 14px; }
+.notes-list__meta { font-size: 12px; color: var(--text-muted); }
+.notes-list__delete { flex-shrink: 0; align-self: center; margin-right: 8px; }
+.notes-editor-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - 140px);
+  margin: -24px -28px;
+  width: calc(100% + 56px);
+  max-width: none;
+}
+.notes-editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.notes-editor-title-label { flex: 1; min-width: 0; }
+.notes-editor-title-input {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 15px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+}
+.notes-editor-canvas {
+  flex: 1;
+  min-height: 420px;
+  position: relative;
+}
+.notes-editor-canvas .tldraw__editor {
+  position: absolute;
+  inset: 0;
+}
+@media (max-width: 768px) {
+  .notes-editor-shell { margin: -16px -18px; width: calc(100% + 36px); }
+}

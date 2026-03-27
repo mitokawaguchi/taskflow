@@ -13,3 +13,4 @@ export {
   deleteRemember,
   claimExistingDataToAccount,
 } from './remember'
+export { fetchNotes, fetchNote, insertNote, updateNote, deleteNote } from './notes'

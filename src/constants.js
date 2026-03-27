@@ -33,6 +33,7 @@ export const VALIDATION = {
   templateDesc: 2000,
   clientName: 200,
   rememberBody: 2000,
+  noteTitle: 200,
 }
 
 /** 文字列を最大長で切り詰め（trim 済みを想定） */
@@ -53,6 +54,13 @@ export const SORT_OPTIONS = [
   { key: 'due',      label: '期限' },
   { key: 'created',  label: '作成日' },
   { key: 'name',     label: '名前' },
+]
+
+/** TopBar タブ（カンバン / タイムライン / インサイト） */
+export const VIEW_TABS = [
+  { key: 'kanban', label: 'カンバン', icon: '📌' },
+  { key: 'gantt', label: 'タイムライン', icon: '📅' },
+  { key: 'dashboard', label: 'インサイト', icon: '📊' },
 ]
 
 export const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 }

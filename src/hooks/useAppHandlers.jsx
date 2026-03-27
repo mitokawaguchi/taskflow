@@ -4,64 +4,28 @@
 import { useCallback, useMemo, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
-import { priorityOrder } from '../constants'
+import { priorityOrder, VIEW_TABS } from '../constants'
 import { useTaskFilters } from './useTaskFilters'
 import { useTaskActions } from './useTaskActions'
 import { useProjectActions } from './useProjectActions'
 import { useTemplateActions } from './useTemplateActions'
 import { useClientActions } from './useClientActions'
-import { isToday, isOverdue } from '../utils'
+import { isToday, isOverdue, filterTasksForBoard } from '../utils'
 import ProjectCard from '../components/ProjectCard'
-
-const DUE_TODAY_CHECK_DELAY_MS = 2000
-const DUE_TODAY_NOTIFY_THROTTLE_MS = 60 * 60 * 1000
-const DUE_TODAY_NOTIFY_STORAGE_KEY = 'taskflow_due_today_notified_at'
-
-function getViewFromPathname(pathname) {
-  if (pathname === '/') return 'projects'
-  if (pathname === '/all' || pathname === '/tasks') return 'all'
-  if (pathname === '/today') return 'today'
-  if (pathname === '/overdue') return 'overdue'
-  if (pathname === '/kanban') return 'kanban'
-  if (pathname === '/dashboard') return 'dashboard'
-  if (pathname === '/gantt') return 'gantt'
-  if (pathname === '/templates') return 'templates'
-  if (pathname === '/clients') return 'clients'
-  if (pathname === '/categories') return 'categories'
-  if (pathname === '/boss-feedback') return 'boss-feedback'
-  if (pathname === '/mail-tracker') return 'mail-tracker'
-  const pMatch = pathname.match(/^\/projects\/([^/]+)/)
-  if (pMatch) return `p:${pMatch[1]}`
-  const cMatch = pathname.match(/^\/clients\/([^/]+)/)
-  if (cMatch) return `c:${cMatch[1]}`
-  return 'projects'
-}
+import { getViewFromPathname, navigateToView } from '../utils/viewRouting'
+import { getViewTitle } from '../utils/viewTitle'
+import { useDueTodayNotification } from './useDueTodayNotification'
 
 export function useAppHandlers(data, ui, authUser) {
-  const { tasks, setTasks, projects, setProjects, categories, users } = data
+  const { tasks, setTasks, projects, setProjects, users } = data
   const location = useLocation()
   const navigate = useNavigate()
   const view = useMemo(() => getViewFromPathname(location.pathname), [location.pathname])
-  const setView = useCallback(
-    (v) => {
-      if (v === 'projects') navigate('/')
-      else if (v === 'all') navigate('/all')
-      else if (v === 'today') navigate('/today')
-      else if (v === 'overdue') navigate('/overdue')
-      else if (v === 'kanban') navigate('/kanban')
-      else if (v === 'dashboard') navigate('/dashboard')
-      else if (v === 'gantt') navigate('/gantt')
-      else if (v === 'templates') navigate('/templates')
-      else if (v === 'clients') navigate('/clients')
-      else if (v === 'categories') navigate('/categories')
-      else if (v === 'boss-feedback') navigate('/boss-feedback')
-      else if (v === 'mail-tracker') navigate('/mail-tracker')
-      else if (v.startsWith('p:')) navigate(`/projects/${v.slice(2)}`)
-      else if (v.startsWith('c:')) navigate(`/clients/${v.slice(2)}`)
-      else navigate('/')
-    },
-    [navigate]
-  )
+  const setView = useCallback((v) => navigateToView(navigate, v), [navigate])
+
+  useEffect(() => {
+    if (!view.startsWith('n:')) ui.setNoteDetailTitle(null)
+  }, [view, ui.setNoteDetailTitle])
 
   const taskFilters = useTaskFilters(tasks, view, ui.showDone, ui.searchQuery)
   const { sort, setSort, filterProjectIds, setFilterProjectIds, filterPriorities, setFilterPriorities, filterDueFrom, setFilterDueFrom, filterDueTo, setFilterDueTo, filterPriorityFrom, setFilterPriorityFrom, filterPriorityTo, setFilterPriorityTo, filterOpen, setFilterOpen, filterAssigneeId, setFilterAssigneeId, hasAnyFilter, sortedTasks, clearFilters: taskFiltersClear } = taskFilters
@@ -91,22 +55,12 @@ export function useAppHandlers(data, ui, authUser) {
   const todayCount = tasks.filter((t) => !t.done && isToday(t.due)).length
   const overdueCount = tasks.filter((t) => !t.done && isOverdue(t.due)).length
   const viewTitle = useCallback(() => {
-    if (view === 'all') return 'すべてのタスク'
-    if (view === 'today') return '今日のタスク'
-    if (view === 'overdue') return '期限超過'
-    if (view === 'kanban') return 'カンバン'
-    if (view === 'dashboard') return 'ダッシュボード'
-    if (view === 'gantt') return 'タイムライン'
-    if (view === 'projects') return 'プロジェクト'
-    if (view === 'templates') return 'テンプレート'
-    if (view === 'clients') return '覚えておくこと'
-    if (view === 'categories') return 'カテゴリ'
-    if (view === 'boss-feedback') return '上司の指摘DB'
-    if (view === 'mail-tracker') return '未返信'
-    if (view.startsWith('c:')) return data.clients.find((c) => c.id === view.slice(2))?.name ?? 'クライアント'
-    if (view.startsWith('p:')) return projects.find((p) => p.id === view.slice(2))?.name ?? ''
-    return ''
-  }, [view, projects, data.clients])
+    return getViewTitle(view, {
+      projects,
+      clients: data.clients,
+      noteDetailTitle: ui.noteDetailTitle,
+    })
+  }, [view, projects, data.clients, ui.noteDetailTitle])
   const openTaskFormForProject = useCallback((projectId) => {
     ui.setTaskFormProjectId(projectId)
     ui.setShowTaskForm(true)
@@ -154,21 +108,9 @@ export function useAppHandlers(data, ui, authUser) {
   const isProjectView = view.startsWith('p:')
   const currentProject = isProjectView ? projects.find((p) => p.id === view.slice(2)) : null
   const isMainView = ['kanban', 'gantt', 'dashboard', 'all', 'today', 'overdue', 'projects', 'templates'].includes(view) || isProjectView
-  const viewTabs = [
-    { key: 'kanban', label: 'カンバン', icon: '📌' },
-    { key: 'gantt', label: 'タイムライン', icon: '📅' },
-    { key: 'dashboard', label: 'インサイト', icon: '📊' },
-  ]
+  const viewTabs = VIEW_TABS
   const activeFilterCount = [filterProjectIds.length, filterPriorities.length, filterDueFrom, filterDueTo, filterPriorityFrom, filterPriorityTo, filterAssigneeId].filter(Boolean).length
-  const tasksForBoard = useMemo(() => {
-    let list = tasks
-    if (ui.searchQuery.trim()) {
-      const q = ui.searchQuery.trim().toLowerCase()
-      list = list.filter((t) => (t.title && t.title.toLowerCase().includes(q)) || (t.desc && String(t.desc).toLowerCase().includes(q)))
-    }
-    if (currentProject) list = list.filter((t) => t.projectId === currentProject.id)
-    return list
-  }, [tasks, ui.searchQuery, currentProject])
+  const tasksForBoard = useMemo(() => filterTasksForBoard(tasks, ui.searchQuery, currentProject), [tasks, ui.searchQuery, currentProject])
   const taskFormInitialTask = useMemo(() => {
     if (ui.editTask) return ui.editTask
     const projectId = ui.taskFormProjectId ?? (isProjectView ? view.slice(2) : null)
@@ -194,25 +136,7 @@ export function useAppHandlers(data, ui, authUser) {
       ui.addToast('🔔', '通知が有効になりました', '期限が近いタスクをお知らせします')
     }
   }, [ui])
-
-  useEffect(() => {
-    const checkDueToday = () => {
-      const dueToday = tasks.filter((t) => !t.done && isToday(t.due))
-      if (dueToday.length === 0 || !ui.notifyReminderEnabled) return
-      const now = Date.now()
-      const lastAt = Number.parseInt(localStorage.getItem(DUE_TODAY_NOTIFY_STORAGE_KEY) ?? '0', 10)
-      if (now - lastAt < DUE_TODAY_NOTIFY_THROTTLE_MS) return
-      localStorage.setItem(DUE_TODAY_NOTIFY_STORAGE_KEY, String(now))
-      ui.addToast('⚠️', `今日が期限: ${dueToday.length}件`, dueToday.map((t) => t.title).join('、'))
-      if (ui.notifGranted) {
-        new globalThis.Notification('TaskFlow — 今日の期限', { body: dueToday.map((t) => t.title).join('\n') })
-        if ('vibrate' in navigator) navigator.vibrate([200, 100, 200, 100, 400])
-      }
-    }
-    const timer = setTimeout(checkDueToday, DUE_TODAY_CHECK_DELAY_MS)
-    return () => clearTimeout(timer)
-  }, [tasks, ui.notifGranted, ui.addToast, ui.notifyReminderEnabled])
-
+  useDueTodayNotification(tasks, ui)
   return {
     view,
     setView,

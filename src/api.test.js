@@ -567,4 +567,42 @@ describe('api', () => {
       await expect(deleteTemplate('nonexistent')).rejects.toThrow('削除対象が見つかりません')
     })
   })
+
+  describe('tf_notes', () => {
+    it('fetchNotes returns empty when no rows', async () => {
+      const { fetchNotes } = await import('./api')
+      const result = await fetchNotes()
+      expect(result).toEqual([])
+    })
+    it('fetchNotes maps rows', async () => {
+      const { supabase } = await import('./supabase')
+      const { fetchNotes } = await import('./api')
+      supabase.from.mockReturnValue(
+        mockSelectOrder([
+          {
+            id: 'n1',
+            title: 'Hello',
+            snapshot: { doc: 1 },
+            updated_at: '2025-01-01T00:00:00.000Z',
+            created_at: '2025-01-01T00:00:00.000Z',
+          },
+        ])
+      )
+      const result = await fetchNotes()
+      expect(result).toHaveLength(1)
+      expect(result[0]).toMatchObject({
+        id: 'n1',
+        title: 'Hello',
+        snapshot: { doc: 1 },
+        updatedAt: '2025-01-01T00:00:00.000Z',
+        createdAt: '2025-01-01T00:00:00.000Z',
+      })
+    })
+    it('insertNote throws when title exceeds VALIDATION.noteTitle', async () => {
+      const { insertNote } = await import('./api')
+      const { VALIDATION } = await import('./constants')
+      const long = 'x'.repeat(VALIDATION.noteTitle + 1)
+      await expect(insertNote({ id: '00000000-0000-4000-8000-000000000001', title: long })).rejects.toThrow('タイトルは')
+    })
+  })
 })

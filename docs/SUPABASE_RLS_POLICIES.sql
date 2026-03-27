@@ -175,3 +175,25 @@ CREATE POLICY "tf_remember_update" ON public.tf_remember
 DROP POLICY IF EXISTS "tf_remember_delete" ON public.tf_remember;
 CREATE POLICY "tf_remember_delete" ON public.tf_remember
   FOR DELETE USING (owner_id = auth.uid());
+
+-- -----------------------------------------------------------------------------
+-- tf_notes（メモ帳）
+-- -----------------------------------------------------------------------------
+ALTER TABLE public.tf_notes ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "tf_notes_select" ON public.tf_notes;
+CREATE POLICY "tf_notes_select" ON public.tf_notes
+  FOR SELECT USING (public.tf_owner_visible(owner_id));
+
+DROP POLICY IF EXISTS "tf_notes_insert" ON public.tf_notes;
+CREATE POLICY "tf_notes_insert" ON public.tf_notes
+  FOR INSERT WITH CHECK (public.tf_owner_writable(owner_id));
+
+DROP POLICY IF EXISTS "tf_notes_update" ON public.tf_notes;
+CREATE POLICY "tf_notes_update" ON public.tf_notes
+  FOR UPDATE USING (public.tf_owner_visible(owner_id))
+  WITH CHECK (public.tf_owner_writable(owner_id));
+
+DROP POLICY IF EXISTS "tf_notes_delete" ON public.tf_notes;
+CREATE POLICY "tf_notes_delete" ON public.tf_notes
+  FOR DELETE USING (owner_id = auth.uid());

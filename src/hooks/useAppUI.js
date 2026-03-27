@@ -33,6 +33,8 @@ export function useAppUI() {
   const [legalPage, setLegalPage] = useState(() => getLegalPageFromHash())
   const [kanbanAddStatus, setKanbanAddStatus] = useState(null)
   const [dragActiveId, setDragActiveId] = useState(null)
+  /** メモ詳細画面のタイトル（TopBar 用） */
+  const [noteDetailTitle, setNoteDetailTitle] = useState(null)
 
   useEffect(() => {
     const onHash = () => setLegalPage(getLegalPageFromHash())
@@ -115,6 +117,8 @@ export function useAppUI() {
     setKanbanAddStatus,
     dragActiveId,
     setDragActiveId,
+    noteDetailTitle,
+    setNoteDetailTitle,
     addToast,
     closeTaskForm,
   }

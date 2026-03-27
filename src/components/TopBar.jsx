@@ -26,12 +26,15 @@ export default function TopBar({
 }) {
   return (
     <div className="topbar">
-      {(isProjectView || view.startsWith('c:')) && (
+      {(isProjectView || view.startsWith('c:') || view.startsWith('n:')) && (
         <button
           type="button"
           className="btn btn-ghost btn-sm topbar-back"
-          onClick={() => setView(isProjectView ? 'projects' : 'clients')}
-          aria-label="一覧に戻る"
+          onClick={() => {
+            if (view.startsWith('n:')) setView('notes')
+            else setView(isProjectView ? 'projects' : 'clients')
+          }}
+          aria-label={view.startsWith('n:') ? 'メモ一覧に戻る' : '一覧に戻る'}
         >
           ← 戻る
         </button>
@@ -70,7 +73,7 @@ export default function TopBar({
             onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
           />
         </div>
-        {view !== 'clients' && !view.startsWith('c:') && (
+        {view !== 'clients' && !view.startsWith('c:') && view !== 'notes' && !view.startsWith('n:') && (
           <>
             {(view === 'all' || view === 'today' || view === 'overdue') && (
               <>
@@ -119,12 +122,12 @@ export default function TopBar({
             </button>
           </>
         )}
-        {view !== 'clients' && !view.startsWith('c:') && view !== 'projects' && view !== 'categories' && view !== 'boss-feedback' && view !== 'mail-tracker' && (
+        {view !== 'clients' && !view.startsWith('c:') && view !== 'projects' && view !== 'categories' && view !== 'boss-feedback' && view !== 'mail-tracker' && view !== 'notes' && !view.startsWith('n:') && (
           <button type="button" className="btn btn-ghost btn-sm" onClick={() => setShowDone(!showDone)}>
             {showDone ? '完了を非表示' : '完了を表示'}
           </button>
         )}
-        {!isProjectView && view !== 'projects' && view !== 'templates' && view !== 'boss-feedback' && view !== 'mail-tracker' && view !== 'clients' && !view.startsWith('c:') && (
+        {!isProjectView && view !== 'projects' && view !== 'templates' && view !== 'boss-feedback' && view !== 'mail-tracker' && view !== 'clients' && !view.startsWith('c:') && view !== 'notes' && !view.startsWith('n:') && (
           <button type="button" className="btn btn-primary" onClick={onAddTask}>
             + 追加
           </button>

@@ -17,6 +17,7 @@ export default defineConfig({
           if (id.includes('node_modules')) {
             if (id.includes('@dnd-kit')) return 'dnd-kit'
             if (id.includes('@supabase')) return 'supabase'
+            if (id.includes('tldraw')) return 'tldraw'
             if (id.includes('react') || id.includes('react-dom')) return 'vendor'
           }
         },

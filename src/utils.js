@@ -81,3 +81,16 @@ export function formatWeekLabel(weekStartStr) {
   const weekOfMonth = Math.ceil(d.getDate() / 7)
   return `${month}月${weekOfMonth}週目`
 }
+
+/** 検索・プロジェクトでタスクを絞り込み（カンバン等のボード用） */
+export function filterTasksForBoard(tasks, searchQuery, currentProject) {
+  let list = tasks
+  if (searchQuery.trim()) {
+    const q = searchQuery.trim().toLowerCase()
+    list = list.filter(
+      (t) => (t.title && t.title.toLowerCase().includes(q)) || (t.desc && String(t.desc).toLowerCase().includes(q))
+    )
+  }
+  if (currentProject) list = list.filter((t) => t.projectId === currentProject.id)
+  return list
+}

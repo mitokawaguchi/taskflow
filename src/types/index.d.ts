@@ -62,3 +62,12 @@ export interface User {
   avatarUrl: string
   created: number
 }
+
+/** メモ帳（tldraw スナップショット） */
+export interface Note {
+  id: string
+  title: string
+  snapshot: unknown | null
+  updatedAt: string
+  createdAt: string
+}
