@@ -34,6 +34,8 @@ export const VALIDATION = {
   clientName: 200,
   rememberBody: 2000,
   noteTitle: 200,
+  /** メモ本文（プレーンテキスト） */
+  noteBody: 50000,
 }
 
 /** 文字列を最大長で切り詰め（trim 済みを想定） */

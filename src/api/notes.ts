@@ -5,6 +5,7 @@ import { getSupabase, getOwnerId, ensureCanDelete } from './helpers'
 interface NoteRow {
   id: string
   title: string | null
+  body_text?: string | null
   snapshot: unknown | null
   updated_at: string
   created_at: string
@@ -15,6 +16,7 @@ function noteFromRow(row: NoteRow | null): Note | null {
   return {
     id: row.id,
     title: row.title ?? '',
+    bodyText: row.body_text ?? '',
     snapshot: row.snapshot ?? null,
     updatedAt: row.updated_at,
     createdAt: row.created_at,
@@ -42,17 +44,21 @@ export async function fetchNote(id: string): Promise<Note | null> {
   return noteFromRow((data as NoteRow | null) ?? null)
 }
 
-export type NoteInsertInput = Pick<Note, 'id' | 'title'> & { snapshot?: unknown | null }
+export type NoteInsertInput = Pick<Note, 'id' | 'title'> & { snapshot?: unknown | null; bodyText?: string }
 
 export async function insertNote(item: NoteInsertInput): Promise<Note> {
   const db = getSupabase()
   if (item.title != null && String(item.title).length > VALIDATION.noteTitle) {
     throw new Error(`タイトルは${VALIDATION.noteTitle}文字以内にしてください`)
   }
+  if (item.bodyText != null && String(item.bodyText).length > VALIDATION.noteBody) {
+    throw new Error(`本文は${VALIDATION.noteBody}文字以内にしてください`)
+  }
   const ownerId = await getOwnerId()
   const row: Record<string, unknown> = {
     id: item.id,
     title: item.title ?? '無題のメモ',
+    body_text: item.bodyText ?? '',
     snapshot: item.snapshot ?? null,
   }
   if (ownerId) row.owner_id = ownerId
@@ -63,15 +69,19 @@ export async function insertNote(item: NoteInsertInput): Promise<Note> {
   return result
 }
 
-export type NoteUpdatePatch = Partial<Pick<Note, 'title' | 'snapshot'>>
+export type NoteUpdatePatch = Partial<Pick<Note, 'title' | 'bodyText' | 'snapshot'>>
 
 export async function updateNote(id: string, patch: NoteUpdatePatch): Promise<Note> {
   const db = getSupabase()
   if (patch.title !== undefined && String(patch.title).length > VALIDATION.noteTitle) {
     throw new Error(`タイトルは${VALIDATION.noteTitle}文字以内にしてください`)
   }
+  if (patch.bodyText !== undefined && String(patch.bodyText).length > VALIDATION.noteBody) {
+    throw new Error(`本文は${VALIDATION.noteBody}文字以内にしてください`)
+  }
   const row: Record<string, unknown> = {}
   if (patch.title !== undefined) row.title = patch.title
+  if (patch.bodyText !== undefined) row.body_text = patch.bodyText
   if (patch.snapshot !== undefined) row.snapshot = patch.snapshot
   row.updated_at = new Date().toISOString()
   const { data, error } = await db.from('tf_notes').update(row).eq('id', id).select().single()

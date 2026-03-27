@@ -26,15 +26,12 @@ export default function TopBar({
 }) {
   return (
     <div className="topbar">
-      {(isProjectView || view.startsWith('c:') || view.startsWith('n:')) && (
+      {(isProjectView || view.startsWith('c:')) && (
         <button
           type="button"
           className="btn btn-ghost btn-sm topbar-back"
-          onClick={() => {
-            if (view.startsWith('n:')) setView('notes')
-            else setView(isProjectView ? 'projects' : 'clients')
-          }}
-          aria-label={view.startsWith('n:') ? 'メモ一覧に戻る' : '一覧に戻る'}
+          onClick={() => setView(isProjectView ? 'projects' : 'clients')}
+          aria-label="一覧に戻る"
         >
           ← 戻る
         </button>
@@ -42,7 +39,11 @@ export default function TopBar({
       <button type="button" className="hamburger" onClick={() => setSidebarOpen(true)} aria-label="メニュー">
         ☰
       </button>
-      <div className="topbar-title">{viewTitle()}</div>
+      {view.startsWith('n:') ? (
+        <div className="topbar-spacer" aria-hidden="true" />
+      ) : (
+        <div className="topbar-title">{viewTitle()}</div>
+      )}
 
       {isMainView && (
         <div className="topbar-tabs" role="tablist" aria-label="ビュー切替">
@@ -73,7 +74,7 @@ export default function TopBar({
             onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
           />
         </div>
-        {view !== 'clients' && !view.startsWith('c:') && view !== 'notes' && !view.startsWith('n:') && (
+        {view !== 'clients' && !view.startsWith('c:') && (
           <>
             {(view === 'all' || view === 'today' || view === 'overdue') && (
               <>

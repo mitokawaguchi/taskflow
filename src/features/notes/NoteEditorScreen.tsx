@@ -3,6 +3,7 @@ import type { TLEditorSnapshot } from 'tldraw'
 import { fetchNote, updateNote } from '../../api/notes'
 import { VALIDATION, truncateToMax } from '../../constants'
 import { NoteEditorCanvas } from './NoteEditorCanvas'
+import { NoteEditorTextArea } from './NoteEditorTextArea'
 
 type Props = {
   noteId: string
@@ -25,6 +26,7 @@ export default function NoteEditorScreen({
   theme,
 }: Readonly<Props>) {
   const [title, setTitle] = useState('')
+  const [bodyText, setBodyText] = useState('')
   const [snapshot, setSnapshot] = useState<TLEditorSnapshot | undefined>(undefined)
   const [loading, setLoading] = useState(true)
 
@@ -38,6 +40,7 @@ export default function NoteEditorScreen({
         return
       }
       setTitle(n.title)
+      setBodyText(n.bodyText ?? '')
       setNoteDetailTitle(n.title)
       setSnapshot(parseSnapshot(n.snapshot))
     } catch (e) {
@@ -87,6 +90,7 @@ export default function NoteEditorScreen({
             className="notes-editor-title-input"
             value={title}
             maxLength={VALIDATION.noteTitle}
+            placeholder="タイトル"
             onChange={(e) => {
               const v = e.target.value
               setTitle(v)
@@ -97,8 +101,15 @@ export default function NoteEditorScreen({
           />
         </label>
       </div>
-      <div className="notes-editor-canvas">
-        <NoteEditorCanvas noteId={noteId} initialSnapshot={snapshot} theme={theme} onSaveError={onSaveError} />
+      <NoteEditorTextArea noteId={noteId} initialBody={bodyText} addToast={addToast} />
+      <div className="notes-canvas-section">
+        <h2 className="notes-canvas-section__heading">手書き・図・付箋（任意）</h2>
+        <p className="notes-canvas-section__hint text-muted">
+          下の広い白い部分がキャンバスです。左端の縦ツールから鉛筆・消しゴム・テキスト（T）などを選び、キャンバス上でドラッグして入力します。
+        </p>
+        <div className="notes-editor-canvas">
+          <NoteEditorCanvas noteId={noteId} initialSnapshot={snapshot} theme={theme} onSaveError={onSaveError} />
+        </div>
       </div>
     </div>
   )

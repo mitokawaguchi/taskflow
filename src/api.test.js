@@ -582,6 +582,7 @@ describe('api', () => {
           {
             id: 'n1',
             title: 'Hello',
+            body_text: '本文',
             snapshot: { doc: 1 },
             updated_at: '2025-01-01T00:00:00.000Z',
             created_at: '2025-01-01T00:00:00.000Z',
@@ -593,6 +594,7 @@ describe('api', () => {
       expect(result[0]).toMatchObject({
         id: 'n1',
         title: 'Hello',
+        bodyText: '本文',
         snapshot: { doc: 1 },
         updatedAt: '2025-01-01T00:00:00.000Z',
         createdAt: '2025-01-01T00:00:00.000Z',

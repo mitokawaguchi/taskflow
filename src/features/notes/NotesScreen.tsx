@@ -67,13 +67,16 @@ export default function NotesScreen({ setView, addToast }: Readonly<Props>) {
 
   return (
     <div className="notes-screen">
+      <p className="notes-screen__lead text-muted">
+        「新しいメモ」で作成すると、<strong>上から順に</strong> タイトル → <strong>テキスト入力欄</strong> → 手書き用キャンバスが開きます。まずは真ん中の大きな欄にキーボードで書けばOKです。
+      </p>
       <div className="toolbar-row">
         <button type="button" className="btn btn-primary" onClick={handleCreate}>
           + 新しいメモ
         </button>
       </div>
       {items.length === 0 ? (
-        <p className="text-muted">メモはまだありません。「新しいメモ」で手書き・テキストのキャンバスを作成できます。</p>
+        <p className="text-muted">メモはまだありません。</p>
       ) : (
         <ul className="notes-list" aria-label="メモ一覧">
           {items.map((n) => (

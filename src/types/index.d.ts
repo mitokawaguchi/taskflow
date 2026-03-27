@@ -63,10 +63,11 @@ export interface User {
   created: number
 }
 
-/** メモ帳（tldraw スナップショット） */
+/** メモ帳（プレーンテキスト + tldraw スナップショット） */
 export interface Note {
   id: string
   title: string
+  bodyText: string
   snapshot: unknown | null
   updatedAt: string
   createdAt: string

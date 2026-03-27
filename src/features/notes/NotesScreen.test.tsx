@@ -28,6 +28,7 @@ describe('NotesScreen', () => {
       {
         id: 'n1',
         title: 'テスト',
+        bodyText: '',
         snapshot: null,
         updatedAt: '2025-01-01T00:00:00.000Z',
         createdAt: '2025-01-01T00:00:00.000Z',
