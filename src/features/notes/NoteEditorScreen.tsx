@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { TLEditorSnapshot } from 'tldraw'
 import { fetchNote, updateNote } from '../../api/notes'
 import { VALIDATION, truncateToMax } from '../../constants'
 import { NoteEditorCanvas } from './NoteEditorCanvas'
 import { NoteEditorTextArea } from './NoteEditorTextArea'
-import { isIpadMemoEditingDevice } from '../../utils/memoDevice'
 
 type Props = {
   noteId: string
@@ -30,8 +29,7 @@ export default function NoteEditorScreen({
   const [bodyText, setBodyText] = useState('')
   const [snapshot, setSnapshot] = useState<TLEditorSnapshot | undefined>(undefined)
   const [loading, setLoading] = useState(true)
-  const canEdit = useMemo(() => isIpadMemoEditingDevice(), [])
-  const readOnly = !canEdit
+  const readOnly = false
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -59,7 +57,6 @@ export default function NoteEditorScreen({
   }, [load])
 
   const handleTitleBlur = useCallback(async () => {
-    if (!canEdit) return
     const next = truncateToMax(title, VALIDATION.noteTitle)
     if (next !== title) setTitle(next)
     try {
@@ -68,7 +65,7 @@ export default function NoteEditorScreen({
     } catch (e) {
       addToast('❌', 'タイトルを保存できませんでした', e instanceof Error ? e.message : String(e))
     }
-  }, [noteId, title, addToast, setNoteDetailTitle, canEdit])
+  }, [noteId, title, addToast, setNoteDetailTitle])
 
   const onSaveError = useCallback(
     (msg: string) => {
@@ -83,11 +80,6 @@ export default function NoteEditorScreen({
 
   return (
     <div className="notes-editor-shell">
-      {readOnly && (
-        <div className="notes-readonly-banner" role="status">
-          閲覧専用です。メモの編集・手書きは <strong>iPad</strong> で開いたときのみ行えます。
-        </div>
-      )}
       <div className="notes-editor-toolbar">
         <button type="button" className="btn btn-ghost btn-sm" onClick={() => setView('notes')} aria-label="一覧に戻る">
           ← 一覧
@@ -116,9 +108,7 @@ export default function NoteEditorScreen({
       <div className="notes-canvas-section">
         <h2 className="notes-canvas-section__heading">手書き・図・付箋（任意）</h2>
         <p className="notes-canvas-section__hint text-muted">
-          {readOnly
-            ? 'キャンバスは閲覧のみです（移動・ズームは可能）。編集は iPad でこのメモを開いてください。'
-            : '下は描画用の別パネルです。左のツールで鉛筆・消しゴム・テキスト（T）を選びます。テキストを置いたあとその文字を選ぶと、パネルでフォントやサイズを変えられます（本文欄とは別の仕組みです）。'}
+          下は描画用の別パネルです。左のツールで鉛筆・消しゴム・テキスト（T）を選びます。テキストを置いたあとその文字を選ぶと、パネルでフォントやサイズを変えられます（本文欄とは別の仕組みです）。
         </p>
         <div className="notes-editor-canvas">
           <NoteEditorCanvas

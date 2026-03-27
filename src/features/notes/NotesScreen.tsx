@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { deleteNote, fetchNotes, insertNote } from '../../api/notes'
 import type { Note } from '../../types'
-import { isIpadMemoEditingDevice } from '../../utils/memoDevice'
 
 type Props = {
   setView: (v: string) => void
@@ -21,7 +20,6 @@ function formatUpdated(iso: string): string {
 export default function NotesScreen({ setView, addToast }: Readonly<Props>) {
   const [items, setItems] = useState<Note[]>([])
   const [loading, setLoading] = useState(true)
-  const canEdit = useMemo(() => isIpadMemoEditingDevice(), [])
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -40,7 +38,6 @@ export default function NotesScreen({ setView, addToast }: Readonly<Props>) {
   }, [load])
 
   const handleCreate = useCallback(async () => {
-    if (!canEdit) return
     const id = crypto.randomUUID()
     try {
       await insertNote({ id, title: '無題のメモ' })
@@ -48,11 +45,10 @@ export default function NotesScreen({ setView, addToast }: Readonly<Props>) {
     } catch (e) {
       addToast('❌', 'メモを作成できませんでした', e instanceof Error ? e.message : String(e))
     }
-  }, [addToast, setView, canEdit])
+  }, [addToast, setView])
 
   const handleDelete = useCallback(
     async (id: string, title: string) => {
-      if (!canEdit) return
       if (!globalThis.confirm(`「${title}」を削除しますか？`)) return
       try {
         await deleteNote(id)
@@ -62,7 +58,7 @@ export default function NotesScreen({ setView, addToast }: Readonly<Props>) {
         addToast('❌', '削除できませんでした', e instanceof Error ? e.message : String(e))
       }
     },
-    [addToast, canEdit]
+    [addToast]
   )
 
   if (loading) {
@@ -71,21 +67,13 @@ export default function NotesScreen({ setView, addToast }: Readonly<Props>) {
 
   return (
     <div className="notes-screen">
-      {canEdit ? (
-        <p className="notes-screen__lead text-muted">
-          各メモの構成は <strong>①タイトル</strong> → <strong>②本文（プレーンテキスト）</strong> → <strong>③手書き・図キャンバス</strong> です。②は装飾なしのメモ帳のような入力で、フォント見た目だけ選べます。③は白板ツールで手書きや図形を足す用です（メモ帳アプリの「全部リッチ」ではありません）。
-        </p>
-      ) : (
-        <p className="notes-screen__lead notes-screen__lead--readonly" role="status">
-          <strong>PC では閲覧のみ</strong>です。メモの新規作成・編集・削除は <strong>iPad</strong> で開いたときのみ行えます。一覧からメモを選ぶと内容を確認できます。
-        </p>
-      )}
+      <p className="notes-screen__lead text-muted">
+        各メモの構成は <strong>①タイトル</strong> → <strong>②本文（プレーンテキスト）</strong> → <strong>③手書き・図キャンバス</strong> です。②は装飾なしのメモ帳のような入力で、フォント見た目だけ選べます。③は白板ツールで手書きや図形を足す用です（メモ帳アプリの「全部リッチ」ではありません）。
+      </p>
       <div className="toolbar-row">
         <button
           type="button"
           className="btn btn-primary"
-          disabled={!canEdit}
-          title={canEdit ? undefined : '編集は iPad のみ'}
           onClick={handleCreate}
         >
           + 新しいメモ
@@ -104,8 +92,6 @@ export default function NotesScreen({ setView, addToast }: Readonly<Props>) {
               <button
                 type="button"
                 className="btn btn-ghost btn-sm notes-list__delete"
-                disabled={!canEdit}
-                title={canEdit ? undefined : '削除は iPad のみ'}
                 onClick={() => handleDelete(n.id, n.title || '無題のメモ')}
                 aria-label={`${n.title || '無題のメモ'}を削除`}
               >
