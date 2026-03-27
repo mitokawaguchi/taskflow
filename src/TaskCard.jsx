@@ -11,15 +11,6 @@ export default function TaskCard({ task, projects, categories = [], users = [], 
 
   return (
     <div className={`task-card ${task.priority} ${task.done ? 'done' : ''}`} onClick={onClick}>
-      {assignee && (
-        <span className="card-assignee-corner" title={assignee.name} aria-label={`担当: ${assignee.name}`}>
-          {assignee.avatarUrl ? (
-            <img src={assignee.avatarUrl} alt="" width={20} height={20} className="card-assignee-avatar" />
-          ) : (
-            <span className="card-assignee-dot" aria-hidden>👤</span>
-          )}
-        </span>
-      )}
       {proj && (
         <div className="card-project-banner" style={{ background: `${proj.color}28`, color: proj.color, border: `1px solid ${proj.color}55` }}>
           <span>{proj.icon}</span>
@@ -35,7 +26,10 @@ export default function TaskCard({ task, projects, categories = [], users = [], 
           onClick={e => e.stopPropagation()}
           aria-label={`${task.title}を${task.done ? '未完了に' : '完了に'}する`}
         />
-        <div className={`card-title ${task.done ? 'done' : ''}`}>{task.title}</div>
+        <div className="card-title-row">
+          <div className={`card-title ${task.done ? 'done' : ''}`}>{task.title}</div>
+          <span className={`priority-badge ${task.priority}`}>{getPriorityLabel(task.priority)}</span>
+        </div>
       </div>
       {task.desc && <div className="card-desc">{task.desc}</div>}
       <div className="card-footer">
@@ -51,11 +45,23 @@ export default function TaskCard({ task, projects, categories = [], users = [], 
             {categoryInfo.label}
           </span>
         )}
-        <span className={`priority-badge ${task.priority}`}>{getPriorityLabel(task.priority)}</span>
-        {task.due && (
-          <span className={`due-badge ${over ? 'overdue' : tod || tom ? 'today-or-tomorrow' : ''}`} style={{ marginLeft: 'auto' }}>
-            {formatDate(task.due)}
-          </span>
+        {(task.due || assignee) && (
+          <div className="card-footer__due-row">
+            {task.due && (
+              <span className={`due-badge ${over ? 'overdue' : tod || tom ? 'today-or-tomorrow' : ''}`}>
+                {formatDate(task.due)}
+              </span>
+            )}
+            {assignee && (
+              <span className="card-assignee-inline" title={assignee.name} aria-label={`担当: ${assignee.name}`}>
+                {assignee.avatarUrl ? (
+                  <img src={assignee.avatarUrl} alt="" width={18} height={18} className="card-assignee-inline__img" />
+                ) : (
+                  <span className="card-assignee-inline__dot" aria-hidden>👤</span>
+                )}
+              </span>
+            )}
+          </div>
         )}
       </div>
     </div>

@@ -14,15 +14,6 @@ export function KanbanCardContent({ task, projects, categories = [], users = [],
     <>
       <div className={`kanban-card__bar kanban-card__bar--${task.priority}`} />
       <div className="kanban-card__body">
-        {assignee && (
-          <span className="kanban-card__assignee-corner" title={assignee.name} aria-label={`担当: ${assignee.name}`}>
-            {assignee.avatarUrl ? (
-              <img src={assignee.avatarUrl} alt="" width={18} height={18} className="kanban-card__assignee-avatar" />
-            ) : (
-              <span className="kanban-card__assignee-dot" aria-hidden>👤</span>
-            )}
-          </span>
-        )}
         <div className="kanban-card__title-row">
           <input
             type="checkbox"
@@ -35,7 +26,10 @@ export function KanbanCardContent({ task, projects, categories = [], users = [],
             onClick={(e) => e.stopPropagation()}
             aria-label={`${task.title}を${task.done ? '未完了に' : '完了に'}する`}
           />
-          <div className={`kanban-card__title ${task.done ? 'done' : ''}`}>{task.title}</div>
+          <div className="kanban-card__title-with-priority">
+            <div className={`kanban-card__title ${task.done ? 'done' : ''}`}>{task.title}</div>
+            <span className={`priority-badge ${task.priority}`}>{getPriorityLabel(task.priority)}</span>
+          </div>
         </div>
         <div className="kanban-card__meta-row">
           {categoryInfo && (
@@ -63,7 +57,15 @@ export function KanbanCardContent({ task, projects, categories = [], users = [],
           {task.due && (
             <span className={`kanban-card__due ${over ? 'overdue' : ''}`}>📅 {formatDate(task.due)}</span>
           )}
-          <span className={`priority-badge ${task.priority}`}>{getPriorityLabel(task.priority)}</span>
+          {assignee && (
+            <span className="kanban-card__assignee-inline" title={assignee.name} aria-label={`担当: ${assignee.name}`}>
+              {assignee.avatarUrl ? (
+                <img src={assignee.avatarUrl} alt="" width={16} height={16} className="kanban-card__assignee-inline-img" />
+              ) : (
+                <span className="kanban-card__assignee-inline-dot" aria-hidden>👤</span>
+              )}
+            </span>
+          )}
         </div>
       </div>
     </>
