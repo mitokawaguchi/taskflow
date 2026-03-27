@@ -1964,6 +1964,28 @@ html.dark .bf-cat { border-color: rgba(58, 143, 82, 0.4); }
   background: var(--surface2);
 }
 .notes-screen__lead strong { color: var(--text); font-weight: 600; }
+.notes-screen__lead--readonly {
+  border-color: rgba(58, 143, 82, 0.35);
+  background: var(--accent-glow);
+}
+html.dark .notes-screen__lead--readonly { border-color: rgba(58, 143, 82, 0.45); }
+.notes-readonly-banner {
+  flex-shrink: 0;
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+}
+.notes-readonly-banner strong { color: var(--accent-hover); }
+.notes-text-block__textarea--readonly {
+  cursor: default;
+  opacity: 0.92;
+  background: var(--surface2);
+}
 .notes-text-block {
   padding: 0 0 16px;
   flex-shrink: 0;
@@ -1976,6 +1998,27 @@ html.dark .bf-cat { border-color: rgba(58, 143, 82, 0.4); }
   color: var(--text);
 }
 .notes-text-block__hint { font-size: 12px; margin: 0 0 8px; line-height: 1.45; }
+.notes-text-block__font-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin: 0 0 8px;
+}
+.notes-text-block__font-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.notes-text-block__font-select {
+  min-width: 140px;
+  padding: 6px 10px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface2);
+  color: var(--text);
+}
 .notes-text-block__textarea {
   width: 100%;
   min-height: 160px;
@@ -1989,6 +2032,18 @@ html.dark .bf-cat { border-color: rgba(58, 143, 82, 0.4); }
   resize: vertical;
   box-sizing: border-box;
   font-family: inherit;
+}
+.notes-text-block__textarea--font-system {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+.notes-text-block__textarea--font-serif {
+  font-family: 'Yu Mincho', 'Hiragino Mincho ProN', 'Hiragino Mincho Pro', serif;
+}
+.notes-text-block__textarea--font-mono {
+  font-family: ui-monospace, 'Cascadia Code', 'Consolas', monospace;
+}
+.notes-text-block__textarea--font-rounded {
+  font-family: 'Hiragino Maru Gothic ProN', 'M PLUS Rounded 1c', 'Yu Gothic UI', sans-serif;
 }
 .notes-text-block__textarea::placeholder { color: var(--text-muted); }
 .notes-text-block__textarea:focus {

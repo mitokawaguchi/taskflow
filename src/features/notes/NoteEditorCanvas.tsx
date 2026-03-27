@@ -1,5 +1,6 @@
-import { useEffect, useState, type ComponentProps } from 'react'
-import { Tldraw, getSnapshot, type TLEditorSnapshot } from 'tldraw'
+import { useCallback, useEffect, useState } from 'react'
+import type { Editor, TLEditorSnapshot, TLStoreSnapshot } from '@tldraw/editor'
+import { Tldraw, getSnapshot } from 'tldraw'
 import 'tldraw/tldraw.css'
 import { updateNote } from '../../api/notes'
 
@@ -13,19 +14,20 @@ function errToMessage(err: unknown): string {
 
 type Props = {
   noteId: string
-  initialSnapshot: TLEditorSnapshot | undefined
+  /** `<Tldraw snapshot={...} />` と同型（Partial 不可・document 必須） */
+  initialSnapshot: TLEditorSnapshot | TLStoreSnapshot | undefined
   theme: 'light' | 'dark'
   onSaveError: (message: string) => void
+  /** PC 等では true（保存・編集ツールなし） */
+  readOnly: boolean
 }
 
-type TldrawEditor = Parameters<NonNullable<ComponentProps<typeof Tldraw>['onMount']>>[0]
-
 /** tldraw 本体とドキュメント自動保存（遅延読み込みチャンク用） */
-export function NoteEditorCanvas({ noteId, initialSnapshot, theme, onSaveError }: Readonly<Props>) {
-  const [editor, setEditor] = useState<TldrawEditor | null>(null)
+export function NoteEditorCanvas({ noteId, initialSnapshot, theme, onSaveError, readOnly }: Readonly<Props>) {
+  const [editor, setEditor] = useState<Editor | null>(null)
 
   useEffect(() => {
-    if (!editor) return
+    if (!editor || readOnly) return
     let timer: ReturnType<typeof setTimeout> | undefined
     const scheduleSave = (): void => {
       if (timer) clearTimeout(timer)
@@ -43,14 +45,23 @@ export function NoteEditorCanvas({ noteId, initialSnapshot, theme, onSaveError }
       if (timer) clearTimeout(timer)
       unsub()
     }
-  }, [editor, noteId, onSaveError])
+  }, [editor, noteId, onSaveError, readOnly])
+
+  const handleMount = useCallback(
+    (ed: Editor) => {
+      ed.user.updateUserPreferences({
+        colorScheme: theme === 'dark' ? 'dark' : 'light',
+      })
+      if (readOnly) {
+        ed.updateInstanceState({ isReadonly: true })
+      } else {
+        setEditor(ed)
+      }
+    },
+    [readOnly, theme]
+  )
 
   return (
-    <Tldraw
-      key={noteId}
-      snapshot={initialSnapshot}
-      onMount={setEditor}
-      colorScheme={theme === 'dark' ? 'dark' : 'light'}
-    />
+    <Tldraw key={noteId} snapshot={initialSnapshot} onMount={handleMount} inferDarkMode={false} />
   )
 }

@@ -1,21 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { fetchNotes } from '../../api/notes'
+import type { Note } from '../../types'
 import NotesScreen from './NotesScreen'
 
-const fetchNotes = vi.fn(() => Promise.resolve([]))
-const insertNote = vi.fn()
-const deleteNote = vi.fn()
-
 vi.mock('../../api/notes', () => ({
-  fetchNotes: (...args: unknown[]) => fetchNotes(...args),
-  insertNote: (...args: unknown[]) => insertNote(...args),
-  deleteNote: (...args: unknown[]) => deleteNote(...args),
+  fetchNotes: vi.fn(() => Promise.resolve([])),
+  insertNote: vi.fn(),
+  deleteNote: vi.fn(),
 }))
 
 describe('NotesScreen', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    fetchNotes.mockResolvedValue([])
+    vi.mocked(fetchNotes).mockResolvedValue([])
   })
 
   it('空のとき案内文を表示する', async () => {
@@ -24,16 +22,15 @@ describe('NotesScreen', () => {
   })
 
   it('メモ一覧を表示する', async () => {
-    fetchNotes.mockResolvedValueOnce([
-      {
-        id: 'n1',
-        title: 'テスト',
-        bodyText: '',
-        snapshot: null,
-        updatedAt: '2025-01-01T00:00:00.000Z',
-        createdAt: '2025-01-01T00:00:00.000Z',
-      },
-    ])
+    const row: Note = {
+      id: 'n1',
+      title: 'テスト',
+      bodyText: '',
+      snapshot: null,
+      updatedAt: '2025-01-01T00:00:00.000Z',
+      createdAt: '2025-01-01T00:00:00.000Z',
+    }
+    vi.mocked(fetchNotes).mockResolvedValueOnce([row])
     render(<NotesScreen setView={vi.fn()} addToast={vi.fn()} />)
     expect(await screen.findByText('テスト')).toBeInTheDocument()
   })
