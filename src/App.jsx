@@ -113,7 +113,7 @@ export default function App() {
                   activeProjects={app.activeProjects} completedProjects={app.completedProjects} dragActiveId={app.dragActiveId}
                   renderProjectCard={app.renderProjectCard} openTaskFormForProject={app.openTaskFormForProject}
                   templates={app.templates} setEditTemplate={app.setEditTemplate} setShowTplForm={app.setShowTplForm}
-                  theme={app.theme} setNoteDetailTitle={app.setNoteDetailTitle}
+                  theme={app.theme}
                 />
               )}
             </div>

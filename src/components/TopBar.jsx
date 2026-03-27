@@ -39,11 +39,7 @@ export default function TopBar({
       <button type="button" className="hamburger" onClick={() => setSidebarOpen(true)} aria-label="メニュー">
         ☰
       </button>
-      {view.startsWith('n:') ? (
-        <div className="topbar-spacer" aria-hidden="true" />
-      ) : (
-        <div className="topbar-title">{viewTitle()}</div>
-      )}
+      <div className="topbar-title">{viewTitle()}</div>
 
       {isMainView && (
         <div className="topbar-tabs" role="tablist" aria-label="ビュー切替">
@@ -123,12 +119,12 @@ export default function TopBar({
             </button>
           </>
         )}
-        {view !== 'clients' && !view.startsWith('c:') && view !== 'projects' && view !== 'categories' && view !== 'boss-feedback' && view !== 'mail-tracker' && view !== 'notes' && !view.startsWith('n:') && (
+        {view !== 'clients' && !view.startsWith('c:') && view !== 'projects' && view !== 'categories' && view !== 'boss-feedback' && view !== 'mail-tracker' && (
           <button type="button" className="btn btn-ghost btn-sm" onClick={() => setShowDone(!showDone)}>
             {showDone ? '完了を非表示' : '完了を表示'}
           </button>
         )}
-        {!isProjectView && view !== 'projects' && view !== 'templates' && view !== 'boss-feedback' && view !== 'mail-tracker' && view !== 'clients' && !view.startsWith('c:') && view !== 'notes' && !view.startsWith('n:') && (
+        {!isProjectView && view !== 'projects' && view !== 'templates' && view !== 'boss-feedback' && view !== 'mail-tracker' && view !== 'clients' && !view.startsWith('c:') && (
           <button type="button" className="btn btn-primary" onClick={onAddTask}>
             + 追加
           </button>

@@ -1,7 +1,7 @@
 /**
  * ARCH-001: App.jsx 200行以下化のためフィルタ・アクション・派生値・dueToday 効果を集約
  */
-import { useCallback, useMemo, useEffect } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { priorityOrder, VIEW_TABS } from '../constants'
@@ -22,10 +22,6 @@ export function useAppHandlers(data, ui, authUser) {
   const navigate = useNavigate()
   const view = useMemo(() => getViewFromPathname(location.pathname), [location.pathname])
   const setView = useCallback((v) => navigateToView(navigate, v), [navigate])
-
-  useEffect(() => {
-    if (!view.startsWith('n:')) ui.setNoteDetailTitle(null)
-  }, [view, ui.setNoteDetailTitle])
 
   const taskFilters = useTaskFilters(tasks, view, ui.showDone, ui.searchQuery)
   const { sort, setSort, filterProjectIds, setFilterProjectIds, filterPriorities, setFilterPriorities, filterDueFrom, setFilterDueFrom, filterDueTo, setFilterDueTo, filterPriorityFrom, setFilterPriorityFrom, filterPriorityTo, setFilterPriorityTo, filterOpen, setFilterOpen, filterAssigneeId, setFilterAssigneeId, hasAnyFilter, sortedTasks, clearFilters: taskFiltersClear } = taskFilters
@@ -58,9 +54,8 @@ export function useAppHandlers(data, ui, authUser) {
     return getViewTitle(view, {
       projects,
       clients: data.clients,
-      noteDetailTitle: ui.noteDetailTitle,
     })
-  }, [view, projects, data.clients, ui.noteDetailTitle])
+  }, [view, projects, data.clients])
   const openTaskFormForProject = useCallback((projectId) => {
     ui.setTaskFormProjectId(projectId)
     ui.setShowTaskForm(true)

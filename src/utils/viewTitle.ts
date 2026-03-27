@@ -3,7 +3,6 @@ import type { Client, Project } from '../types'
 type ViewTitleOpts = {
   projects: Project[]
   clients: Client[]
-  noteDetailTitle: string | null
 }
 
 /** TopBar 用タイトル文字列 */
@@ -20,8 +19,6 @@ export function getViewTitle(view: string, opts: ViewTitleOpts): string {
   if (view === 'categories') return 'カテゴリ'
   if (view === 'boss-feedback') return '上司の指摘DB'
   if (view === 'mail-tracker') return '未返信'
-  if (view === 'notes') return 'メモ帳'
-  if (view.startsWith('n:')) return opts.noteDetailTitle ?? 'メモ'
   if (view.startsWith('c:')) return opts.clients.find((c) => c.id === view.slice(2))?.name ?? 'クライアント'
   if (view.startsWith('p:')) return opts.projects.find((p) => p.id === view.slice(2))?.name ?? ''
   return ''

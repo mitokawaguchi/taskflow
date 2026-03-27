@@ -9,8 +9,6 @@ import ProjectsOverview from './ProjectsOverview'
 import TemplatesListView from './TemplatesListView'
 import BossFeedbackScreen from '../features/boss-feedback/BossFeedbackScreen'
 import MailTrackerScreen from '../features/mail-tracker/MailTrackerScreen'
-import NotesScreen from '../features/notes/NotesScreen'
-import { NoteEditorLoader } from '../features/notes/NoteEditorLoader'
 
 export default function ContentArea({
   view,
@@ -55,7 +53,6 @@ export default function ContentArea({
   setEditTemplate,
   setShowTplForm,
   theme,
-  setNoteDetailTitle,
 }) {
   if (isProjectView && currentProject) {
     return (
@@ -156,20 +153,6 @@ export default function ContentArea({
   }
   if (view === 'mail-tracker') {
     return <MailTrackerScreen addToast={addToast} />
-  }
-  if (view === 'notes') {
-    return <NotesScreen setView={setView} addToast={addToast} />
-  }
-  if (view.startsWith('n:')) {
-    return (
-      <NoteEditorLoader
-        noteId={view.slice(2)}
-        setView={setView}
-        addToast={addToast}
-        setNoteDetailTitle={setNoteDetailTitle}
-        theme={theme}
-      />
-    )
   }
   return null
 }
