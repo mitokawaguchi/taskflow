@@ -87,6 +87,7 @@ export default function ContentAreaTasks({
   if (view === 'all' || view === 'today' || view === 'overdue') {
     return (
       <TaskListWithFilters
+        view={view}
         filterOpen={filterOpen}
         setFilterOpen={setFilterOpen}
         hasAnyFilter={hasAnyFilter}
