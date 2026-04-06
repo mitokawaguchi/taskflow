@@ -60,44 +60,8 @@ export default function TopBar({
       )}
 
       <div className="topbar-right">
-        <div className="theme-toggle" role="group" aria-label="表示モード">
-          <span className="theme-toggle__label">{theme === 'dark' ? 'ダーク' : 'ライト'}</span>
-          <button
-            type="button"
-            className="theme-toggle__switch"
-            aria-pressed={theme === 'dark'}
-            aria-label={theme === 'dark' ? 'ダークモード（クリックでライトに）' : 'ライトモード（クリックでダークに）'}
-            onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
-          />
-        </div>
         {view !== 'clients' && !view.startsWith('c:') && (
           <>
-            {(view === 'all' || view === 'today' || view === 'overdue') && (
-              <>
-                <button
-                  type="button"
-                  className="btn btn-ghost btn-sm topbar-filter-btn"
-                  onClick={() => setFilterOpen((o) => !o)}
-                  aria-label="フィルター"
-                >
-                  フィルター
-                  {activeFilterCount > 0 && <span className="topbar-filter-badge">{activeFilterCount}</span>}
-                </button>
-                <label className="topbar-search-wrap">
-                  <span className="topbar-search-icon" aria-hidden>
-                    🔍
-                  </span>
-                  <input
-                    type="search"
-                    className="topbar-search"
-                    placeholder="タスクを検索..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    aria-label="タスクを検索"
-                  />
-                </label>
-              </>
-            )}
             <button
               type="button"
               className="topbar-icon-btn"
@@ -119,14 +83,54 @@ export default function TopBar({
             </button>
           </>
         )}
-        {view !== 'clients' && !view.startsWith('c:') && view !== 'projects' && view !== 'categories' && view !== 'boss-feedback' && view !== 'mail-tracker' && (
-          <button type="button" className="btn btn-ghost btn-sm" onClick={() => setShowDone(!showDone)}>
-            {showDone ? '完了を非表示' : '完了を表示'}
-          </button>
-        )}
         {!isProjectView && view !== 'projects' && view !== 'templates' && view !== 'boss-feedback' && view !== 'mail-tracker' && view !== 'clients' && !view.startsWith('c:') && (
           <button type="button" className="btn btn-primary" onClick={onAddTask}>
             + 追加
+          </button>
+        )}
+      </div>
+
+      {/* 補助アクション行（フィルター・検索・テーマ・完了切替） */}
+      <div className="topbar-secondary">
+        <div className="theme-toggle" role="group" aria-label="表示モード">
+          <span className="theme-toggle__label">{theme === 'dark' ? 'ダーク' : 'ライト'}</span>
+          <button
+            type="button"
+            className="theme-toggle__switch"
+            aria-pressed={theme === 'dark'}
+            aria-label={theme === 'dark' ? 'ダークモード（クリックでライトに）' : 'ライトモード（クリックでダークに）'}
+            onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
+          />
+        </div>
+        {(view === 'all' || view === 'today' || view === 'overdue') && (
+          <>
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm topbar-filter-btn"
+              onClick={() => setFilterOpen((o) => !o)}
+              aria-label="フィルター"
+            >
+              フィルター
+              {activeFilterCount > 0 && <span className="topbar-filter-badge">{activeFilterCount}</span>}
+            </button>
+            <label className="topbar-search-wrap">
+              <span className="topbar-search-icon" aria-hidden>
+                🔍
+              </span>
+              <input
+                type="search"
+                className="topbar-search"
+                placeholder="タスクを検索..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="タスクを検索"
+              />
+            </label>
+          </>
+        )}
+        {view !== 'clients' && !view.startsWith('c:') && view !== 'projects' && view !== 'categories' && view !== 'boss-feedback' && view !== 'mail-tracker' && (
+          <button type="button" className="btn btn-ghost btn-sm" onClick={() => setShowDone(!showDone)}>
+            {showDone ? '完了を非表示' : '完了を表示'}
           </button>
         )}
       </div>

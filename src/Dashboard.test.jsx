@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, it, expect, vi } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/react'
 import Dashboard from './Dashboard'
 
 describe('Dashboard', () => {
@@ -40,5 +40,27 @@ describe('Dashboard', () => {
     render(<Dashboard tasks={tasks} projects={projects} />)
     expect(screen.getByText(/Proj1/)).toBeInTheDocument()
     expect(screen.getByText('50%')).toBeInTheDocument()
+  })
+
+  it('opens project detail when project progress item is clicked', () => {
+    const setView = vi.fn()
+    const tasks = [{ id: 't1', title: 'A', done: false, status: 'todo', due: '', priority: 'medium', projectId: 'p1', created: 1 }]
+    const projects = [{ id: 'p1', name: 'Proj1', color: '#06d6a0', icon: '📁' }]
+    render(<Dashboard tasks={tasks} projects={projects} setView={setView} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Proj1の詳細を開く' }))
+
+    expect(setView).toHaveBeenCalledWith('p:p1')
+  })
+
+  it('opens project detail when recent task item is clicked', () => {
+    const setView = vi.fn()
+    const tasks = [{ id: 't1', title: 'タスクA', done: false, status: 'todo', due: '', priority: 'medium', projectId: 'p1', created: 1 }]
+    const projects = [{ id: 'p1', name: 'Proj1', color: '#06d6a0', icon: '📁' }]
+    render(<Dashboard tasks={tasks} projects={projects} setView={setView} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'タスクAのプロジェクトを開く' }))
+
+    expect(setView).toHaveBeenCalledWith('p:p1')
   })
 })

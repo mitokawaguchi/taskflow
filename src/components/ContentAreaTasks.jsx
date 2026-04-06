@@ -10,6 +10,7 @@ export default function ContentAreaTasks({
   view,
   tasksForBoard,
   projects,
+  setView,
   categories,
   users,
   projectsMap,
@@ -66,7 +67,7 @@ export default function ContentAreaTasks({
   }
   if (view === 'dashboard') {
     return (
-      <Dashboard tasks={tasksForBoard} projects={projects} />
+      <Dashboard tasks={tasksForBoard} projects={projects} setView={setView} />
     )
   }
   if (view === 'gantt') {

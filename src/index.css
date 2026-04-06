@@ -327,6 +327,13 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
   margin-left: auto;
   flex-shrink: 0;
 }
+.topbar-secondary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-basis: 100%;
+  flex-wrap: wrap;
+}
 .topbar-filter-btn { position: relative; }
 .topbar-filter-badge {
   position: absolute;
@@ -1466,6 +1473,14 @@ html.dark .kanban-card__check:not(:checked):hover {
   border-radius: 8px;
   border: 1px solid var(--border);
 }
+.dashboard-proj--button {
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.dashboard-proj--button:hover { border-color: var(--accent); background: var(--surface3); }
 .dashboard-proj__info { flex: 1; min-width: 0; }
 .dashboard-status-chart { display: flex; flex-direction: column; gap: 12px; }
 .dashboard-status-row { display: flex; align-items: center; gap: 12px; }
@@ -1502,7 +1517,22 @@ html.dark .kanban-card__check:not(:checked):hover {
 }
 
 .dashboard-activity { list-style: none; padding: 0; margin: 0; }
-.dashboard-activity__item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.dashboard-activity__item { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.dashboard-activity__button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.dashboard-activity__button:hover:not(:disabled) { color: var(--accent); }
+.dashboard-activity__button:disabled { cursor: default; opacity: 0.72; }
 .dashboard-activity__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
 .dashboard-activity__dot.done { background: var(--text-muted); }
 .dashboard-activity__title { flex: 1; }
@@ -1614,6 +1644,7 @@ html.dark .kanban-card__check:not(:checked):hover {
   .topbar { flex-wrap: wrap; gap: 8px; padding: 14px 18px; }
   .topbar-tabs { margin-left: 0; }
   .topbar-right { flex-wrap: wrap; }
+  .topbar-secondary { flex-wrap: wrap; }
   .topbar-search { width: 160px; }
 }
 
@@ -1625,7 +1656,7 @@ html.dark .kanban-card__check:not(:checked):hover {
     padding-right: max(14px, env(safe-area-inset-right));
     padding-top: max(12px, env(safe-area-inset-top));
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px 8px;
   }
   .topbar-title {
     order: 0;
@@ -1636,6 +1667,8 @@ html.dark .kanban-card__check:not(:checked):hover {
     white-space: nowrap;
     font-size: 16px;
   }
+  .topbar-right { gap: 6px; }
+  .topbar-secondary { gap: 6px; }
   .topbar .btn,
   .topbar .btn-sm {
     flex-shrink: 0;
@@ -1648,11 +1681,12 @@ html.dark .kanban-card__check:not(:checked):hover {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  .theme-toggle__label { display: none; }
+  .topbar-search { width: 120px; }
   .content {
     padding: 14px 12px;
     padding-left: max(12px, env(safe-area-inset-left));
     padding-right: max(12px, env(safe-area-inset-right));
-    /* 最下部がChrome等のブラウザUIに隠れないよう余白を確保 */
     padding-bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 64px));
   }
   .cards-grid { grid-template-columns: 1fr; }
@@ -1692,6 +1726,34 @@ html.dark .kanban-card__check:not(:checked):hover {
   }
   .morning-tasks { max-height: 50vh; }
   .morning-header h1 { font-size: clamp(22px, 5vw, 32px); }
+
+  /* カンバン: 横スワイプ + スナップ */
+  .kanban-view-wrap {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: 12px;
+    padding-bottom: 8px;
+  }
+  .kanban-board {
+    min-width: max-content;
+    gap: 10px;
+    padding: 0 4px;
+  }
+  .kanban-column {
+    flex: none;
+    width: 78vw;
+    min-width: 260px;
+    max-width: none;
+    scroll-snap-align: start;
+  }
+  .kanban-card__body { padding: 0 6px; }
+  .kanban-card__title { font-size: 12px; }
+  .kanban-card__meta { font-size: 10px; }
+  .kanban-card__footer { gap: 6px; }
+  .kanban-card__due { font-size: 11px; }
+  .kanban-column__title { font-size: 13px; }
 }
 /* CODE-005: 繰り返しインラインスタイルの共通クラス */
 .app-loading {
@@ -1819,10 +1881,14 @@ html.dark .kanban-card__check:not(:checked):hover {
 @media (max-width: 480px) {
   .topbar { padding: 10px 12px; }
   .topbar-title { font-size: 15px; }
+  .topbar-search-wrap { display: none; }
+  .topbar-right { gap: 4px; }
+  .topbar-secondary { gap: 4px; }
   .projects-grid { grid-template-columns: 1fr; }
   .project-card { padding: 14px; }
   .project-name { font-size: 13px; }
   .project-card-tasks { max-height: 120px; }
+  .kanban-column { width: 85vw; }
 }
 
 /* 上司の指摘 DB（boss_feedback）・メールトラッカー等の共通シート */

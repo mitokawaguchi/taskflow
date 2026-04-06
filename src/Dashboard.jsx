@@ -42,7 +42,7 @@ function DonutChart({ percentage, color, size = 80 }) {
   )
 }
 
-export default function Dashboard({ tasks, projects }) {
+export default function Dashboard({ tasks, projects, setView = () => {} }) {
   const stats = useMemo(() => {
     const all = tasks.length
     const done = tasks.filter(t => t.done).length
@@ -76,6 +76,12 @@ export default function Dashboard({ tasks, projects }) {
       .sort((a, b) => (b.created || 0) - (a.created || 0))
       .slice(0, 10)
   }, [tasks])
+  const projectIds = useMemo(() => new Set(projects.map((project) => project.id)), [projects])
+
+  const openProject = (projectId) => {
+    if (!projectId || !projectIds.has(projectId)) return
+    setView(`p:${projectId}`)
+  }
 
   return (
     <div className="dashboard">
@@ -109,13 +115,19 @@ export default function Dashboard({ tasks, projects }) {
             <p className="dashboard-empty">プロジェクトがありません</p>
           ) : (
             projectProgress.map(({ project, total, done, pct }) => (
-              <div key={project.id} className="dashboard-proj dashboard-proj--with-chart">
+              <button
+                key={project.id}
+                type="button"
+                className="dashboard-proj dashboard-proj--with-chart dashboard-proj--button"
+                onClick={() => openProject(project.id)}
+                aria-label={`${project.name}の詳細を開く`}
+              >
                 <DonutChart percentage={pct} color={project.color} size={64} />
                 <div className="dashboard-proj__info">
                   <div className="dashboard-proj__name">{project.icon} {project.name}</div>
                   <div className="dashboard-proj__meta">{done} / {total} 完了</div>
                 </div>
-              </div>
+              </button>
             ))
           )}
         </div>
@@ -150,11 +162,19 @@ export default function Dashboard({ tasks, projects }) {
           ) : (
             recentTasks.map(t => (
               <li key={t.id} className="dashboard-activity__item">
-                <span className={`dashboard-activity__dot ${t.done ? 'done' : ''}`} />
-                <span className="dashboard-activity__title">{t.title}</span>
-                <span className="dashboard-activity__meta">
-                  {t.done ? '完了' : '追加'} · {t.created ? new Date(t.created).toLocaleDateString('ja-JP') : ''}
-                </span>
+                <button
+                  type="button"
+                  className="dashboard-activity__button"
+                  onClick={() => openProject(t.projectId)}
+                  disabled={!t.projectId || !projectIds.has(t.projectId)}
+                  aria-label={`${t.title}のプロジェクトを開く`}
+                >
+                  <span className={`dashboard-activity__dot ${t.done ? 'done' : ''}`} />
+                  <span className="dashboard-activity__title">{t.title}</span>
+                  <span className="dashboard-activity__meta">
+                    {t.done ? '完了' : '追加'} · {t.created ? new Date(t.created).toLocaleDateString('ja-JP') : ''}
+                  </span>
+                </button>
               </li>
             ))
           )}

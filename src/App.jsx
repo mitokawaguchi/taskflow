@@ -87,7 +87,7 @@ export default function App() {
             <div key={app.view} className="content-view">
               {['kanban', 'dashboard', 'gantt', 'all', 'today', 'overdue'].includes(app.view) ? (
                 <ContentAreaTasks
-                  view={app.view} tasksForBoard={app.tasksForBoard} projects={app.projects} categories={app.categories} users={app.users}
+                  view={app.view} tasksForBoard={app.tasksForBoard} projects={app.projects} setView={app.setView} categories={app.categories} users={app.users}
                   projectsMap={app.projectsMap} usersMap={app.usersMap} moveTaskStatus={app.moveTaskStatus}
                   setEditTask={app.setEditTask} setShowTaskForm={app.setShowTaskForm} openTaskFormForKanbanColumn={app.openTaskFormForKanbanColumn}
                   filterOpen={app.filterOpen} setFilterOpen={app.setFilterOpen} hasAnyFilter={app.hasAnyFilter}

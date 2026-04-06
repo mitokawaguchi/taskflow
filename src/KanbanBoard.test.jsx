@@ -48,4 +48,31 @@ describe('KanbanBoard', () => {
     render(<KanbanBoard {...defaultProps} tasks={tasks} projects={[{ id: 'p1', name: 'P1', color: '#333', icon: '📁' }]} />)
     expect(screen.getByText('Done task')).toBeInTheDocument()
   })
+
+  it('renders exactly 4 columns', () => {
+    const { container } = render(<KanbanBoard {...defaultProps} />)
+    const columns = container.querySelectorAll('.kanban-column')
+    expect(columns.length).toBe(4)
+  })
+
+  it('wraps columns in kanban-board container for responsive scroll', () => {
+    const { container } = render(<KanbanBoard {...defaultProps} />)
+    const board = container.querySelector('.kanban-board')
+    expect(board).toBeTruthy()
+    expect(board.children.length).toBe(4)
+  })
+
+  it('renders add button in each column', () => {
+    render(<KanbanBoard {...defaultProps} />)
+    const addButtons = screen.getAllByText('＋ タスクを追加')
+    expect(addButtons.length).toBe(4)
+  })
+
+  it('calls onAddTask with column status when add button clicked', () => {
+    const onAddTask = vi.fn()
+    render(<KanbanBoard {...defaultProps} onAddTask={onAddTask} />)
+    const addButtons = screen.getAllByText('＋ タスクを追加')
+    addButtons[0].click()
+    expect(onAddTask).toHaveBeenCalledWith('todo')
+  })
 })
