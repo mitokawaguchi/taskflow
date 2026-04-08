@@ -16,16 +16,20 @@ export async function fetchProjects(): Promise<Project[]> {
 }
 
 export async function insertProject(
-  project: Pick<Project, 'id' | 'name' | 'color' | 'icon'> & Partial<Pick<Project, 'endDate' | 'sortOrder'>>
+  project: Pick<Project, 'id' | 'name' | 'purpose' | 'color' | 'icon'> & Partial<Pick<Project, 'endDate' | 'sortOrder'>>
 ): Promise<Project> {
   const db = getSupabase()
   if (!project?.name || String(project.name).length > VALIDATION.projectName) {
     throw new Error(`プロジェクト名は1〜${VALIDATION.projectName}文字にしてください`)
   }
+  if (!project?.purpose || !String(project.purpose).trim() || String(project.purpose).length > VALIDATION.projectPurpose) {
+    throw new Error(`目的は1〜${VALIDATION.projectPurpose}文字にしてください`)
+  }
   const ownerId = await getOwnerId()
   const row: Record<string, unknown> = {
     id: project.id,
     name: project.name,
+    purpose: project.purpose,
     color: project.color,
     icon: project.icon,
     end_date: project.endDate || null,
@@ -41,14 +45,18 @@ export async function insertProject(
 
 export async function updateProject(
   id: string,
-  patch: Partial<Pick<Project, 'name' | 'color' | 'icon' | 'endDate' | 'sortOrder'>>
+  patch: Partial<Pick<Project, 'name' | 'purpose' | 'color' | 'icon' | 'endDate' | 'sortOrder'>>
 ): Promise<Project> {
   const db = getSupabase()
   if (patch.name !== undefined && String(patch.name).length > VALIDATION.projectName) {
     throw new Error(`プロジェクト名は${VALIDATION.projectName}文字以内にしてください`)
   }
+  if (patch.purpose !== undefined && (!String(patch.purpose).trim() || String(patch.purpose).length > VALIDATION.projectPurpose)) {
+    throw new Error(`目的は1〜${VALIDATION.projectPurpose}文字以内にしてください`)
+  }
   const row: Record<string, unknown> = {}
   if (patch.name !== undefined) row.name = patch.name
+  if (patch.purpose !== undefined) row.purpose = patch.purpose
   if (patch.color !== undefined) row.color = patch.color
   if (patch.icon !== undefined) row.icon = patch.icon
   if (patch.endDate !== undefined) row.end_date = patch.endDate || null

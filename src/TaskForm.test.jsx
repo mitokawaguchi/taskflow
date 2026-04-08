@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import TaskForm from './TaskForm'
 
 const defaultProjects = [
-  { id: 'p1', name: 'プロジェクト1', color: '#06d6a0', icon: '📁' },
+  { id: 'p1', name: 'プロジェクト1', purpose: '目的', color: '#06d6a0', icon: '📁' },
 ]
 
 describe('TaskForm', () => {
@@ -33,7 +33,7 @@ describe('TaskForm', () => {
     expect(screen.getByText('タスクを編集')).toBeInTheDocument()
   })
 
-  it('save button is disabled when title is empty', () => {
+  it('save button is disabled when title or purpose is empty', () => {
     render(
       <TaskForm
         task={null}
@@ -61,9 +61,13 @@ describe('TaskForm', () => {
     fireEvent.change(screen.getByPlaceholderText('タスク名を入力...'), {
       target: { value: '新規タスク' },
     })
+    fireEvent.change(screen.getByPlaceholderText('このタスクの目的を入力...'), {
+      target: { value: '目的テスト' },
+    })
     fireEvent.click(screen.getByRole('button', { name: '保存' }))
     expect(onSave).toHaveBeenCalledTimes(1)
     expect(onSave.mock.calls[0][0].title).toBe('新規タスク')
+    expect(onSave.mock.calls[0][0].purpose).toBe('目的テスト')
   })
 
   it('calls onClose when 戻る is clicked', () => {

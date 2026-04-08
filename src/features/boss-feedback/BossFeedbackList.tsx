@@ -82,6 +82,7 @@ export function BossFeedbackList({
               <tr>
                 <th>カテゴリ</th>
                 <th>指摘内容</th>
+                <th>目的</th>
                 <th>回数</th>
                 <th>PJ</th>
                 <th>作成日</th>
@@ -95,6 +96,7 @@ export function BossFeedbackList({
                     <span className="bf-cat">{row.category}</span>
                   </td>
                   <td className="bf-table__desc">{row.description}</td>
+                  <td className="bf-table__desc">{row.purpose}</td>
                   <td>{row.frequency}</td>
                   <td>{row.projectName ?? '—'}</td>
                   <td>{row.createdAt.slice(0, 10)}</td>

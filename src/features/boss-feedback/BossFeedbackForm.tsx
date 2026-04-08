@@ -53,6 +53,16 @@ export function BossFeedbackForm({ form, editingId, onFieldChange, onSubmit, onC
             required
           />
         </label>
+        <label className="bf-field bf-field--block">
+          <span className="bf-label">目的（必須）</span>
+          <textarea
+            className="input textarea"
+            rows={2}
+            value={form.purpose}
+            onChange={(e) => onFieldChange('purpose', e.target.value)}
+            required
+          />
+        </label>
         <div className="bf-form-row">
           <label className="bf-field bf-field--block">
             <span className="bf-label">修正前の例</span>

@@ -6,6 +6,7 @@ type BossFeedbackRow = {
   created_at: string
   category: string
   description: string
+  purpose: string
   example_before: string | null
   example_after: string | null
   project_name: string | null
@@ -19,6 +20,7 @@ function rowToBossFeedback(row: BossFeedbackRow): BossFeedback {
     createdAt: row.created_at,
     category: row.category as BossFeedbackCategory,
     description: row.description,
+    purpose: row.purpose,
     exampleBefore: row.example_before,
     exampleAfter: row.example_after,
     projectName: row.project_name,
@@ -46,6 +48,7 @@ export type BossFeedbackInsertInput = {
   id: string
   category: BossFeedbackCategory
   description: string
+  purpose: string
   exampleBefore: string | null
   exampleAfter: string | null
   projectName: string | null
@@ -62,6 +65,7 @@ export async function insertBossFeedback(input: BossFeedbackInsertInput): Promis
     owner_id: ownerId,
     category: input.category,
     description: input.description,
+    purpose: input.purpose,
     example_before: input.exampleBefore,
     example_after: input.exampleAfter,
     project_name: input.projectName,
@@ -83,6 +87,7 @@ export async function updateBossFeedback(
   const row = {
     category: input.category,
     description: input.description,
+    purpose: input.purpose,
     example_before: input.exampleBefore,
     example_after: input.exampleAfter,
     project_name: input.projectName,

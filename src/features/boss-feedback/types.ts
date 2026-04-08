@@ -15,6 +15,7 @@ export type BossFeedback = {
   createdAt: string
   category: BossFeedbackCategory
   description: string
+  purpose: string
   exampleBefore: string | null
   exampleAfter: string | null
   projectName: string | null
@@ -26,6 +27,7 @@ export type BossFeedback = {
 export type BossFeedbackFormValues = {
   category: BossFeedbackCategory
   description: string
+  purpose: string
   exampleBefore: string
   exampleAfter: string
   projectName: string

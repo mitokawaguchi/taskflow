@@ -32,6 +32,7 @@ interface TaskRow {
   id: string
   title: string
   desc?: string | null
+  purpose?: string | null
   priority?: string | null
   project_id?: string | null
   due?: string | null
@@ -52,6 +53,7 @@ export function taskFromRow(row: TaskRow | null): Task | null {
     id: row.id,
     title: row.title,
     desc: row.desc ?? '',
+    purpose: row.purpose ?? '',
     priority: (row.priority as Task['priority']) ?? 'medium',
     projectId: row.project_id ?? null,
     due: row.due ?? '',
@@ -68,6 +70,7 @@ export function taskFromRow(row: TaskRow | null): Task | null {
 interface ProjectRow {
   id: string
   name: string
+  purpose?: string | null
   color?: string | null
   icon?: string | null
   end_date?: string | null
@@ -79,6 +82,7 @@ export function projectFromRow(row: ProjectRow | null): Project | null {
   return {
     id: row.id,
     name: row.name,
+    purpose: row.purpose ?? '',
     color: row.color ?? '#2d6b3f',
     icon: row.icon ?? '📁',
     endDate: row.end_date ?? '',

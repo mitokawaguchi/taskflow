@@ -7,6 +7,7 @@ export interface Task {
   id: string
   title: string
   desc: string
+  purpose: string
   priority: PriorityKey
   projectId: string | null
   due: string
@@ -22,6 +23,7 @@ export interface Task {
 export interface Project {
   id: string
   name: string
+  purpose: string
   color: string
   icon: string
   endDate: string

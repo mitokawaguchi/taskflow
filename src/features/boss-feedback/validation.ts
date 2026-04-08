@@ -4,12 +4,15 @@ function isCategory(v: string): v is BossFeedbackCategory {
   return (BOSS_FEEDBACK_CATEGORIES as readonly string[]).includes(v)
 }
 
-/** フォーム送信前の検証（description 必須・frequency は 1 以上） */
+/** フォーム送信前の検証（description/purpose 必須・frequency は 1 以上） */
 export function validateBossFeedbackForm(
   raw: BossFeedbackFormValues
 ): { ok: true; values: BossFeedbackFormValues } | { ok: false; error: string } {
   if (!raw.description.trim()) {
     return { ok: false, error: '指摘内容（説明）は必須です' }
+  }
+  if (!raw.purpose.trim()) {
+    return { ok: false, error: '目的は必須です' }
   }
   if (!isCategory(raw.category)) {
     return { ok: false, error: 'カテゴリが不正です' }
@@ -23,6 +26,7 @@ export function validateBossFeedbackForm(
     values: {
       category: raw.category,
       description: raw.description.trim(),
+      purpose: raw.purpose.trim(),
       exampleBefore: raw.exampleBefore.trim() || '',
       exampleAfter: raw.exampleAfter.trim() || '',
       projectName: raw.projectName.trim() || '',

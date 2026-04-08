@@ -16,9 +16,14 @@ export function useProjectActions(
   const saveProject = useCallback(
     async (form) => {
       try {
+        if (!form.purpose || !String(form.purpose).trim()) {
+          addToast('❌', '保存できませんでした', '目的は必須です')
+          return
+        }
         if (editProject) {
           const updated = await updateProject(editProject.id, {
             name: form.name,
+            purpose: form.purpose,
             icon: form.icon,
             color: form.color,
             endDate: form.endDate ?? '',

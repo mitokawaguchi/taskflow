@@ -11,7 +11,7 @@ describe('ProjectForm', () => {
   it('renders edit title when project provided', () => {
     render(
       <ProjectForm
-        project={{ id: 'p1', name: 'P1', icon: '📁', color: '#333', endDate: '' }}
+        project={{ id: 'p1', name: 'P1', purpose: '目的', icon: '📁', color: '#333', endDate: '' }}
         onSave={vi.fn()}
         onClose={vi.fn()}
       />

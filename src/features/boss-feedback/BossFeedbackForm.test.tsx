@@ -7,6 +7,7 @@ import type { BossFeedbackFormValues } from './types'
 const base: BossFeedbackFormValues = {
   category: 'その他',
   description: '内容',
+  purpose: '再発防止のため',
   exampleBefore: '',
   exampleAfter: '',
   projectName: '',
@@ -24,6 +25,10 @@ describe('validateBossFeedbackForm', () => {
     const r = validateBossFeedbackForm({ ...base, description: '   ' })
     expect(r.ok).toBe(false)
     if (!r.ok) expect(r.error).toMatch(/必須/)
+  })
+  it('異常系: purpose が空', () => {
+    const r = validateBossFeedbackForm({ ...base, purpose: '   ' })
+    expect(r.ok).toBe(false)
   })
   it('境界値: frequency が 0', () => {
     const r = validateBossFeedbackForm({ ...base, frequency: 0 })

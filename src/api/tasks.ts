@@ -35,7 +35,9 @@ export type TaskInsertInput = Pick<Task, 'id' | 'title'> & Partial<Omit<Task, 'i
 export async function insertTask(task: TaskInsertInput): Promise<Task> {
   const db = getSupabase()
   if (!task || typeof task.title !== 'string') throw new Error('タスク名は必須です')
+  if (!task.purpose || !String(task.purpose).trim()) throw new Error('目的は必須です')
   if (task.title.length > VALIDATION.taskTitle) throw new Error(`タスク名は${VALIDATION.taskTitle}文字以内にしてください`)
+  if (String(task.purpose).length > VALIDATION.taskPurpose) throw new Error(`目的は${VALIDATION.taskPurpose}文字以内にしてください`)
   if (task.desc != null && String(task.desc).length > VALIDATION.taskDesc) throw new Error(`説明は${VALIDATION.taskDesc}文字以内にしてください`)
   const ownerId = await getOwnerId()
   const status = task.status && TASK_STATUS_KEYS.includes(task.status) ? task.status : (task.done ? 'done' : 'todo')
@@ -45,6 +47,7 @@ export async function insertTask(task: TaskInsertInput): Promise<Task> {
     project_id: task.projectId ?? null,
     title: task.title,
     desc: task.desc ?? '',
+    purpose: task.purpose,
     priority: task.priority ?? 'medium',
     due: normalizeDate(task.due),
     done: status === 'done',
@@ -64,17 +67,20 @@ export async function insertTask(task: TaskInsertInput): Promise<Task> {
 }
 
 export type TaskUpdatePatch = Partial<
-  Pick<Task, 'title' | 'desc' | 'priority' | 'projectId' | 'due' | 'done' | 'status' | 'startDate' | 'progress' | 'category' | 'assigneeId'>
+  Pick<Task, 'title' | 'desc' | 'purpose' | 'priority' | 'projectId' | 'due' | 'done' | 'status' | 'startDate' | 'progress' | 'category' | 'assigneeId'>
 >
 
 export async function updateTask(id: string, patch: TaskUpdatePatch): Promise<Task> {
   const db = getSupabase()
   if (!id || !patch || typeof patch !== 'object') throw new Error('更新パラメータが不正です')
   if (patch.title !== undefined && patch.title.length > VALIDATION.taskTitle) throw new Error(`タスク名は${VALIDATION.taskTitle}文字以内にしてください`)
+  if (patch.purpose !== undefined && !String(patch.purpose).trim()) throw new Error('目的は必須です')
+  if (patch.purpose !== undefined && String(patch.purpose).length > VALIDATION.taskPurpose) throw new Error(`目的は${VALIDATION.taskPurpose}文字以内にしてください`)
   if (patch.desc !== undefined && String(patch.desc).length > VALIDATION.taskDesc) throw new Error(`説明は${VALIDATION.taskDesc}文字以内にしてください`)
   const row: Record<string, unknown> = {}
   if (patch.title !== undefined) row.title = patch.title
   if (patch.desc !== undefined) row.desc = patch.desc
+  if (patch.purpose !== undefined) row.purpose = patch.purpose
   if (patch.priority !== undefined) row.priority = patch.priority
   if (patch.projectId !== undefined) row.project_id = patch.projectId
   if (patch.due !== undefined) row.due = normalizeDate(patch.due)

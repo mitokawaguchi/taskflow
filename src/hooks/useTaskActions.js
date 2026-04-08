@@ -10,6 +10,10 @@ export function useTaskActions(tasks, setTasks, addToast, editTask, closeTaskFor
         addToast('❌', '保存できませんでした', 'タスク名が不正です')
         return
       }
+      if (!form.purpose || !String(form.purpose).trim()) {
+        addToast('❌', '保存できませんでした', '目的は必須です')
+        return
+      }
       if (!editTask?.id) {
         const start = form.startDate != null && String(form.startDate).trim()
         const due = form.due != null && String(form.due).trim()

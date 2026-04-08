@@ -273,7 +273,7 @@ describe('api', () => {
     it('returns project in app shape', async () => {
       const { supabase } = await import('./supabase')
       const { insertProject } = await import('./api')
-      const project = { id: 'p99', name: 'N', color: '#000', icon: '📂' }
+      const project = { id: 'p99', name: 'N', purpose: 'P', color: '#000', icon: '📂' }
       supabase.from.mockReturnValue(mockInsertSingle(project))
       const result = await insertProject(project)
       expect(result).toMatchObject(project)
@@ -285,7 +285,7 @@ describe('api', () => {
       const { supabase } = await import('./supabase')
       const { insertProject } = await import('./api')
       const uuidId = `p-${crypto.randomUUID()}`
-      const project = { id: uuidId, name: 'N', color: '#000', icon: '📂' }
+      const project = { id: uuidId, name: 'N', purpose: 'P', color: '#000', icon: '📂' }
       supabase.from.mockReturnValue(mockInsertSingle(project))
       const result = await insertProject(project)
       expect(result.id).toMatch(/^p-[0-9a-f-]{36}$/i)
@@ -301,6 +301,7 @@ describe('api', () => {
         id: 't1',
         project_id: 'p1',
         title: 'T',
+        purpose: 'P',
         desc: '',
         priority: 'medium',
         due: null,
@@ -312,6 +313,7 @@ describe('api', () => {
         id: 't1',
         projectId: 'p1',
         title: 'T',
+        purpose: 'P',
         desc: '',
         priority: 'medium',
         due: null,
@@ -329,6 +331,7 @@ describe('api', () => {
         id: uuidId,
         project_id: 'p1',
         title: 'T',
+        purpose: 'P',
         desc: '',
         priority: 'medium',
         due: null,
@@ -340,6 +343,7 @@ describe('api', () => {
         id: uuidId,
         projectId: 'p1',
         title: 'T',
+        purpose: 'P',
         desc: '',
         priority: 'medium',
         due: null,
@@ -364,6 +368,7 @@ describe('api', () => {
         id: 't1',
         projectId: 'p1',
         title: 'T',
+        purpose: 'P',
         desc: '',
         priority: 'medium',
         due: null,
@@ -387,6 +392,7 @@ describe('api', () => {
         id: 't1',
         projectId: 'p1',
         title: 'T',
+        purpose: 'P',
         desc: '',
         priority: 'medium',
         due: null,
@@ -536,7 +542,7 @@ describe('api', () => {
       const { VALIDATION } = await import('./constants')
       const longTitle = 'x'.repeat(VALIDATION.taskTitle + 1)
       await expect(
-        insertTask({ id: 't1', projectId: 'p1', title: longTitle, desc: '', priority: 'medium', due: null, done: false, created: 1 })
+        insertTask({ id: 't1', projectId: 'p1', title: longTitle, purpose: 'P', desc: '', priority: 'medium', due: null, done: false, created: 1 })
       ).rejects.toThrow('文字以内にしてください')
     })
     it('updateTask throws when id or patch invalid', async () => {
@@ -552,7 +558,7 @@ describe('api', () => {
       const { VALIDATION } = await import('./constants')
       const longName = 'x'.repeat(VALIDATION.projectName + 1)
       await expect(
-        insertProject({ id: 'p1', name: longName, color: '#000', icon: '📁' })
+        insertProject({ id: 'p1', name: longName, purpose: 'P', color: '#000', icon: '📁' })
       ).rejects.toThrow('文字にしてください')
     })
   })

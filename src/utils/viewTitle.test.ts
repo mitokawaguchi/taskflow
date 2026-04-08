@@ -8,7 +8,7 @@ describe('getViewTitle', () => {
   it('プロジェクト・クライアント名を返す', () => {
     expect(
       getViewTitle('p:p1', {
-        projects: [{ id: 'p1', name: 'P1', color: '#000', icon: '📁', endDate: '', sortOrder: 0 }],
+        projects: [{ id: 'p1', name: 'P1', purpose: '目的', color: '#000', icon: '📁', endDate: '', sortOrder: 0 }],
         clients: [],
       })
     ).toBe('P1')

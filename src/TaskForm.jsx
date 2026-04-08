@@ -7,6 +7,7 @@ import CategoryPicker from './components/CategoryPicker'
 const DEFAULT_FORM = {
   title: '',
   desc: '',
+  purpose: '',
   priority: 'medium',
   projectId: '',
   startDate: '',
@@ -71,6 +72,10 @@ export default function TaskForm({ task, projects, templates, categories = [], u
         <div className="form-group">
           <label className="form-label">詳細</label>
           <textarea className="form-textarea" value={form.desc} onChange={e => set('desc', e.target.value)} placeholder="詳細メモ（任意）" />
+        </div>
+        <div className="form-group">
+          <label className="form-label">目的 *</label>
+          <textarea className="form-textarea" value={form.purpose} onChange={e => set('purpose', e.target.value)} placeholder="このタスクの目的を入力..." />
         </div>
         <div className="form-group">
           <label className="form-label">重要度</label>
@@ -140,10 +145,11 @@ export default function TaskForm({ task, projects, templates, categories = [], u
           <button
             className="btn btn-primary"
             onClick={() => {
-              if (!form.title.trim()) return
+              if (!form.title.trim() || !form.purpose.trim()) return
               const payload = {
                 title: truncateToMax(form.title, VALIDATION.taskTitle),
                 desc: truncateToMax(form.desc, VALIDATION.taskDesc),
+                purpose: truncateToMax(form.purpose, VALIDATION.taskPurpose),
                 priority: form.priority || 'medium',
                 projectId: form.projectId || null,
                 due: form.due && String(form.due).trim() ? String(form.due).trim() : null,
@@ -154,7 +160,7 @@ export default function TaskForm({ task, projects, templates, categories = [], u
               }
               onSave(payload)
             }}
-            disabled={!form.title.trim()}
+            disabled={!form.title.trim() || !form.purpose.trim()}
           >
             保存
           </button>

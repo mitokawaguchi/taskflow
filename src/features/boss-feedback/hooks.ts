@@ -19,6 +19,7 @@ function defaultForm(): BossFeedbackFormValues {
   return {
     category: 'その他',
     description: '',
+    purpose: '',
     exampleBefore: '',
     exampleAfter: '',
     projectName: '',
@@ -73,6 +74,7 @@ export function useBossFeedback(addToast: AddToast) {
     setForm({
       category: row.category,
       description: row.description,
+      purpose: row.purpose,
       exampleBefore: row.exampleBefore ?? '',
       exampleAfter: row.exampleAfter ?? '',
       projectName: row.projectName ?? '',
@@ -91,6 +93,7 @@ export function useBossFeedback(addToast: AddToast) {
     const payload = {
       category: v.category,
       description: v.description,
+      purpose: v.purpose,
       exampleBefore: v.exampleBefore || null,
       exampleAfter: v.exampleAfter || null,
       projectName: v.projectName || null,

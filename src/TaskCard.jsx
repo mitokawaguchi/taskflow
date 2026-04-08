@@ -22,6 +22,7 @@ export default function TaskCard({ task, projects, categories = [], users = [], 
           <span>{proj.name}</span>
         </div>
       )}
+      {task.purpose && <div className="card-purpose">目的: {task.purpose}</div>}
       <div className="card-header">
         <input
           type="checkbox"

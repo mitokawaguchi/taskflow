@@ -52,6 +52,7 @@ export function KanbanCardContent({ task, projects, categories = [], users = [],
             </div>
           )}
         </div>
+        {task.purpose && <div className="kanban-card__purpose">目的: {task.purpose}</div>}
         <div className="kanban-card__progress">
           <div className="kanban-card__progress-bar" style={{ width: `${progress}%` }} />
           <span className="kanban-card__progress-text">{progress}%</span>

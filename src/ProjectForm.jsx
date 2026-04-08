@@ -7,6 +7,7 @@ const COLORS  = ['#2d6b3f','#ff4560','#ff8c42','#ffd166','#06d6a0','#00b4d8','#e
 
 export default function ProjectForm({ project, onSave, onClose }) {
   const [name, setName] = useState(project?.name ?? '')
+  const [purpose, setPurpose] = useState(project?.purpose ?? '')
   const [icon, setIcon] = useState(project?.icon ?? '📁')
   const [color, setColor] = useState(project?.color ?? COLORS[0])
   const [endDate, setEndDate] = useState(project?.endDate ?? '')
@@ -14,6 +15,7 @@ export default function ProjectForm({ project, onSave, onClose }) {
   useEffect(() => {
     if (project) {
       setName(project.name)
+      setPurpose(project.purpose ?? '')
       setIcon(project.icon ?? '📁')
       setColor(project.color ?? COLORS[0])
       setEndDate(project.endDate ?? '')
@@ -43,6 +45,10 @@ export default function ProjectForm({ project, onSave, onClose }) {
           <label className="form-label">プロジェクト名 *</label>
           <input className="form-input" value={name} onChange={e => setName(e.target.value)} placeholder="プロジェクト名" autoFocus />
         </div>
+        <div className="form-group">
+          <label className="form-label">目的 *</label>
+          <textarea className="form-textarea" value={purpose} onChange={e => setPurpose(e.target.value)} placeholder="このプロジェクトの目的を入力..." />
+        </div>
 
         <div className="form-group">
           <label className="form-label">カラー</label>
@@ -71,7 +77,7 @@ export default function ProjectForm({ project, onSave, onClose }) {
 
         <div className="modal-actions">
           <button className="btn btn-ghost" onClick={onClose}>キャンセル</button>
-          <button className="btn btn-primary" onClick={() => { if (name.trim()) onSave({ name: truncateToMax(name, VALIDATION.projectName), icon, color, endDate: endDate || '' }) }} disabled={!name.trim()}>
+          <button className="btn btn-primary" onClick={() => { if (name.trim() && purpose.trim()) onSave({ name: truncateToMax(name, VALIDATION.projectName), purpose: truncateToMax(purpose, VALIDATION.projectPurpose), icon, color, endDate: endDate || '' }) }} disabled={!name.trim() || !purpose.trim()}>
             {isEdit ? '保存' : '作成'}
           </button>
         </div>
