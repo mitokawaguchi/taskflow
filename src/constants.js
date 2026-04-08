@@ -51,6 +51,20 @@ export function progressFromStatus(status) {
   return map[status] ?? 0
 }
 
+/** 表示・進捗算出用に task.status / done を列キーへ正規化 */
+export function normalizeTaskStatus(task) {
+  if (task && TASK_STATUS_KEYS.includes(task.status)) return task.status
+  if (task?.done) return 'done'
+  return 'todo'
+}
+
+/** DB 不正値対策: 状態キーからラベルを取得 */
+export function getStatusLabel(status) {
+  if (TASK_STATUS_KEYS.includes(status)) return TASK_STATUS[status].label
+  if (status != null && String(status)) return String(status)
+  return TASK_STATUS.todo.label
+}
+
 export const SORT_OPTIONS = [
   { key: 'priority', label: '重要度' },
   { key: 'due',      label: '期限' },

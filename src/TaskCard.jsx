@@ -1,7 +1,8 @@
-import { getPriorityLabel, getCategoryInfo } from './constants'
+import { getPriorityLabel, getCategoryInfo, getStatusLabel, normalizeTaskStatus } from './constants'
 import { isOverdue, isToday, isTomorrow, formatDate } from './utils'
 
 export default function TaskCard({ task, projects, categories = [], users = [], projectsMap, usersMap, onToggle, onClick }) {
+  const statusKey = normalizeTaskStatus(task)
   const categoryInfo = getCategoryInfo(task.category, categories)
   const proj = projectsMap ? projectsMap.get(task.projectId) : (projects || []).find(p => p.id === task.projectId)
   const assignee = task.assigneeId ? (usersMap ? usersMap.get(task.assigneeId) : (users || []).find(u => u.id === task.assigneeId)) : null
@@ -33,6 +34,12 @@ export default function TaskCard({ task, projects, categories = [], users = [], 
       </div>
       {task.desc && <div className="card-desc">{task.desc}</div>}
       <div className="card-footer">
+        <span
+          className={`status-badge status-badge--${statusKey}`}
+          title={`状態: ${getStatusLabel(statusKey)}`}
+        >
+          {getStatusLabel(statusKey)}
+        </span>
         {categoryInfo && (
           <span
             className="category-badge"

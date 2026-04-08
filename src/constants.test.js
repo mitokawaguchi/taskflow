@@ -3,6 +3,8 @@ import {
   PRIORITY,
   getPriorityLabel,
   getPriorityColor,
+  getStatusLabel,
+  normalizeTaskStatus,
   SORT_OPTIONS,
   priorityOrder,
   DEFAULT_PROJECTS,
@@ -47,6 +49,35 @@ describe('constants', () => {
     })
     it('returns medium color for unknown key', () => {
       expect(getPriorityColor('invalid')).toBe(PRIORITY.medium.color)
+    })
+  })
+
+  describe('getStatusLabel', () => {
+    it('returns label for valid key', () => {
+      expect(getStatusLabel('todo')).toBe('未着手')
+      expect(getStatusLabel('in_progress')).toBe('進行中')
+      expect(getStatusLabel('review')).toBe('レビュー中')
+      expect(getStatusLabel('done')).toBe('完了')
+    })
+    it('returns key as string for unknown key (DB 不正値対策)', () => {
+      expect(getStatusLabel('unknown')).toBe('unknown')
+    })
+    it('returns 未着手 for null/undefined', () => {
+      expect(getStatusLabel(null)).toBe('未着手')
+      expect(getStatusLabel(undefined)).toBe('未着手')
+    })
+  })
+
+  describe('normalizeTaskStatus', () => {
+    it('returns valid status key from task', () => {
+      expect(normalizeTaskStatus({ status: 'review', done: false })).toBe('review')
+    })
+    it('maps done to done when status missing', () => {
+      expect(normalizeTaskStatus({ done: true })).toBe('done')
+    })
+    it('falls back to todo', () => {
+      expect(normalizeTaskStatus({ status: 'invalid', done: false })).toBe('todo')
+      expect(normalizeTaskStatus({})).toBe('todo')
     })
   })
 

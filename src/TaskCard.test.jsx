@@ -54,6 +54,30 @@ describe('TaskCard', () => {
     expect(screen.getByText('中')).toBeInTheDocument()
   })
 
+  it('renders status label', () => {
+    render(
+      <TaskCard
+        task={defaultTask}
+        projects={defaultProjects}
+        onToggle={vi.fn()}
+        onClick={vi.fn()}
+      />
+    )
+    expect(screen.getByText('未着手')).toBeInTheDocument()
+  })
+
+  it('renders 進行中 when status is in_progress', () => {
+    render(
+      <TaskCard
+        task={{ ...defaultTask, status: 'in_progress' }}
+        projects={defaultProjects}
+        onToggle={vi.fn()}
+        onClick={vi.fn()}
+      />
+    )
+    expect(screen.getByText('進行中')).toBeInTheDocument()
+  })
+
   it('calls onClick when card is clicked', () => {
     const onClick = vi.fn()
     render(

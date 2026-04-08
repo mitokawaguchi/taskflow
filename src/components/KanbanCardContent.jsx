@@ -1,9 +1,10 @@
-import { getPriorityLabel, progressFromStatus, getCategoryInfo } from '../constants'
+import { getPriorityLabel, progressFromStatus, getCategoryInfo, getStatusLabel, normalizeTaskStatus } from '../constants'
 import { formatDate, isOverdue } from '../utils'
 
 export function KanbanCardContent({ task, projects, categories = [], users = [], projectsMap, usersMap, onToggleDone }) {
   const proj = projectsMap?.get(task.projectId) ?? projects?.find((p) => p.id === task.projectId)
-  const progress = task.progress != null ? task.progress : progressFromStatus(task.status)
+  const statusKey = normalizeTaskStatus(task)
+  const progress = task.progress != null ? task.progress : progressFromStatus(statusKey)
   const over = isOverdue(task.due)
   const categoryInfo = getCategoryInfo(task.category, categories)
   const assignee = task.assigneeId
@@ -32,6 +33,12 @@ export function KanbanCardContent({ task, projects, categories = [], users = [],
           </div>
         </div>
         <div className="kanban-card__meta-row">
+          <span
+            className={`status-badge status-badge--${statusKey}`}
+            title={`状態: ${getStatusLabel(statusKey)}`}
+          >
+            {getStatusLabel(statusKey)}
+          </span>
           {categoryInfo && (
             <span
               className="kanban-card__category"
