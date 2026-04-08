@@ -13,8 +13,11 @@ export function KanbanCardContent({ task, projects, categories = [], users = [],
 
   return (
     <>
-      <div className={`kanban-card__bar kanban-card__bar--${task.priority}`} />
+      <div className={`kanban-card__bar kanban-card__bar--${statusKey}`} aria-hidden="true" />
       <div className="kanban-card__body">
+        <span className="sr-only">
+          状態: {getStatusLabel(statusKey)}
+        </span>
         <div className="kanban-card__title-row">
           <input
             type="checkbox"
@@ -33,12 +36,6 @@ export function KanbanCardContent({ task, projects, categories = [], users = [],
           </div>
         </div>
         <div className="kanban-card__meta-row">
-          <span
-            className={`status-badge status-badge--${statusKey}`}
-            title={`状態: ${getStatusLabel(statusKey)}`}
-          >
-            {getStatusLabel(statusKey)}
-          </span>
           {categoryInfo && (
             <span
               className="kanban-card__category"

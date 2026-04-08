@@ -11,7 +11,13 @@ export default function TaskCard({ task, projects, categories = [], users = [], 
   const tom  = isTomorrow(task.due)
 
   return (
-    <div className={`task-card ${task.priority} ${task.done ? 'done' : ''}`} onClick={onClick}>
+    <div
+      className={`task-card ${task.priority} task-card--status-${statusKey} ${task.done ? 'done' : ''}`}
+      onClick={onClick}
+    >
+      <span className="sr-only">
+        状態: {getStatusLabel(statusKey)}
+      </span>
       {proj && (
         <div className="card-project-banner" style={{ background: `${proj.color}28`, color: proj.color, border: `1px solid ${proj.color}55` }}>
           <span>{proj.icon}</span>
@@ -34,12 +40,6 @@ export default function TaskCard({ task, projects, categories = [], users = [], 
       </div>
       {task.desc && <div className="card-desc">{task.desc}</div>}
       <div className="card-footer">
-        <span
-          className={`status-badge status-badge--${statusKey}`}
-          title={`状態: ${getStatusLabel(statusKey)}`}
-        >
-          {getStatusLabel(statusKey)}
-        </span>
         {categoryInfo && (
           <span
             className="category-badge"

@@ -54,7 +54,7 @@ describe('TaskCard', () => {
     expect(screen.getByText('中')).toBeInTheDocument()
   })
 
-  it('renders status label', () => {
+  it('exposes status for assistive tech (sr-only)', () => {
     render(
       <TaskCard
         task={defaultTask}
@@ -63,11 +63,11 @@ describe('TaskCard', () => {
         onClick={vi.fn()}
       />
     )
-    expect(screen.getByText('未着手')).toBeInTheDocument()
+    expect(screen.getByText('状態: 未着手')).toBeInTheDocument()
   })
 
-  it('renders 進行中 when status is in_progress', () => {
-    render(
+  it('applies status ribbon class for in_progress', () => {
+    const { container } = render(
       <TaskCard
         task={{ ...defaultTask, status: 'in_progress' }}
         projects={defaultProjects}
@@ -75,7 +75,7 @@ describe('TaskCard', () => {
         onClick={vi.fn()}
       />
     )
-    expect(screen.getByText('進行中')).toBeInTheDocument()
+    expect(container.querySelector('.task-card--status-in_progress')).toBeTruthy()
   })
 
   it('calls onClick when card is clicked', () => {
