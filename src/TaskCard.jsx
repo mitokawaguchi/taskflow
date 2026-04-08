@@ -1,4 +1,5 @@
-import { getPriorityLabel, getCategoryInfo, getStatusLabel, normalizeTaskStatus } from './constants'
+import { TaskStatusBadge } from './components/TaskStatusBadge'
+import { getPriorityLabel, getCategoryInfo, normalizeTaskStatus } from './constants'
 import { isOverdue, isToday, isTomorrow, formatDate } from './utils'
 
 export default function TaskCard({ task, projects, categories = [], users = [], projectsMap, usersMap, onToggle, onClick }) {
@@ -15,9 +16,6 @@ export default function TaskCard({ task, projects, categories = [], users = [], 
       className={`task-card ${task.priority} task-card--status-${statusKey} ${task.done ? 'done' : ''}`}
       onClick={onClick}
     >
-      <span className="sr-only">
-        状態: {getStatusLabel(statusKey)}
-      </span>
       {proj && (
         <div className="card-project-banner" style={{ background: `${proj.color}28`, color: proj.color, border: `1px solid ${proj.color}55` }}>
           <span>{proj.icon}</span>
@@ -40,6 +38,7 @@ export default function TaskCard({ task, projects, categories = [], users = [], 
       </div>
       {task.desc && <div className="card-desc">{task.desc}</div>}
       <div className="card-footer">
+        <TaskStatusBadge statusKey={statusKey} />
         {categoryInfo && (
           <span
             className="category-badge"

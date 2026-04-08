@@ -54,7 +54,7 @@ describe('TaskCard', () => {
     expect(screen.getByText('中')).toBeInTheDocument()
   })
 
-  it('exposes status for assistive tech (sr-only)', () => {
+  it('shows visible progress label (not color-only)', () => {
     render(
       <TaskCard
         task={defaultTask}
@@ -63,7 +63,8 @@ describe('TaskCard', () => {
         onClick={vi.fn()}
       />
     )
-    expect(screen.getByText('状態: 未着手')).toBeInTheDocument()
+    expect(screen.getByTitle('進捗: 未着手')).toBeInTheDocument()
+    expect(screen.getByText('未着手')).toBeInTheDocument()
   })
 
   it('applies status ribbon class for in_progress', () => {

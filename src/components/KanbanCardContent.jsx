@@ -1,4 +1,5 @@
-import { getPriorityLabel, progressFromStatus, getCategoryInfo, getStatusLabel, normalizeTaskStatus } from '../constants'
+import { TaskStatusBadge } from './TaskStatusBadge'
+import { getPriorityLabel, progressFromStatus, getCategoryInfo, normalizeTaskStatus } from '../constants'
 import { formatDate, isOverdue } from '../utils'
 
 export function KanbanCardContent({ task, projects, categories = [], users = [], projectsMap, usersMap, onToggleDone }) {
@@ -15,9 +16,6 @@ export function KanbanCardContent({ task, projects, categories = [], users = [],
     <>
       <div className={`kanban-card__bar kanban-card__bar--${statusKey}`} aria-hidden="true" />
       <div className="kanban-card__body">
-        <span className="sr-only">
-          状態: {getStatusLabel(statusKey)}
-        </span>
         <div className="kanban-card__title-row">
           <input
             type="checkbox"
@@ -36,6 +34,7 @@ export function KanbanCardContent({ task, projects, categories = [], users = [],
           </div>
         </div>
         <div className="kanban-card__meta-row">
+          <TaskStatusBadge statusKey={statusKey} />
           {categoryInfo && (
             <span
               className="kanban-card__category"

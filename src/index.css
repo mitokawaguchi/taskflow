@@ -25,8 +25,8 @@
   --low-border: rgba(37,99,235,0.35);
 
   /* タスクカード左リボン（進捗＝状態の色／面は優先度） */
-  --task-card-ribbon-width: 14px;
-  --task-card-ribbon-width-compact: 9px;
+  --task-card-ribbon-width: 18px;
+  --task-card-ribbon-width-compact: 11px;
   --task-card-ribbon-inner-gap: 8px;
 }
 
@@ -684,6 +684,71 @@ html.dark input.card-check:not(:checked):hover {
 .priority-badge.high { background: var(--high-bg); color: var(--high); }
 .priority-badge.medium { background: var(--medium-bg); color: var(--medium); }
 .priority-badge.low { background: var(--low-bg); color: var(--low); }
+
+/* 進捗フラグ（文字＋記号＋枠線の形で色以外も判別可能） */
+.task-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'Sora', sans-serif;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  max-width: 100%;
+}
+.task-status-badge__mark {
+  font-size: 11px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.task-status-badge__label { min-width: 0; }
+.task-status-badge--todo {
+  border-style: dashed;
+  background: rgba(100, 116, 139, 0.12);
+  color: #475569;
+}
+.task-status-badge--in_progress {
+  border-style: solid;
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+.task-status-badge--review {
+  border-style: dotted;
+  background: rgba(124, 58, 237, 0.12);
+  color: #6d28d9;
+}
+.task-status-badge--done {
+  border-style: double;
+  border-width: 2px;
+  padding: 1px 6px;
+  background: rgba(15, 118, 110, 0.12);
+  color: #0f766e;
+}
+html.dark .task-status-badge--todo {
+  background: rgba(148, 163, 184, 0.14);
+  color: #cbd5e1;
+}
+html.dark .task-status-badge--in_progress {
+  color: #86efac;
+}
+html.dark .task-status-badge--review {
+  background: rgba(167, 139, 250, 0.15);
+  color: #c4b5fd;
+}
+html.dark .task-status-badge--done {
+  color: #5eead4;
+}
+.cards-grid--compact .task-status-badge {
+  font-size: 9px;
+  padding: 1px 5px;
+  gap: 3px;
+}
+.cards-grid--compact .task-status-badge__mark { font-size: 9px; }
+.cards-grid--compact .task-status-badge--done { padding: 0 4px; }
 
 .due-badge {
   font-size: 14px;
@@ -1424,7 +1489,15 @@ html.dark .kanban-card__check:not(:checked):hover {
 }
 .kanban-card__title { font-size: 13px; font-weight: 600; line-height: 1.3; min-width: 0; }
 .kanban-card__title.done { text-decoration: line-through; color: var(--text-muted); }
-.kanban-card__meta-row { display: block; margin-bottom: 6px; min-width: 0; }
+.kanban-card__meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  min-width: 0;
+}
+.kanban-card__meta-row .task-status-badge { flex-shrink: 0; }
 .kanban-card__meta {
   font-size: 11px;
   min-width: 0;
@@ -1775,7 +1848,7 @@ html.dark .kanban-card__check:not(:checked):hover {
     max-width: none;
     scroll-snap-align: start;
   }
-  .kanban-card__body { padding: 0 6px; }
+  .kanban-card__body { padding: 0 6px 0 calc(var(--task-card-ribbon-width) + 6px); }
   .kanban-card__title { font-size: 12px; }
   .kanban-card__meta { font-size: 10px; }
   .kanban-card__footer { gap: 6px; }
