@@ -23,6 +23,11 @@
   --low: #2563eb;
   --low-bg: rgba(37,99,235,0.12);
   --low-border: rgba(37,99,235,0.35);
+
+  /* タスクカード左リボン（進捗＝状態の色／面は優先度） */
+  --task-card-ribbon-width: 14px;
+  --task-card-ribbon-width-compact: 9px;
+  --task-card-ribbon-inner-gap: 8px;
 }
 
 /* ダークモード（トップバーの切り替えで適用） */
@@ -524,14 +529,17 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
   grid-template-columns: 1fr;
   grid-template-rows: auto auto auto;
   gap: 4px;
-  padding: 6px 10px 6px 12px;
+  padding: 6px 10px 6px calc(var(--task-card-ribbon-width-compact) + 6px);
   border-radius: 8px;
   min-height: 0;
   align-items: start;
   padding-right: 12px;
   padding-bottom: 8px;
 }
-.cards-grid--compact .task-card::before { width: 5px; border-radius: 8px 0 0 8px; }
+.cards-grid--compact .task-card::before {
+  width: var(--task-card-ribbon-width-compact);
+  border-radius: 8px 0 0 8px;
+}
 .cards-grid--compact .task-card:hover { transform: none; }
 .cards-grid--compact .card-project-banner {
   grid-column: 1;
@@ -566,6 +574,7 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 16px;
+  padding-left: calc(var(--task-card-ribbon-width) + var(--task-card-ribbon-inner-gap));
   cursor: pointer;
   transition: all 0.18s;
   position: relative;
@@ -585,10 +594,10 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 .task-card::before {
   content: '';
   position: absolute; left: 0; top: 0; bottom: 0;
-  width: 8px;
+  width: var(--task-card-ribbon-width);
   border-radius: 8px 0 0 8px;
 }
-/* 左リボン = タスク状態（背景・枠は優先度） */
+/* 左リボン = 進捗（状態）の色。面・枠は優先度 */
 .task-card--status-todo::before { background: #64748b; }
 .task-card--status-in_progress::before { background: var(--accent); }
 .task-card--status-review::before { background: #7c3aed; }
@@ -1355,10 +1364,10 @@ html.dark select.input {
   left: 0;
   top: 0;
   bottom: 0;
-  width: 8px;
+  width: var(--task-card-ribbon-width);
   border-radius: 8px 0 0 8px;
 }
-/* 左リボン = タスク状態（カード面は優先度色なし・列で文脈補完） */
+/* 左リボン = 進捗（状態）。カード面は優先度、列でも文脈補完 */
 .kanban-card__bar--todo { background: #64748b; }
 .kanban-card__bar--in_progress { background: var(--accent); }
 .kanban-card__bar--review { background: #7c3aed; }
@@ -1367,7 +1376,10 @@ html.dark .kanban-card__bar--todo { background: #94a3b8; }
 html.dark .kanban-card__bar--in_progress { background: #4ade80; }
 html.dark .kanban-card__bar--review { background: #a78bfa; }
 html.dark .kanban-card__bar--done { background: #2dd4bf; }
-.kanban-card__body { position: relative; padding: 0 10px 0 10px; }
+.kanban-card__body {
+  position: relative;
+  padding: 0 10px 0 calc(var(--task-card-ribbon-width) + var(--task-card-ribbon-inner-gap));
+}
 .kanban-card__title-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
 .kanban-card__check {
   width: 18px;
@@ -1421,7 +1433,7 @@ html.dark .kanban-card__check:not(:checked):hover {
   overflow-wrap: anywhere;
 }
 .kanban-card__progress {
-  height: 6px;
+  height: 4px;
   background: var(--surface3);
   border-radius: 3px;
   margin-bottom: 8px;
@@ -1433,6 +1445,7 @@ html.dark .kanban-card__check:not(:checked):hover {
   background: var(--accent);
   border-radius: 3px;
   transition: width 0.3s;
+  opacity: 0.88;
 }
 .kanban-card__progress-text { font-size: 10px; color: var(--text-muted); }
 .kanban-card__footer {
