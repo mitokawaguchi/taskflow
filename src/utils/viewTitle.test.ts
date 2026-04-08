@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { getViewTitle } from './viewTitle'
 
+/** 空配列だけの opts（未解決 ID の挙動用） */
 const emptyOpts = { projects: [], clients: [] }
 
 describe('getViewTitle', () => {
@@ -17,5 +18,10 @@ describe('getViewTitle', () => {
         clients: [{ id: 'c1', name: 'C1', color: '#000', icon: '🤝' }],
       })
     ).toBe('C1')
+  })
+
+  it('ID が一致しないときプロジェクト名は空・クライアントはフォールバック文言', () => {
+    expect(getViewTitle('p:missing', emptyOpts)).toBe('')
+    expect(getViewTitle('c:missing', emptyOpts)).toBe('クライアント')
   })
 })
