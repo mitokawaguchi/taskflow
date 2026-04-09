@@ -1,3 +1,4 @@
+import { TaskPurposePanel } from './components/TaskPurposePanel'
 import { TaskStatusBadge } from './components/TaskStatusBadge'
 import { getPriorityLabel, getCategoryInfo, normalizeTaskStatus } from './constants'
 import { isOverdue, isToday, isTomorrow, formatDate } from './utils'
@@ -22,7 +23,7 @@ export default function TaskCard({ task, projects, categories = [], users = [], 
           <span>{proj.name}</span>
         </div>
       )}
-      {task.purpose && <div className="card-purpose">目的: {task.purpose}</div>}
+      <TaskPurposePanel purpose={task.purpose} variant="list" />
       <div className="card-header">
         <input
           type="checkbox"

@@ -45,7 +45,7 @@ export default function ProjectForm({ project, onSave, onClose }) {
           <label className="form-label">プロジェクト名 *</label>
           <input className="form-input" value={name} onChange={e => setName(e.target.value)} placeholder="プロジェクト名" autoFocus />
         </div>
-        <div className="form-group">
+        <div className="form-group form-group--purpose-emphasis">
           <label className="form-label">目的 *</label>
           <textarea className="form-textarea" value={purpose} onChange={e => setPurpose(e.target.value)} placeholder="このプロジェクトの目的を入力..." />
         </div>
