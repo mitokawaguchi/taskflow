@@ -9,6 +9,7 @@ import ProjectsOverview from './ProjectsOverview'
 import TemplatesListView from './TemplatesListView'
 import BossFeedbackScreen from '../features/boss-feedback/BossFeedbackScreen'
 import MailTrackerScreen from '../features/mail-tracker/MailTrackerScreen'
+import MaterialsLibraryPage from '../features/materials/MaterialsLibraryPage'
 
 export default function ContentArea({
   view,
@@ -153,6 +154,9 @@ export default function ContentArea({
   }
   if (view === 'mail-tracker') {
     return <MailTrackerScreen addToast={addToast} />
+  }
+  if (view === 'materials') {
+    return <MaterialsLibraryPage />
   }
   return null
 }

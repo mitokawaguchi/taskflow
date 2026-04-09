@@ -188,6 +188,16 @@ export default function Sidebar({
         >
           <span className="icon">🏷</span>カテゴリ
         </button>
+        <button
+          type="button"
+          className={`sidebar-item ${view === 'materials' ? 'active' : ''}`}
+          onClick={() => {
+            setView('materials')
+            setSidebarOpen(false)
+          }}
+        >
+          <span className="icon">📚</span>教材集
+        </button>
       </div>
 
       <div className="sidebar-footer">

@@ -2481,3 +2481,188 @@ html.dark .notes-screen__lead--readonly { border-color: rgba(58, 143, 82, 0.45);
 @media (max-width: 768px) {
   .notes-editor-shell { margin: -16px -18px; width: calc(100% + 36px); }
 }
+
+/* 教材集（PDF ビューア） */
+.materials-library {
+  display: flex;
+  gap: 0;
+  min-height: calc(100dvh - 120px);
+  margin: -24px -28px;
+  width: calc(100% + 56px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.materials-library__aside {
+  width: min(320px, 38vw);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  background: var(--bg);
+}
+.materials-library__aside-head {
+  padding: 16px 14px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.materials-library__heading {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+.materials-library__sub {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+.materials-library__list {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+  flex: 1;
+  overflow-y: auto;
+}
+.materials-library__list li { margin: 0 0 6px; }
+.materials-library__item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.materials-library__item:hover {
+  background: var(--surface3);
+}
+.materials-library__item--active {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+  box-shadow: 0 0 0 1px var(--accent-glow);
+}
+.materials-library__series {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: none;
+}
+.materials-library__doc-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+.materials-library__file {
+  font-size: 12px;
+  color: var(--text-muted);
+  word-break: break-all;
+}
+.materials-library__aside-foot {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+}
+.materials-library__add { width: 100%; }
+.materials-library__viewer {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 480px;
+}
+.materials-library__viewer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.materials-library__viewer-title {
+  font-size: 14px;
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.materials-library__iframe {
+  flex: 1;
+  width: 100%;
+  min-height: 420px;
+  border: none;
+  background: var(--bg);
+}
+.materials-library__empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  color: var(--text-muted);
+}
+.materials-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.materials-modal {
+  max-width: 440px;
+  width: 100%;
+  padding: 20px 22px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+}
+.materials-modal__title {
+  margin: 0 0 10px;
+  font-size: 17px;
+  font-weight: 700;
+}
+.materials-modal__p {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+.materials-modal__ol {
+  margin: 0 0 16px;
+  padding-left: 1.25rem;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text);
+}
+.materials-modal__code {
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--surface3);
+  color: var(--text);
+}
+.materials-modal__actions { display: flex; justify-content: flex-end; }
+@media (max-width: 768px) {
+  .materials-library {
+    flex-direction: column;
+    margin: -16px -18px;
+    width: calc(100% + 36px);
+    min-height: auto;
+  }
+  .materials-library__aside { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+  .materials-library__iframe { min-height: 60vh; }
+}

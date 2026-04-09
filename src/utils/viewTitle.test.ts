@@ -24,4 +24,8 @@ describe('getViewTitle', () => {
     expect(getViewTitle('p:missing', emptyOpts)).toBe('')
     expect(getViewTitle('c:missing', emptyOpts)).toBe('クライアント')
   })
+
+  it('教材集', () => {
+    expect(getViewTitle('materials', emptyOpts)).toBe('教材集')
+  })
 })
