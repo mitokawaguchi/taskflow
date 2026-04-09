@@ -33,7 +33,8 @@ describe('TaskForm', () => {
     expect(screen.getByText('タスクを編集')).toBeInTheDocument()
   })
 
-  it('save button is disabled when title or purpose is empty', () => {
+  it('shows validation toast callback when save clicked without title', () => {
+    const onNotifyValidation = vi.fn()
     render(
       <TaskForm
         task={null}
@@ -41,17 +42,37 @@ describe('TaskForm', () => {
         templates={[]}
         onSave={vi.fn()}
         onClose={vi.fn()}
+        onNotifyValidation={onNotifyValidation}
       />
     )
-    const saveBtn = screen.getByRole('button', { name: '保存' })
-    expect(saveBtn).toBeDisabled()
+    fireEvent.click(screen.getByRole('button', { name: '保存' }))
+    expect(onNotifyValidation).toHaveBeenCalledWith('タスク名を入力してください')
   })
 
-  it('calls onSave with form when title filled and save clicked', () => {
-    const onSave = vi.fn()
+  it('shows validation when purpose empty but title filled', () => {
+    const onNotifyValidation = vi.fn()
     render(
       <TaskForm
         task={null}
+        projects={defaultProjects}
+        templates={[]}
+        onSave={vi.fn()}
+        onClose={vi.fn()}
+        onNotifyValidation={onNotifyValidation}
+      />
+    )
+    fireEvent.change(screen.getByPlaceholderText('タスク名を入力...'), {
+      target: { value: 'タイトルのみ' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: '保存' }))
+    expect(onNotifyValidation).toHaveBeenCalledWith('目的は必須です')
+  })
+
+  it('calls onSave with form when required fields and dates filled (new task)', () => {
+    const onSave = vi.fn()
+    render(
+      <TaskForm
+        task={{ projectId: 'p1', startDate: '2026-04-01', due: '2026-04-10' }}
         projects={defaultProjects}
         templates={[]}
         onSave={onSave}

@@ -5,7 +5,7 @@ import { VALIDATION, truncateToMax } from './constants'
 const ICONS   = ['📁','🏢','🤝','⚡','🎯','💡','🔬','🎨','🚀','📊','🏗','💼']
 const COLORS  = ['#2d6b3f','#ff4560','#ff8c42','#ffd166','#06d6a0','#00b4d8','#e040fb']
 
-export default function ProjectForm({ project, onSave, onClose }) {
+export default function ProjectForm({ project, onSave, onClose, onNotifyValidation }) {
   const [name, setName] = useState(project?.name ?? '')
   const [purpose, setPurpose] = useState(project?.purpose ?? '')
   const [icon, setIcon] = useState(project?.icon ?? '📁')
@@ -76,8 +76,28 @@ export default function ProjectForm({ project, onSave, onClose }) {
         </div>
 
         <div className="modal-actions">
-          <button className="btn btn-ghost" onClick={onClose}>キャンセル</button>
-          <button className="btn btn-primary" onClick={() => { if (name.trim() && purpose.trim()) onSave({ name: truncateToMax(name, VALIDATION.projectName), purpose: truncateToMax(purpose, VALIDATION.projectPurpose), icon, color, endDate: endDate || '' }) }} disabled={!name.trim() || !purpose.trim()}>
+          <button type="button" className="btn btn-ghost" onClick={onClose}>キャンセル</button>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => {
+              if (!name.trim()) {
+                onNotifyValidation?.('プロジェクト名を入力してください')
+                return
+              }
+              if (!purpose.trim()) {
+                onNotifyValidation?.('目的は必須です')
+                return
+              }
+              onSave({
+                name: truncateToMax(name, VALIDATION.projectName),
+                purpose: truncateToMax(purpose, VALIDATION.projectPurpose),
+                icon,
+                color,
+                endDate: endDate || '',
+              })
+            }}
+          >
             {isEdit ? '保存' : '作成'}
           </button>
         </div>

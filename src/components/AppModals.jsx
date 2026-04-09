@@ -65,10 +65,16 @@ export default function AppModals({
           users={usersForTaskForm}
           onSave={onSaveTask}
           onClose={onCloseTaskForm}
+          onNotifyValidation={(detail) => addToast('❌', '保存できませんでした', detail)}
         />
       )}
       {showProjForm && (
-        <ProjectForm project={editProject} onSave={onSaveProject} onClose={onCloseProjForm} />
+        <ProjectForm
+          project={editProject}
+          onSave={onSaveProject}
+          onClose={onCloseProjForm}
+          onNotifyValidation={(detail) => addToast('❌', '保存できませんでした', detail)}
+        />
       )}
       {showTplForm && (
         <TemplateForm

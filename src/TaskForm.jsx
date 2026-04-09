@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { PRIORITY, TASK_STATUS, TASK_STATUS_KEYS, VALIDATION, truncateToMax, categoriesToOptions } from './constants'
+import { PRIORITY, TASK_STATUS, TASK_STATUS_KEYS, categoriesToOptions } from './constants'
+import { buildTaskSavePayload, getTaskFormValidationMessage } from './utils/taskFormSubmit'
 import { formatDate, isToday, isTomorrow } from './utils'
 import CalendarPicker from './CalendarPicker'
 import CategoryPicker from './components/CategoryPicker'
@@ -51,10 +52,19 @@ function getInitialTaskForm(task, projects) {
   return { ...DEFAULT_FORM, projectId: defaultProjectId }
 }
 
-export default function TaskForm({ task, projects, templates, categories = [], users = [], onSave, onClose }) {
+export default function TaskForm({ task, projects, templates, categories = [], users = [], onSave, onClose, onNotifyValidation }) {
   const categoryOptions = categoriesToOptions(categories)
   const [form, setForm] = useState(() => getInitialTaskForm(task, projects))
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
+
+  const handleSave = () => {
+    const err = getTaskFormValidationMessage(form, Boolean(task?.id))
+    if (err) {
+      onNotifyValidation?.(err)
+      return
+    }
+    onSave(buildTaskSavePayload(form))
+  }
 
   const applyTemplate = (t) => setForm(f => ({ ...f, title: t.title, desc: t.desc, priority: t.priority }))
 
@@ -157,34 +167,7 @@ export default function TaskForm({ task, projects, templates, categories = [], u
         <TaskFormDeepThinking form={form} set={set} />
         <div className="modal-actions">
           <button className="btn btn-ghost" onClick={onClose}>キャンセル</button>
-          <button
-            className="btn btn-primary"
-            onClick={() => {
-              if (!form.title.trim() || !form.purpose.trim()) return
-              const hyp = form.hypothesis != null && String(form.hypothesis).trim()
-                ? truncateToMax(String(form.hypothesis).trim(), VALIDATION.taskHypothesis)
-                : null
-              const payload = {
-                title: truncateToMax(form.title, VALIDATION.taskTitle),
-                desc: truncateToMax(form.desc, VALIDATION.taskDesc),
-                purpose: truncateToMax(form.purpose, VALIDATION.taskPurpose),
-                priority: form.priority || 'medium',
-                projectId: form.projectId || null,
-                due: form.due && String(form.due).trim() ? String(form.due).trim() : null,
-                startDate: form.startDate && String(form.startDate).trim() ? String(form.startDate).trim() : null,
-                status: form.status || 'todo',
-                category: form.category && String(form.category).trim() ? form.category : null,
-                assigneeId: form.assigneeId && String(form.assigneeId).trim() ? form.assigneeId : null,
-                hypothesis: hyp,
-                timeboxMinutes: form.timeboxMinutes != null && Number.isFinite(form.timeboxMinutes) && form.timeboxMinutes > 0
-                  ? form.timeboxMinutes
-                  : null,
-                premortemRisks: Array.isArray(form.premortemRisks) ? form.premortemRisks : [],
-              }
-              onSave(payload)
-            }}
-            disabled={!form.title.trim() || !form.purpose.trim()}
-          >
+          <button type="button" className="btn btn-primary" onClick={handleSave}>
             保存
           </button>
         </div>
