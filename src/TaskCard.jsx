@@ -29,6 +29,7 @@ export default function TaskCard({ task, projects, categories = [], users = [], 
           type="checkbox"
           className={`card-check ${task.done ? 'checked' : ''}`}
           checked={!!task.done}
+          onPointerDown={(e) => e.stopPropagation()}
           onChange={e => { e.stopPropagation(); onToggle(task.id) }}
           onClick={e => e.stopPropagation()}
           aria-label={`${task.title}を${task.done ? '未完了に' : '完了に'}する`}

@@ -5,8 +5,7 @@ const SIDEBAR_MENU_ITEMS = [
   { key: 'projects', icon: '📁', label: 'プロジェクト' },
   { key: 'all', icon: '📋', label: 'すべてのタスク' },
   { key: 'week-tasks', icon: '📆', label: '今週タスク', badgeKey: 'todayCount' },
-  { key: 'daily-today', icon: '☀️', label: '今日' },
-  { key: 'daily-tomorrow', icon: '🌅', label: '明日' },
+  { key: 'daily-today', icon: '☀️', label: '今日・明日', isDailyPlanner: true },
   { key: 'overdue', icon: '🚨', label: '期限超過', badgeKey: 'overdueCount' },
   { key: 'kanban', icon: '📌', label: 'カンバン' },
   { key: 'dashboard', icon: '📊', label: 'ダッシュボード' },
@@ -74,11 +73,15 @@ export default function Sidebar({
         {SIDEBAR_MENU_ITEMS.map((item) => {
           const badge = item.badgeKey === 'todayCount' ? todayCount : item.badgeKey === 'overdueCount' ? overdueCount : 0
           const allTaskCount = item.key === 'all' ? tasks.filter((t) => !t.done).length : null
+          const isActive =
+            item.isDailyPlanner === true
+              ? view === 'daily-today' || view === 'daily-tomorrow'
+              : view === item.key
           return (
             <button
               key={item.key}
               type="button"
-              className={`sidebar-item ${view === item.key ? 'active' : ''}`}
+              className={`sidebar-item ${isActive ? 'active' : ''}`}
               onClick={() => {
                 setView(item.key)
                 setSidebarOpen(false)

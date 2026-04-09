@@ -8,11 +8,14 @@ export function SortableRow({ id, task, projects, categories, users, projectsMap
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }
   return (
-    <div ref={setNodeRef} style={style} className="daily-planner__rank-row">
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="daily-planner__rank-row"
+      {...listeners}
+      {...attributes}
+    >
       <span className="daily-planner__rank-label">{label}</span>
-      <button type="button" className="daily-planner__drag-h" {...listeners} {...attributes} aria-label="並び替え">
-        ⋮⋮
-      </button>
       <div className="daily-planner__card-wrap">
         <TaskCard
           task={task}
@@ -37,10 +40,9 @@ export function PoolDraggable({ task, projects, categories, users, projectsMap, 
       ref={setNodeRef}
       style={style}
       className={`daily-planner__pool-card ${isDragging ? 'daily-planner__pool-card--drag' : ''}`}
+      {...listeners}
+      {...attributes}
     >
-      <button type="button" className="daily-planner__drag-h" {...listeners} {...attributes} aria-label="ドラッグ">
-        ⋮⋮
-      </button>
       <TaskCard
         task={task}
         projects={projects}

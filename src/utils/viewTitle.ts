@@ -9,8 +9,7 @@ type ViewTitleOpts = {
 export function getViewTitle(view: string, opts: ViewTitleOpts): string {
   if (view === 'all') return 'すべてのタスク'
   if (view === 'week-tasks') return '今週タスク'
-  if (view === 'daily-today') return '今日の予定'
-  if (view === 'daily-tomorrow') return '明日の予定'
+  if (view === 'daily-today' || view === 'daily-tomorrow') return '今日・明日'
   if (view === 'overdue') return '期限超過'
   if (view === 'kanban') return 'カンバン'
   if (view === 'dashboard') return 'ダッシュボード'

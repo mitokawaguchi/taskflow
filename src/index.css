@@ -2984,26 +2984,24 @@ html.dark .notes-screen__lead--readonly { border-color: rgba(58, 143, 82, 0.45);
 }
 .daily-planner__rank-row {
   display: grid;
-  grid-template-columns: 28px 28px 1fr;
+  grid-template-columns: 28px 1fr;
   align-items: start;
   gap: 8px;
+  cursor: grab;
+  touch-action: none;
+}
+.daily-planner__rank-row:active {
+  cursor: grabbing;
 }
 .daily-planner__rank-label {
   font-weight: 700;
   font-size: 14px;
   color: var(--accent);
   padding-top: 6px;
-}
-.daily-planner__drag-h {
-  padding: 4px;
-  border: none;
-  background: transparent;
-  cursor: grab;
-  color: var(--text-muted);
-  line-height: 1;
+  user-select: none;
 }
 .daily-planner__card-wrap .task-card {
-  cursor: default;
+  cursor: grab;
 }
 .daily-planner__pool-title {
   margin: 0 0 12px;
@@ -3020,18 +3018,17 @@ html.dark .notes-screen__lead--readonly { border-color: rgba(58, 143, 82, 0.45);
 }
 .daily-planner__pool-card {
   position: relative;
+  cursor: grab;
+  touch-action: none;
+}
+.daily-planner__pool-card:active {
+  cursor: grabbing;
 }
 .daily-planner__pool-card--drag {
   opacity: 0.6;
 }
-.daily-planner__pool-card .daily-planner__drag-h {
-  position: absolute;
-  top: 6px;
-  left: 6px;
-  z-index: 2;
-}
 .daily-planner__pool-card .task-card {
-  padding-left: 36px;
+  cursor: grab;
 }
 .daily-planner__pool-drop {
   margin-top: 12px;
