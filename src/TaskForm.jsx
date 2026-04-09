@@ -70,12 +70,12 @@ export default function TaskForm({ task, projects, templates, categories = [], u
           <input className="form-input" value={form.title} onChange={e => set('title', e.target.value)} placeholder="タスク名を入力..." autoFocus />
         </div>
         <div className="form-group">
-          <label className="form-label">詳細</label>
-          <textarea className="form-textarea" value={form.desc} onChange={e => set('desc', e.target.value)} placeholder="詳細メモ（任意）" />
-        </div>
-        <div className="form-group">
           <label className="form-label">目的 *</label>
           <textarea className="form-textarea" value={form.purpose} onChange={e => set('purpose', e.target.value)} placeholder="このタスクの目的を入力..." />
+        </div>
+        <div className="form-group">
+          <label className="form-label">詳細</label>
+          <textarea className="form-textarea" value={form.desc} onChange={e => set('desc', e.target.value)} placeholder="詳細メモ（任意）" />
         </div>
         <div className="form-group">
           <label className="form-label">重要度</label>
