@@ -2,7 +2,17 @@
  * ARCH-001: App.jsx 200行以下化のためデータ取得・state・load 効果を集約
  */
 import { useState, useEffect } from 'react'
-import { fetchProjects, fetchTasks, fetchTemplates, fetchRemember, fetchClients, fetchCategories, fetchUsers, updateTask } from '../api'
+import {
+  fetchProjects,
+  fetchTasks,
+  fetchTemplates,
+  fetchRemember,
+  fetchClients,
+  fetchCategories,
+  fetchUsers,
+  updateTask,
+  fetchWeeklyReviews,
+} from '../api'
 import { isOverdue } from '../utils'
 
 export function useAppData(authUser, addToast) {
@@ -14,6 +24,7 @@ export function useAppData(authUser, addToast) {
   const [loading, setLoading] = useState(true)
   const [categories, setCategories] = useState([])
   const [users, setUsers] = useState([])
+  const [weeklyReviews, setWeeklyReviews] = useState([])
 
   useEffect(() => {
     if (!authUser) {
@@ -43,6 +54,14 @@ export function useAppData(authUser, addToast) {
         } catch (e) {
           if (!cancelled) addToast('⚠️', '担当者の読み込みに失敗しました', e?.message ?? '')
         }
+        let wrevs = []
+        try {
+          wrevs = await fetchWeeklyReviews()
+        } catch (e) {
+          if (!cancelled && import.meta.env?.DEV) {
+            console.warn('weekly_reviews:', e?.message ?? e)
+          }
+        }
         if (!cancelled) {
           let tasksToSet = ts
           const overdueNotCritical = ts.filter((t) => !t.done && isOverdue(t.due) && t.priority !== 'critical')
@@ -61,6 +80,7 @@ export function useAppData(authUser, addToast) {
           setRemembers(rems)
           setCategories(cats)
           setUsers(usrs)
+          setWeeklyReviews(wrevs)
         }
       } catch (e) {
         if (!cancelled) addToast('❌', '読み込みエラー', e?.message ?? 'データを取得できませんでした')
@@ -91,5 +111,7 @@ export function useAppData(authUser, addToast) {
     setUsers,
     loading,
     setLoading,
+    weeklyReviews,
+    setWeeklyReviews,
   }
 }

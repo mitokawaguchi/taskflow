@@ -98,7 +98,9 @@ export default function App() {
                   filterPriorityFrom={app.filterPriorityFrom} setFilterPriorityFrom={app.setFilterPriorityFrom}
                   filterPriorityTo={app.filterPriorityTo} setFilterPriorityTo={app.setFilterPriorityTo}
                   sort={app.sort} setSort={app.setSort} sortedTasks={app.sortedTasks} taskFiltersClear={app.taskFiltersClear}
-                  onAddTask={() => app.setShowTaskForm(true)} onEditTask={(t) => { app.setEditTask(t); app.setShowTaskForm(true) }} onToggleTask={app.toggleTask}
+                  onAddTask={() => app.setShowTaskForm(true)} onEditTask={(t) => { app.setEditTask(t); app.setShowTaskForm(true) }}                   onToggleTask={app.toggleTask}
+                  patchTask={app.patchTask}
+                  weeklyReviews={app.weeklyReviews}
                 />
               ) : (
                 <ContentArea
@@ -114,6 +116,7 @@ export default function App() {
                   renderProjectCard={app.renderProjectCard} openTaskFormForProject={app.openTaskFormForProject}
                   templates={app.templates} setEditTemplate={app.setEditTemplate} setShowTplForm={app.setShowTplForm}
                   theme={app.theme}
+                  setWeeklyReviews={app.setWeeklyReviews}
                 />
               )}
             </div>
@@ -134,6 +137,10 @@ export default function App() {
         users={app.users} setUsers={app.setUsers} notifyReminderEnabled={app.notifyReminderEnabled} setNotifyReminderEnabled={app.setNotifyReminderEnabled}
         addToast={app.addToast} showProfileModal={app.showProfileModal} authUser={app.authUser}
         onCloseProfile={() => app.setShowProfileModal(false)} setAuthUser={app.setAuthUser} toasts={app.toasts}
+        completeNextTask={app.completeNextTask}
+        onCompleteNextSkip={app.onCompleteNextSkip}
+        onCompleteNextCreate={app.onCompleteNextCreate}
+        onCompleteNextCancel={app.onCompleteNextCancel}
       />
     </>
   )

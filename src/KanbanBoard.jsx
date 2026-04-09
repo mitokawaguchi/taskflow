@@ -16,8 +16,19 @@ export default function KanbanBoard({
   onEditTask,
   onAddTask,
   onToggleTask,
+  onPatchTask,
 }) {
   const dragProcessedRef = useRef(null)
+  const [highlightTaskId, setHighlightTaskId] = useState(null)
+
+  const tasksById = useMemo(() => new Map(tasks.map((t) => [t.id, t])), [tasks])
+
+  const scrollToTask = useCallback((id) => {
+    const el = document.querySelector(`[data-kanban-task-id="${id}"]`)
+    el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    setHighlightTaskId(id)
+    setTimeout(() => setHighlightTaskId(null), 2200)
+  }, [])
 
   const columns = useMemo(() => {
     const map = { todo: [], in_progress: [], review: [], done: [] }
@@ -88,6 +99,10 @@ export default function KanbanBoard({
                 usersMap={usersMap}
                 onClick={onEditTask}
                 onToggleDone={onToggleTask}
+                tasksById={tasksById}
+                onPatchTask={onPatchTask}
+                onScrollToTask={scrollToTask}
+                isHighlighted={highlightTaskId === t.id}
               />
             ))}
           </DroppableColumn>

@@ -3,6 +3,9 @@
 export type PriorityKey = 'critical' | 'high' | 'medium' | 'low'
 export type StatusKey = 'todo' | 'in_progress' | 'review' | 'done'
 
+/** プレモーテム1件（JSONB premortem_risks） */
+export type PremortemRiskItem = { text: string }
+
 export interface Task {
   id: string
   title: string
@@ -18,6 +21,36 @@ export interface Task {
   category: string | null
   assigneeId: string | null
   created: number
+  /** 外コンOS: まず答えを置く */
+  hypothesis: string | null
+  /** 分 */
+  timeboxMinutes: number | null
+  premortemRisks: PremortemRiskItem[]
+  nextTaskId: string | null
+  completedAt: string | null
+  timerStartedAt: string | null
+}
+
+/** 週次レビュー 1 行 */
+export interface WeeklyReview {
+  id: string
+  ownerId: string
+  weekStart: string
+  weekEnd: string
+  topAchievements: unknown[]
+  wastedEfforts: unknown[]
+  hypothesisResults: HypothesisResultItem[]
+  nextWeekFocus: unknown[]
+  growthNote: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export type HypothesisResultItem = {
+  hypothesis: string
+  result: 'hit' | 'miss' | 'partial'
+  learning?: string
+  taskId?: string
 }
 
 export interface Project {

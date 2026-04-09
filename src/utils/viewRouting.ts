@@ -15,6 +15,7 @@ export function getViewFromPathname(pathname: string): string {
   if (pathname === '/boss-feedback') return 'boss-feedback'
   if (pathname === '/mail-tracker') return 'mail-tracker'
   if (pathname === '/materials' || pathname.startsWith('/materials/')) return 'materials'
+  if (pathname === '/weekly-review') return 'weekly-review'
   const pMatch = pathname.match(/^\/projects\/([^/]+)/)
   if (pMatch) return `p:${pMatch[1]}`
   const cMatch = pathname.match(/^\/clients\/([^/]+)/)
@@ -37,6 +38,7 @@ export function navigateToView(navigate: NavigateFunction, v: string): void {
   else if (v === 'boss-feedback') navigate('/boss-feedback')
   else if (v === 'mail-tracker') navigate('/mail-tracker')
   else if (v === 'materials') navigate('/materials')
+  else if (v === 'weekly-review') navigate('/weekly-review')
   else if (v.startsWith('p:')) navigate(`/projects/${v.slice(2)}`)
   else if (v.startsWith('c:')) navigate(`/clients/${v.slice(2)}`)
   else navigate('/')

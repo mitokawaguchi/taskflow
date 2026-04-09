@@ -4,7 +4,8 @@
 import { useCallback, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
-import { priorityOrder, VIEW_TABS } from '../constants'
+import { priorityOrder, VIEW_TABS, VALIDATION } from '../constants'
+import { insertTask, updateTask } from '../api'
 import { useTaskFilters } from './useTaskFilters'
 import { useTaskActions } from './useTaskActions'
 import { useProjectActions } from './useProjectActions'
@@ -26,7 +27,84 @@ export function useAppHandlers(data, ui, authUser) {
   const taskFilters = useTaskFilters(tasks, view, ui.showDone, ui.searchQuery)
   const { sort, setSort, filterProjectIds, setFilterProjectIds, filterPriorities, setFilterPriorities, filterDueFrom, setFilterDueFrom, filterDueTo, setFilterDueTo, filterPriorityFrom, setFilterPriorityFrom, filterPriorityTo, setFilterPriorityTo, filterOpen, setFilterOpen, filterAssigneeId, setFilterAssigneeId, hasAnyFilter, sortedTasks, clearFilters: taskFiltersClear } = taskFilters
 
-  const { saveTask, toggleTask, moveTaskStatus } = useTaskActions(tasks, setTasks, ui.addToast, ui.editTask, ui.closeTaskForm)
+  const { saveTask, toggleTask, moveTaskStatus } = useTaskActions(
+    tasks,
+    setTasks,
+    ui.addToast,
+    ui.editTask,
+    ui.closeTaskForm,
+    ui.setCompleteNextTask
+  )
+
+  const handleCompleteNextSkip = useCallback(async () => {
+    const t = ui.completeNextTask
+    if (!t) return
+    try {
+      const updated = await updateTask(t.id, { done: true, status: 'done' })
+      setTasks((ts) => ts.map((x) => (x.id === t.id ? updated : x)))
+      ui.setCompleteNextTask(null)
+      ui.addToast('🎉', '完了！', t.title)
+    } catch (e) {
+      ui.addToast('❌', '更新できませんでした', e?.message ?? '')
+    }
+  }, [ui, setTasks])
+
+  const handleCompleteNextCreate = useCallback(
+    async (nextTitle, minutes) => {
+      const parent = ui.completeNextTask
+      if (!parent) return
+      const nextId = `t-${crypto.randomUUID()}`
+      const purpose = `「${parent.title}」の結果を受けて取り組む次の一手です。`.slice(0, VALIDATION.taskPurpose)
+      try {
+        const created = await insertTask({
+          id: nextId,
+          title: nextTitle,
+          purpose,
+          desc: '',
+          priority: parent.priority ?? 'medium',
+          projectId: parent.projectId,
+          due: parent.due || '',
+          startDate: parent.startDate || '',
+          status: 'todo',
+          done: false,
+          category: parent.category,
+          assigneeId: parent.assigneeId,
+          created: Date.now(),
+          timeboxMinutes: minutes > 0 ? Math.min(24 * 60, minutes) : null,
+          hypothesis: null,
+          premortemRisks: [],
+          progress: null,
+        })
+        const parentDone = await updateTask(parent.id, {
+          done: true,
+          status: 'done',
+          nextTaskId: nextId,
+        })
+        setTasks((ts) => [created, ...ts.map((x) => (x.id === parent.id ? parentDone : x))])
+        ui.setCompleteNextTask(null)
+        ui.addToast('✅', '次のタスクを作成しました', nextTitle)
+      } catch (e) {
+        ui.addToast('❌', '保存に失敗しました', e?.message ?? '')
+      }
+    },
+    [ui, setTasks]
+  )
+
+  const handleCompleteNextCancel = useCallback(() => {
+    ui.setCompleteNextTask(null)
+  }, [ui])
+
+  const patchTask = useCallback(
+    async (id, patch) => {
+      try {
+        const updated = await updateTask(id, patch)
+        setTasks((ts) => ts.map((t) => (t.id === id ? updated : t)))
+      } catch (e) {
+        ui.addToast('❌', '更新に失敗しました', e?.message ?? '')
+      }
+    },
+    [setTasks, ui]
+  )
   const openTaskFormForKanbanColumn = useCallback(
     (columnStatus) => {
       ui.setKanbanAddStatus(columnStatus)
@@ -189,5 +267,10 @@ export function useAppHandlers(data, ui, authUser) {
     projectsMap,
     usersMap,
     requestNotif,
+    completeNextTask: ui.completeNextTask,
+    onCompleteNextSkip: handleCompleteNextSkip,
+    onCompleteNextCreate: handleCompleteNextCreate,
+    onCompleteNextCancel: handleCompleteNextCancel,
+    patchTask,
   }
 }

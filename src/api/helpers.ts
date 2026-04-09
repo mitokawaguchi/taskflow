@@ -1,6 +1,6 @@
 import { supabase } from '../supabase'
 import { TASK_STATUS_KEYS } from '../constants'
-import type { Task, Project, Template, Client, Remember, Category, User } from '../types'
+import type { Task, Project, Template, Client, Remember, Category, User, PremortemRiskItem } from '../types'
 
 export const CONFIG_MSG =
   'Supabase の設定がありません。.env に VITE_SUPABASE_URL と VITE_SUPABASE_ANON_KEY を設定するか、Vercel の環境変数を確認してください。'
@@ -43,12 +43,30 @@ interface TaskRow {
   category?: string | null
   assignee_id?: string | null
   created?: number | string
+  hypothesis?: string | null
+  timebox_minutes?: number | null
+  premortem_risks?: unknown
+  next_task_id?: string | null
+  completed_at?: string | null
+  timer_started_at?: string | null
+}
+
+function premortemFromRow(raw: unknown): PremortemRiskItem[] {
+  if (raw == null || !Array.isArray(raw)) return []
+  const out: PremortemRiskItem[] = []
+  for (const item of raw) {
+    if (item && typeof item === 'object' && 'text' in item && typeof (item as { text: unknown }).text === 'string') {
+      out.push({ text: (item as { text: string }).text })
+    }
+  }
+  return out
 }
 
 export function taskFromRow(row: TaskRow | null): Task | null {
   if (!row) return null
   const status = TASK_STATUS_KEYS.includes(row.status as Task['status']) ? row.status : (row.done ? 'done' : 'todo')
   const progress = row.progress != null && row.progress >= 0 && row.progress <= 100 ? row.progress : null
+  const tb = row.timebox_minutes
   return {
     id: row.id,
     title: row.title,
@@ -64,6 +82,12 @@ export function taskFromRow(row: TaskRow | null): Task | null {
     category: row.category ?? null,
     assigneeId: row.assignee_id ?? null,
     created: typeof row.created === 'number' ? row.created : Number(row.created) || 0,
+    hypothesis: row.hypothesis != null && String(row.hypothesis).trim() ? String(row.hypothesis) : null,
+    timeboxMinutes: tb != null && Number.isFinite(tb) && tb > 0 ? Math.floor(tb) : null,
+    premortemRisks: premortemFromRow(row.premortem_risks),
+    nextTaskId: row.next_task_id ?? null,
+    completedAt: row.completed_at ?? null,
+    timerStartedAt: row.timer_started_at ?? null,
   }
 }
 

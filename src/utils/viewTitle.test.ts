@@ -28,4 +28,8 @@ describe('getViewTitle', () => {
   it('教材集', () => {
     expect(getViewTitle('materials', emptyOpts)).toBe('教材集')
   })
+
+  it('週のふりかえり', () => {
+    expect(getViewTitle('weekly-review', emptyOpts)).toBe('週のふりかえり')
+  })
 })

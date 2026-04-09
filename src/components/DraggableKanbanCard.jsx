@@ -1,7 +1,20 @@
 import { useDraggable } from '@dnd-kit/core'
 import { KanbanCardContent } from './KanbanCardContent'
 
-export function DraggableKanbanCard({ task, projects, categories = [], users = [], projectsMap, usersMap, onClick, onToggleDone }) {
+export function DraggableKanbanCard({
+  task,
+  projects,
+  categories = [],
+  users = [],
+  projectsMap,
+  usersMap,
+  onClick,
+  onToggleDone,
+  tasksById,
+  onPatchTask,
+  onScrollToTask,
+  isHighlighted,
+}) {
   const priorityClass = task.priority ?? 'medium'
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: task.id,
@@ -11,7 +24,8 @@ export function DraggableKanbanCard({ task, projects, categories = [], users = [
   return (
     <div
       ref={setNodeRef}
-      className={`kanban-card kanban-card--draggable ${priorityClass} ${isDragging ? 'kanban-card--dragging' : ''}`}
+      data-kanban-task-id={task.id}
+      className={`kanban-card kanban-card--draggable ${priorityClass} ${isDragging ? 'kanban-card--dragging' : ''} ${isHighlighted ? 'kanban-card--highlight' : ''}`}
       style={transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` } : undefined}
     >
       <span
@@ -41,6 +55,9 @@ export function DraggableKanbanCard({ task, projects, categories = [], users = [
           projectsMap={projectsMap}
           usersMap={usersMap}
           onToggleDone={onToggleDone}
+          tasksById={tasksById}
+          onPatchTask={onPatchTask}
+          onScrollToTask={onScrollToTask}
         />
       </div>
     </div>

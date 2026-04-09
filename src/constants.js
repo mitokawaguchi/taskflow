@@ -29,6 +29,8 @@ export const VALIDATION = {
   taskTitle: 500,
   taskDesc: 2000,
   taskPurpose: 300,
+  taskHypothesis: 2000,
+  premortemLine: 500,
   projectName: 200,
   projectPurpose: 300,
   templateTitle: 200,

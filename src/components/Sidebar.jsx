@@ -198,6 +198,16 @@ export default function Sidebar({
         >
           <span className="icon">📚</span>教材集
         </button>
+        <button
+          type="button"
+          className={`sidebar-item ${view === 'weekly-review' ? 'active' : ''}`}
+          onClick={() => {
+            setView('weekly-review')
+            setSidebarOpen(false)
+          }}
+        >
+          <span className="icon">📝</span>週のふりかえり
+        </button>
       </div>
 
       <div className="sidebar-footer">

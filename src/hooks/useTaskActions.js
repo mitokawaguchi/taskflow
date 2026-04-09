@@ -2,8 +2,10 @@ import { useCallback } from 'react'
 import { updateTask, insertTask } from '../api'
 import { classifyApiError } from '../utils/apiError'
 
-/** タスクの保存・トグル・ステータス移動を集約。ARCH-001 */
-export function useTaskActions(tasks, setTasks, addToast, editTask, closeTaskForm) {
+/** タスクの保存・トグル・ステータス移動を集約。ARCH-001
+ * @param {(task: import('../types').Task) => void} [requestCompleteTask] 完了直前に呼ぶ（次タスクモーダル）
+ */
+export function useTaskActions(tasks, setTasks, addToast, editTask, closeTaskForm, requestCompleteTask) {
   const saveTask = useCallback(
     async (form) => {
       if (!form || typeof form.title !== 'string') {
@@ -55,6 +57,10 @@ export function useTaskActions(tasks, setTasks, addToast, editTask, closeTaskFor
       const task = tasks.find((t) => t.id === id)
       if (!task) return
       const willComplete = !task.done
+      if (willComplete && typeof requestCompleteTask === 'function') {
+        requestCompleteTask(task)
+        return
+      }
       try {
         const updated = await updateTask(id, { done: willComplete, status: willComplete ? 'done' : 'todo' })
         setTasks((ts) => ts.map((t) => (t.id === id ? updated : t)))
@@ -63,11 +69,18 @@ export function useTaskActions(tasks, setTasks, addToast, editTask, closeTaskFor
         addToast('❌', '更新できませんでした', e?.message ?? '')
       }
     },
-    [tasks, addToast]
+    [tasks, addToast, requestCompleteTask]
   )
 
   const moveTaskStatus = useCallback(
     async (taskId, newStatus) => {
+      if (newStatus === 'done' && typeof requestCompleteTask === 'function') {
+        const task = tasks.find((t) => t.id === taskId)
+        if (task && !task.done) {
+          requestCompleteTask(task)
+          return
+        }
+      }
       try {
         const updated = await updateTask(taskId, { status: newStatus, done: newStatus === 'done' })
         setTasks((ts) => ts.map((t) => (t.id === taskId ? updated : t)))
@@ -75,7 +88,7 @@ export function useTaskActions(tasks, setTasks, addToast, editTask, closeTaskFor
         addToast('❌', '状態の更新に失敗しました', e?.message ?? '')
       }
     },
-    [addToast]
+    [addToast, requestCompleteTask, tasks]
   )
 
   return { saveTask, toggleTask, moveTaskStatus }

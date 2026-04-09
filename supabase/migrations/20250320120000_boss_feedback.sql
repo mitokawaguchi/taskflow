@@ -21,6 +21,12 @@ CREATE INDEX IF NOT EXISTS boss_feedback_category_idx ON public.boss_feedback (c
 
 ALTER TABLE public.boss_feedback ENABLE ROW LEVEL SECURITY;
 
+-- 手動再実行・重複適用でも落ちないようにする
+DROP POLICY IF EXISTS "boss_feedback_select_own" ON public.boss_feedback;
+DROP POLICY IF EXISTS "boss_feedback_insert_own" ON public.boss_feedback;
+DROP POLICY IF EXISTS "boss_feedback_update_own" ON public.boss_feedback;
+DROP POLICY IF EXISTS "boss_feedback_delete_own" ON public.boss_feedback;
+
 CREATE POLICY "boss_feedback_select_own"
   ON public.boss_feedback FOR SELECT
   USING (owner_id = auth.uid());

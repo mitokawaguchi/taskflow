@@ -2724,3 +2724,216 @@ html.dark .notes-screen__lead--readonly { border-color: rgba(58, 143, 82, 0.45);
     flex-wrap: wrap;
   }
 }
+
+/* 外コンOS: タスクフォーム「もう一歩深く」 */
+.panel-accent.taskform-deep {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-top: 12px;
+  background: var(--surface3);
+}
+.taskform-deep__toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 14px;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+}
+.taskform-deep__toggle:hover {
+  background: var(--accent-glow);
+}
+.taskform-deep__body {
+  padding: 0 14px 14px;
+}
+.taskform-deep__time-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.taskform-deep__time-input {
+  max-width: 100px;
+}
+.taskform-deep__time-suffix {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.taskform-deep__presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.complete-next-overlay {
+  z-index: 3000;
+}
+.complete-next-modal {
+  max-width: 420px;
+  width: calc(100% - 32px);
+}
+.complete-next-modal__title {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+.complete-next-modal__lead {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.complete-next-modal__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+.complete-next-modal__skip {
+  align-self: center;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-decoration: underline;
+}
+.complete-next-modal__skip:hover {
+  color: var(--text);
+}
+.complete-next-modal__cancel {
+  align-self: center;
+}
+
+/* カンバン OS シグナル */
+.kanban-os-signals {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+.kanban-os-badge {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--surface3);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+.kanban-os-badge--over {
+  background: var(--critical-bg);
+  color: var(--critical);
+  border-color: var(--critical-border);
+}
+.kanban-os-icon {
+  font-size: 12px;
+  line-height: 1;
+  padding: 2px 4px;
+  cursor: help;
+  border: none;
+  background: transparent;
+}
+.kanban-os-chain {
+  font-size: 13px;
+  padding: 0 4px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--accent);
+}
+.kanban-os-timer {
+  font-size: 11px;
+  margin-left: 4px;
+  color: var(--text-muted);
+}
+.kanban-card--highlight {
+  box-shadow: 0 0 0 2px var(--accent), 0 4px 20px rgba(58, 143, 82, 0.35);
+}
+
+.dashboard-consulting {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+@media (min-width: 900px) {
+  .dashboard-consulting {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+}
+.dashboard-consulting .dashboard-section {
+  margin-bottom: 0;
+}
+.dashboard-consulting__card {
+  padding: 12px 0;
+}
+.dashboard-consulting__big {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1.1;
+}
+.dashboard-consulting__sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 8px 0 0;
+  line-height: 1.5;
+}
+.dashboard-consulting__bar-wrap {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--surface3);
+  overflow: hidden;
+  margin-top: 8px;
+}
+.dashboard-consulting__bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+.dashboard-consulting__chains {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text);
+}
+.dashboard-consulting__chain {
+  margin-bottom: 8px;
+}
+
+.weekly-review-screen {
+  max-width: 560px;
+}
+.weekly-review-screen__title {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+.weekly-review-screen__range {
+  margin: 0 0 12px;
+}
+.weekly-review-screen__hint {
+  margin: 0 0 16px;
+  font-size: 13px;
+}
+.weekly-review-screen__done-hint {
+  margin: 16px 0;
+}
+.weekly-review-screen__tasklist {
+  margin: 8px 0 0;
+  padding-left: 1.2rem;
+  font-size: 13px;
+  color: var(--text-muted);
+  max-height: 200px;
+  overflow-y: auto;
+}

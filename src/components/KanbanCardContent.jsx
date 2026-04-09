@@ -1,9 +1,21 @@
 import { TaskPurposePanel } from './TaskPurposePanel'
 import { TaskStatusBadge } from './TaskStatusBadge'
+import { KanbanCardOsSignals } from './KanbanCardOsSignals'
 import { getPriorityLabel, progressFromStatus, getCategoryInfo, normalizeTaskStatus } from '../constants'
 import { formatDate, isOverdue } from '../utils'
 
-export function KanbanCardContent({ task, projects, categories = [], users = [], projectsMap, usersMap, onToggleDone }) {
+export function KanbanCardContent({
+  task,
+  projects,
+  categories = [],
+  users = [],
+  projectsMap,
+  usersMap,
+  onToggleDone,
+  tasksById,
+  onPatchTask,
+  onScrollToTask,
+}) {
   const proj = projectsMap?.get(task.projectId) ?? projects?.find((p) => p.id === task.projectId)
   const statusKey = normalizeTaskStatus(task)
   const progress = task.progress != null ? task.progress : progressFromStatus(statusKey)
@@ -54,6 +66,14 @@ export function KanbanCardContent({ task, projects, categories = [], users = [],
           )}
         </div>
         <TaskPurposePanel purpose={task.purpose} variant="kanban" />
+        {tasksById && (
+          <KanbanCardOsSignals
+            task={task}
+            tasksById={tasksById}
+            onPatchTask={onPatchTask}
+            onScrollToTask={onScrollToTask}
+          />
+        )}
         <div className="kanban-card__progress">
           <div className="kanban-card__progress-bar" style={{ width: `${progress}%` }} />
           <span className="kanban-card__progress-text">{progress}%</span>

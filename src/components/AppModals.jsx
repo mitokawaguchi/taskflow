@@ -9,6 +9,7 @@ import ClientForm from '../ClientForm'
 import SettingsModal from './SettingsModal'
 import ProfileModal from './ProfileModal'
 import Toast from '../Toast'
+import CompleteNextTaskModal from './CompleteNextTaskModal'
 
 export default function AppModals({
   showTaskForm,
@@ -48,6 +49,10 @@ export default function AppModals({
   onCloseProfile,
   setAuthUser,
   toasts,
+  completeNextTask,
+  onCompleteNextSkip,
+  onCompleteNextCreate,
+  onCompleteNextCancel,
 }) {
   return (
     <>
@@ -95,6 +100,14 @@ export default function AppModals({
       )}
       {showProfileModal && (
         <ProfileModal authUser={authUser} onClose={onCloseProfile} addToast={addToast} setAuthUser={setAuthUser} />
+      )}
+      {completeNextTask && (
+        <CompleteNextTaskModal
+          task={completeNextTask}
+          onSkip={onCompleteNextSkip}
+          onCreateNext={onCompleteNextCreate}
+          onClose={onCompleteNextCancel}
+        />
       )}
       <Toast toasts={toasts} />
     </>

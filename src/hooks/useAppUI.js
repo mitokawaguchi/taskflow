@@ -35,6 +35,8 @@ export function useAppUI() {
   const [dragActiveId, setDragActiveId] = useState(null)
   /** メモ詳細画面のタイトル（TopBar 用） */
   const [noteDetailTitle, setNoteDetailTitle] = useState(null)
+  /** 完了直後に「次のタスク」を促すモーダル用 */
+  const [completeNextTask, setCompleteNextTask] = useState(null)
 
   useEffect(() => {
     const onHash = () => setLegalPage(getLegalPageFromHash())
@@ -121,5 +123,7 @@ export function useAppUI() {
     setNoteDetailTitle,
     addToast,
     closeTaskForm,
+    completeNextTask,
+    setCompleteNextTask,
   }
 }

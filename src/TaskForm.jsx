@@ -3,6 +3,7 @@ import { PRIORITY, TASK_STATUS, TASK_STATUS_KEYS, VALIDATION, truncateToMax, cat
 import { formatDate, isToday, isTomorrow } from './utils'
 import CalendarPicker from './CalendarPicker'
 import CategoryPicker from './components/CategoryPicker'
+import { TaskFormDeepThinking } from './components/TaskFormDeepThinking'
 
 const DEFAULT_FORM = {
   title: '',
@@ -16,13 +17,23 @@ const DEFAULT_FORM = {
   status: 'todo',
   category: '',
   assigneeId: '',
+  hypothesis: '',
+  timeboxMinutes: null,
+  premortemRisks: [],
 }
 
 /** 編集対象（id あり）または新規用ヒント（projectId/status 等）から初期フォーム値を生成 */
 function getInitialTaskForm(task, projects) {
   const defaultProjectId = projects[0]?.id ?? ''
   if (task && task.id) {
-    return { ...DEFAULT_FORM, projectId: defaultProjectId, ...task }
+    return {
+      ...DEFAULT_FORM,
+      projectId: defaultProjectId,
+      ...task,
+      hypothesis: task.hypothesis ?? '',
+      timeboxMinutes: task.timeboxMinutes ?? null,
+      premortemRisks: Array.isArray(task.premortemRisks) ? task.premortemRisks : [],
+    }
   }
   if (task && typeof task === 'object') {
     return {
@@ -32,6 +43,9 @@ function getInitialTaskForm(task, projects) {
       due: task.due ?? '',
       status: task.status ?? 'todo',
       assigneeId: task.assigneeId ?? '',
+      hypothesis: '',
+      timeboxMinutes: null,
+      premortemRisks: [],
     }
   }
   return { ...DEFAULT_FORM, projectId: defaultProjectId }
@@ -140,12 +154,16 @@ export default function TaskForm({ task, projects, templates, categories = [], u
             ))}
           </select>
         </div>
+        <TaskFormDeepThinking form={form} set={set} />
         <div className="modal-actions">
           <button className="btn btn-ghost" onClick={onClose}>キャンセル</button>
           <button
             className="btn btn-primary"
             onClick={() => {
               if (!form.title.trim() || !form.purpose.trim()) return
+              const hyp = form.hypothesis != null && String(form.hypothesis).trim()
+                ? truncateToMax(String(form.hypothesis).trim(), VALIDATION.taskHypothesis)
+                : null
               const payload = {
                 title: truncateToMax(form.title, VALIDATION.taskTitle),
                 desc: truncateToMax(form.desc, VALIDATION.taskDesc),
@@ -157,6 +175,11 @@ export default function TaskForm({ task, projects, templates, categories = [], u
                 status: form.status || 'todo',
                 category: form.category && String(form.category).trim() ? form.category : null,
                 assigneeId: form.assigneeId && String(form.assigneeId).trim() ? form.assigneeId : null,
+                hypothesis: hyp,
+                timeboxMinutes: form.timeboxMinutes != null && Number.isFinite(form.timeboxMinutes) && form.timeboxMinutes > 0
+                  ? form.timeboxMinutes
+                  : null,
+                premortemRisks: Array.isArray(form.premortemRisks) ? form.premortemRisks : [],
               }
               onSave(payload)
             }}

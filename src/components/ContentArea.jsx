@@ -10,6 +10,8 @@ import TemplatesListView from './TemplatesListView'
 import BossFeedbackScreen from '../features/boss-feedback/BossFeedbackScreen'
 import MailTrackerScreen from '../features/mail-tracker/MailTrackerScreen'
 import MaterialsLibraryPage from '../features/materials/MaterialsLibraryPage'
+import WeeklyReviewScreen from '../features/consulting-os/WeeklyReviewScreen'
+import { fetchWeeklyReviews } from '../api'
 
 export default function ContentArea({
   view,
@@ -54,6 +56,7 @@ export default function ContentArea({
   setEditTemplate,
   setShowTplForm,
   theme,
+  setWeeklyReviews,
 }) {
   if (isProjectView && currentProject) {
     return (
@@ -157,6 +160,22 @@ export default function ContentArea({
   }
   if (view === 'materials') {
     return <MaterialsLibraryPage />
+  }
+  if (view === 'weekly-review') {
+    return (
+      <WeeklyReviewScreen
+        tasks={tasks}
+        addToast={addToast}
+        onSaved={async () => {
+          try {
+            const r = await fetchWeeklyReviews()
+            setWeeklyReviews(r)
+          } catch {
+            /* ignore */
+          }
+        }}
+      />
+    )
   }
   return null
 }

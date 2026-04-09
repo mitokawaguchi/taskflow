@@ -43,6 +43,8 @@ export default function ContentAreaTasks({
   onAddTask,
   onEditTask,
   onToggleTask,
+  patchTask,
+  weeklyReviews,
 }) {
   if (view === 'kanban') {
     return (
@@ -61,13 +63,14 @@ export default function ContentAreaTasks({
           }}
           onAddTask={openTaskFormForKanbanColumn}
           onToggleTask={onToggleTask}
+          onPatchTask={patchTask}
         />
       </div>
     )
   }
   if (view === 'dashboard') {
     return (
-      <Dashboard tasks={tasksForBoard} projects={projects} setView={setView} />
+      <Dashboard tasks={tasksForBoard} projects={projects} setView={setView} weeklyReviews={weeklyReviews} />
     )
   }
   if (view === 'gantt') {

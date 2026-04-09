@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { isToday, isOverdue } from './utils'
+import { DashboardConsulting } from './components/DashboardConsulting'
 
 function DonutChart({ percentage, color, size = 80 }) {
   const strokeWidth = 8
@@ -42,7 +43,7 @@ function DonutChart({ percentage, color, size = 80 }) {
   )
 }
 
-export default function Dashboard({ tasks, projects, setView = () => {} }) {
+export default function Dashboard({ tasks, projects, setView = () => {}, weeklyReviews = [] }) {
   const stats = useMemo(() => {
     const all = tasks.length
     const done = tasks.filter(t => t.done).length
@@ -107,6 +108,8 @@ export default function Dashboard({ tasks, projects, setView = () => {} }) {
           <div className="dashboard-card__label">期限超過</div>
         </div>
       </div>
+
+      <DashboardConsulting tasks={tasks} weeklyReviews={weeklyReviews} />
 
       <div className="dashboard-section">
         <h2 className="dashboard-section__title">プロジェクト別進捗</h2>

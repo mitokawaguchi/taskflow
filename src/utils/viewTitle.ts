@@ -20,6 +20,7 @@ export function getViewTitle(view: string, opts: ViewTitleOpts): string {
   if (view === 'boss-feedback') return '上司の指摘DB'
   if (view === 'mail-tracker') return '未返信'
   if (view === 'materials') return '教材集'
+  if (view === 'weekly-review') return '週のふりかえり'
   if (view.startsWith('c:')) return opts.clients.find((c) => c.id === view.slice(2))?.name ?? 'クライアント'
   if (view.startsWith('p:')) return opts.projects.find((p) => p.id === view.slice(2))?.name ?? ''
   return ''
