@@ -10,6 +10,9 @@ coverage
 .vscode
 .idea
 
+# Supabase CLI ローカルキャッシュ（project-ref 等）
+supabase/.temp/
+
 # 外部公開時にリポジトリへ含めない内部ドキュメント（ローカルでは編集・保持する）
 docs/CODE_REVIEW.md
 docs/CURSOR_USER_RULES.md
