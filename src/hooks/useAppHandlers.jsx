@@ -180,7 +180,9 @@ export function useAppHandlers(data, ui, authUser) {
 
   const isProjectView = view.startsWith('p:')
   const currentProject = isProjectView ? projects.find((p) => p.id === view.slice(2)) : null
-  const isMainView = ['kanban', 'gantt', 'dashboard', 'all', 'today', 'overdue', 'projects', 'templates'].includes(view) || isProjectView
+  const isMainView =
+    ['kanban', 'gantt', 'dashboard', 'all', 'week-tasks', 'overdue', 'daily-today', 'daily-tomorrow', 'projects', 'templates'].includes(view) ||
+    isProjectView
   const viewTabs = VIEW_TABS
   const activeFilterCount = [filterProjectIds.length, filterPriorities.length, filterDueFrom, filterDueTo, filterPriorityFrom, filterPriorityTo, filterAssigneeId].filter(Boolean).length
   const tasksForBoard = useMemo(() => filterTasksForBoard(tasks, ui.searchQuery, currentProject), [tasks, ui.searchQuery, currentProject])

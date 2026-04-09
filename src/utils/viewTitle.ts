@@ -8,7 +8,9 @@ type ViewTitleOpts = {
 /** TopBar 用タイトル文字列 */
 export function getViewTitle(view: string, opts: ViewTitleOpts): string {
   if (view === 'all') return 'すべてのタスク'
-  if (view === 'today') return '今日のタスク'
+  if (view === 'week-tasks') return '今週タスク'
+  if (view === 'daily-today') return '今日の予定'
+  if (view === 'daily-tomorrow') return '明日の予定'
   if (view === 'overdue') return '期限超過'
   if (view === 'kanban') return 'カンバン'
   if (view === 'dashboard') return 'ダッシュボード'

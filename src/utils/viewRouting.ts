@@ -4,7 +4,9 @@ import type { NavigateFunction } from 'react-router-dom'
 export function getViewFromPathname(pathname: string): string {
   if (pathname === '/') return 'projects'
   if (pathname === '/all' || pathname === '/tasks') return 'all'
-  if (pathname === '/today') return 'today'
+  if (pathname === '/today' || pathname === '/week-tasks') return 'week-tasks'
+  if (pathname === '/daily/today') return 'daily-today'
+  if (pathname === '/daily/tomorrow') return 'daily-tomorrow'
   if (pathname === '/overdue') return 'overdue'
   if (pathname === '/kanban') return 'kanban'
   if (pathname === '/dashboard') return 'dashboard'
@@ -27,7 +29,9 @@ export function getViewFromPathname(pathname: string): string {
 export function navigateToView(navigate: NavigateFunction, v: string): void {
   if (v === 'projects') navigate('/')
   else if (v === 'all') navigate('/all')
-  else if (v === 'today') navigate('/today')
+  else if (v === 'week-tasks' || v === 'today') navigate('/week-tasks')
+  else if (v === 'daily-today') navigate('/daily/today')
+  else if (v === 'daily-tomorrow') navigate('/daily/tomorrow')
   else if (v === 'overdue') navigate('/overdue')
   else if (v === 'kanban') navigate('/kanban')
   else if (v === 'dashboard') navigate('/dashboard')

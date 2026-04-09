@@ -2937,3 +2937,119 @@ html.dark .notes-screen__lead--readonly { border-color: rgba(58, 143, 82, 0.45);
   max-height: 200px;
   overflow-y: auto;
 }
+
+/* 日次プラン（今日/明日） */
+.daily-planner {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.daily-planner__hint {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.daily-planner__top {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 768px) {
+  .daily-planner__top {
+    grid-template-columns: 1fr;
+  }
+}
+.daily-planner__col {
+  min-height: 120px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px dashed var(--border);
+  background: var(--surface2);
+}
+.daily-planner__col--over {
+  border-color: var(--accent);
+  background: var(--surface3);
+}
+.daily-planner__col-title {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+.daily-planner__rank-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.daily-planner__rank-row {
+  display: grid;
+  grid-template-columns: 28px 28px 1fr;
+  align-items: start;
+  gap: 8px;
+}
+.daily-planner__rank-label {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--accent);
+  padding-top: 6px;
+}
+.daily-planner__drag-h {
+  padding: 4px;
+  border: none;
+  background: transparent;
+  cursor: grab;
+  color: var(--text-muted);
+  line-height: 1;
+}
+.daily-planner__card-wrap .task-card {
+  cursor: default;
+}
+.daily-planner__pool-title {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+.daily-planner__pool-section {
+  margin-bottom: 20px;
+}
+.daily-planner__pool-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.daily-planner__pool-card {
+  position: relative;
+}
+.daily-planner__pool-card--drag {
+  opacity: 0.6;
+}
+.daily-planner__pool-card .daily-planner__drag-h {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: 2;
+}
+.daily-planner__pool-card .task-card {
+  padding-left: 36px;
+}
+.daily-planner__pool-drop {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px dashed var(--border);
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.daily-planner__pool-drop--over {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.daily-planner__overlay {
+  padding: 8px 12px;
+  background: var(--surface1);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  font-size: 14px;
+}

@@ -18,6 +18,9 @@ vi.mock('../GanttChart', () => ({
 vi.mock('./TaskListWithFilters', () => ({
   default: () => <div data-testid="task-list">TaskList</div>,
 }))
+vi.mock('../features/daily-planner/DailyPlannerPage', () => ({
+  default: () => <div data-testid="daily-planner">DailyPlanner</div>,
+}))
 
 const baseProps = {
   view: 'kanban',
@@ -56,6 +59,11 @@ const baseProps = {
   onAddTask: vi.fn(),
   onEditTask: vi.fn(),
   onToggleTask: vi.fn(),
+  patchTask: vi.fn(),
+  weeklyReviews: [],
+  dailyPlanner: { todayTaskIds: [], tomorrowTaskIds: [] },
+  setDailyPlanner: vi.fn(),
+  addToast: vi.fn(),
 }
 
 describe('ContentAreaTasks', () => {
@@ -74,8 +82,13 @@ describe('ContentAreaTasks', () => {
     expect(screen.getByTestId('gantt-chart')).toBeInTheDocument()
   })
 
-  it('renders TaskList on all/today/overdue views', () => {
-    for (const view of ['all', 'today', 'overdue']) {
+  it('renders DailyPlanner on daily views', () => {
+    render(<ContentAreaTasks {...baseProps} view="daily-today" />)
+    expect(screen.getByTestId('daily-planner')).toBeInTheDocument()
+  })
+
+  it('renders TaskList on all/week-tasks/overdue views', () => {
+    for (const view of ['all', 'week-tasks', 'overdue']) {
       const { unmount } = render(<ContentAreaTasks {...baseProps} view={view} />)
       expect(screen.getByTestId('task-list')).toBeInTheDocument()
       unmount()

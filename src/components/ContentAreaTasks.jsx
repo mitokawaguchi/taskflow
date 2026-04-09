@@ -5,6 +5,7 @@ import TaskListWithFilters from './TaskListWithFilters'
 import KanbanBoard from '../KanbanBoard'
 import Dashboard from '../Dashboard'
 import GanttChart from '../GanttChart'
+import DailyPlannerPage from '../features/daily-planner/DailyPlannerPage'
 
 export default function ContentAreaTasks({
   view,
@@ -45,6 +46,9 @@ export default function ContentAreaTasks({
   onToggleTask,
   patchTask,
   weeklyReviews,
+  dailyPlanner,
+  setDailyPlanner,
+  addToast,
 }) {
   if (view === 'kanban') {
     return (
@@ -88,7 +92,25 @@ export default function ContentAreaTasks({
       </div>
     )
   }
-  if (view === 'all' || view === 'today' || view === 'overdue') {
+  if (view === 'daily-today' || view === 'daily-tomorrow') {
+    return (
+      <DailyPlannerPage
+        tasks={sortedTasks}
+        dailyPlanner={dailyPlanner}
+        setDailyPlanner={setDailyPlanner}
+        focusSide={view === 'daily-tomorrow' ? 'tomorrow' : 'today'}
+        projects={projects}
+        categories={categories}
+        users={users}
+        projectsMap={projectsMap}
+        usersMap={usersMap}
+        onToggleTask={onToggleTask}
+        onEditTask={onEditTask}
+        addToast={addToast}
+      />
+    )
+  }
+  if (view === 'all' || view === 'week-tasks' || view === 'overdue') {
     return (
       <TaskListWithFilters
         view={view}

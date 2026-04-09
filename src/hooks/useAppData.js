@@ -12,6 +12,7 @@ import {
   fetchUsers,
   updateTask,
   fetchWeeklyReviews,
+  fetchDailyPlanner,
 } from '../api'
 import { isOverdue } from '../utils'
 
@@ -25,6 +26,7 @@ export function useAppData(authUser, addToast) {
   const [categories, setCategories] = useState([])
   const [users, setUsers] = useState([])
   const [weeklyReviews, setWeeklyReviews] = useState([])
+  const [dailyPlanner, setDailyPlanner] = useState({ todayTaskIds: [], tomorrowTaskIds: [] })
 
   useEffect(() => {
     if (!authUser) {
@@ -62,6 +64,14 @@ export function useAppData(authUser, addToast) {
             console.warn('weekly_reviews:', e?.message ?? e)
           }
         }
+        let dp = { todayTaskIds: [], tomorrowTaskIds: [] }
+        try {
+          dp = await fetchDailyPlanner()
+        } catch (e) {
+          if (!cancelled && import.meta.env?.DEV) {
+            console.warn('daily_planner:', e?.message ?? e)
+          }
+        }
         if (!cancelled) {
           let tasksToSet = ts
           const overdueNotCritical = ts.filter((t) => !t.done && isOverdue(t.due) && t.priority !== 'critical')
@@ -81,6 +91,7 @@ export function useAppData(authUser, addToast) {
           setCategories(cats)
           setUsers(usrs)
           setWeeklyReviews(wrevs)
+          setDailyPlanner(dp)
         }
       } catch (e) {
         if (!cancelled) addToast('❌', '読み込みエラー', e?.message ?? 'データを取得できませんでした')
@@ -113,5 +124,7 @@ export function useAppData(authUser, addToast) {
     setLoading,
     weeklyReviews,
     setWeeklyReviews,
+    dailyPlanner,
+    setDailyPlanner,
   }
 }

@@ -85,7 +85,7 @@ export default function App() {
           />
           <div className="content">
             <div key={app.view} className="content-view">
-              {['kanban', 'dashboard', 'gantt', 'all', 'today', 'overdue'].includes(app.view) ? (
+              {['kanban', 'dashboard', 'gantt', 'all', 'week-tasks', 'overdue', 'daily-today', 'daily-tomorrow'].includes(app.view) ? (
                 <ContentAreaTasks
                   view={app.view} tasksForBoard={app.tasksForBoard} projects={app.projects} setView={app.setView} categories={app.categories} users={app.users}
                   projectsMap={app.projectsMap} usersMap={app.usersMap} moveTaskStatus={app.moveTaskStatus}
@@ -101,6 +101,9 @@ export default function App() {
                   onAddTask={() => app.setShowTaskForm(true)} onEditTask={(t) => { app.setEditTask(t); app.setShowTaskForm(true) }}                   onToggleTask={app.toggleTask}
                   patchTask={app.patchTask}
                   weeklyReviews={app.weeklyReviews}
+                  dailyPlanner={app.dailyPlanner}
+                  setDailyPlanner={app.setDailyPlanner}
+                  addToast={app.addToast}
                 />
               ) : (
                 <ContentArea

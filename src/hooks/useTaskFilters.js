@@ -1,34 +1,12 @@
 import { useState, useMemo, useCallback } from 'react'
 import { priorityOrder } from '../constants'
-import { isOverdue, today } from '../utils'
-
-function daysFromToday(d) {
-  if (!d) return null
-  const base = new Date(`${today()}T12:00:00`)
-  const target = new Date(`${d}T12:00:00`)
-  return Math.round((target - base) / 86400000)
-}
-
-function isActiveTodayTask(task) {
-  if (!task?.startDate || !task?.due) return false
-  const todayStr = today()
-  return task.startDate <= todayStr && task.due >= todayStr
-}
-
-function isDueSoonTask(task, days = 3) {
-  const diff = daysFromToday(task?.due)
-  return diff !== null && diff > 0 && diff <= days
-}
-
-function isRelevantForTodayViewTask(task) {
-  if (!task) return false
-  return task.startDate === today() || task.due === today() || isActiveTodayTask(task) || isDueSoonTask(task)
-}
+import { isOverdue } from '../utils'
+import { isRelevantForTodayViewTask } from '../utils/weekTasksScope'
 
 /**
  * タスク一覧の絞り込み・ソート state と sortedTasks を集約。ARCH-003
  * @param {Array} tasks - 全タスク
- * @param {string} view - 'all' | 'today' | 'overdue'
+ * @param {string} view - 'all' | 'week-tasks' | 'overdue'
  * @param {boolean} showDone - 完了タスクを表示するか
  * @param {string} searchQuery - 検索文字列
  */
@@ -63,14 +41,14 @@ export function useTaskFilters(tasks, view, showDone, searchQuery) {
       }
       if (view === 'all') {
         /* continue */
-      } else if (view === 'today') {
+      } else if (view === 'week-tasks') {
         if (!isRelevantForTodayViewTask(t)) return false
       } else if (view === 'overdue') {
         if (!isOverdue(t.due) || t.done) return false
       } else {
         return true
       }
-      if (view !== 'all' && view !== 'today' && view !== 'overdue') return true
+      if (view !== 'all' && view !== 'week-tasks' && view !== 'overdue') return true
       if (filterProjectIds.length > 0 && !filterProjectIds.includes(t.projectId)) return false
       if (filterPriorities.length > 0 && !filterPriorities.includes(t.priority)) return false
       if (filterAssigneeId && t.assigneeId !== filterAssigneeId) return false

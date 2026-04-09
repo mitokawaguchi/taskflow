@@ -20,6 +20,7 @@ vi.mock('./api', () => ({
   fetchCategories: vi.fn(() => Promise.resolve([])),
   fetchUsers: vi.fn(() => Promise.resolve([])),
   fetchWeeklyReviews: vi.fn(() => Promise.resolve([])),
+  fetchDailyPlanner: vi.fn(() => Promise.resolve({ todayTaskIds: [], tomorrowTaskIds: [] })),
   getAuthSession: vi.fn(() =>
     Promise.resolve({ user: { id: 'test-user' } })
   ),

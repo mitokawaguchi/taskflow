@@ -4,7 +4,9 @@ import { LegalLinks } from './LegalLinks'
 const SIDEBAR_MENU_ITEMS = [
   { key: 'projects', icon: '📁', label: 'プロジェクト' },
   { key: 'all', icon: '📋', label: 'すべてのタスク' },
-  { key: 'today', icon: '☀️', label: '今日', badgeKey: 'todayCount' },
+  { key: 'week-tasks', icon: '📆', label: '今週タスク', badgeKey: 'todayCount' },
+  { key: 'daily-today', icon: '☀️', label: '今日' },
+  { key: 'daily-tomorrow', icon: '🌅', label: '明日' },
   { key: 'overdue', icon: '🚨', label: '期限超過', badgeKey: 'overdueCount' },
   { key: 'kanban', icon: '📌', label: 'カンバン' },
   { key: 'dashboard', icon: '📊', label: 'ダッシュボード' },

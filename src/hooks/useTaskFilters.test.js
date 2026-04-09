@@ -18,9 +18,9 @@ describe('useTaskFilters', () => {
     vi.useRealTimers()
   })
 
-  it('returns sortedTasks filtered by view today when view is today', () => {
+  it('returns sortedTasks filtered by view week-tasks when view is week-tasks', () => {
     const { result } = renderHook(() =>
-      useTaskFilters(tasks, 'today', true, '')
+      useTaskFilters(tasks, 'week-tasks', true, '')
     )
     expect(result.current.sortedTasks).toHaveLength(1)
     expect(result.current.sortedTasks[0].title).toBe('A')

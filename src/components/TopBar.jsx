@@ -83,7 +83,7 @@ export default function TopBar({
             </button>
           </>
         )}
-        {!isProjectView && view !== 'projects' && view !== 'templates' && view !== 'boss-feedback' && view !== 'mail-tracker' && view !== 'materials' && view !== 'weekly-review' && view !== 'clients' && !view.startsWith('c:') && (
+        {!isProjectView && view !== 'projects' && view !== 'templates' && view !== 'boss-feedback' && view !== 'mail-tracker' && view !== 'materials' && view !== 'weekly-review' && view !== 'daily-today' && view !== 'daily-tomorrow' && view !== 'clients' && !view.startsWith('c:') && (
           <button type="button" className="btn btn-primary" onClick={onAddTask}>
             + 追加
           </button>
@@ -102,7 +102,7 @@ export default function TopBar({
             onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
           />
         </div>
-        {(view === 'all' || view === 'today' || view === 'overdue') && (
+        {(view === 'all' || view === 'week-tasks' || view === 'overdue') && (
           <>
             <button
               type="button"
@@ -128,7 +128,7 @@ export default function TopBar({
             </label>
           </>
         )}
-        {view !== 'clients' && !view.startsWith('c:') && view !== 'projects' && view !== 'categories' && view !== 'boss-feedback' && view !== 'mail-tracker' && view !== 'materials' && view !== 'weekly-review' && (
+        {view !== 'clients' && !view.startsWith('c:') && view !== 'projects' && view !== 'categories' && view !== 'boss-feedback' && view !== 'mail-tracker' && view !== 'materials' && view !== 'weekly-review' && view !== 'daily-today' && view !== 'daily-tomorrow' && (
           <button type="button" className="btn btn-ghost btn-sm" onClick={() => setShowDone(!showDone)}>
             {showDone ? '完了を非表示' : '完了を表示'}
           </button>

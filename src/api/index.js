@@ -15,3 +15,4 @@ export {
 } from './remember'
 export { fetchNotes, fetchNote, insertNote, updateNote, deleteNote } from './notes'
 export { fetchWeeklyReviews, upsertWeeklyReview } from './weeklyReviews'
+export { fetchDailyPlanner, upsertDailyPlanner } from './dailyPlanner'
