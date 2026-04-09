@@ -14,6 +14,9 @@ export default function DailyPlannerPool({
   return (
     <div className="daily-planner__pool">
       <h3 className="daily-planner__pool-title">プール（今週タスクの並び）</h3>
+      <PoolDropZone id="pool-zone-top">
+        列からプールへ戻す → <strong>ここにドロップ</strong>（スクロール不要）
+      </PoolDropZone>
       {poolSections.map((section) => (
         <section key={section.key} className="daily-planner__pool-section">
           <div className="daily-planner__pool-head">
@@ -60,7 +63,9 @@ export default function DailyPlannerPool({
           </div>
         </section>
       )}
-      <PoolDropZone />
+      <PoolDropZone id="pool-zone">
+        プールへ戻す（一覧の末尾・こちらでも可）
+      </PoolDropZone>
     </div>
   )
 }

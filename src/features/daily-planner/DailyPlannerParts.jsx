@@ -67,11 +67,14 @@ export function DropColumn({ zoneId, title, children }) {
   )
 }
 
-export function PoolDropZone() {
-  const { setNodeRef, isOver } = useDroppable({ id: 'pool-zone' })
+export function PoolDropZone({ id, children }) {
+  const { setNodeRef, isOver } = useDroppable({ id })
   return (
-    <div ref={setNodeRef} className={`daily-planner__pool-drop ${isOver ? 'daily-planner__pool-drop--over' : ''}`}>
-      プールへ戻す（ここにドロップ）
+    <div
+      ref={setNodeRef}
+      className={`daily-planner__pool-drop ${id === 'pool-zone-top' ? 'daily-planner__pool-drop--top' : 'daily-planner__pool-drop--bottom'} ${isOver ? 'daily-planner__pool-drop--over' : ''}`}
+    >
+      {children}
     </div>
   )
 }

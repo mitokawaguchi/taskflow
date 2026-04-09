@@ -58,7 +58,7 @@ export function applyPlannerDragEnd(event, planner) {
   const from = colOfTask(tid, todayIds, tomorrowIds)
   if (!from) return null
 
-  if (oid === 'pool-zone') {
+  if (oid === 'pool-zone' || oid === 'pool-zone-top') {
     if (from === 'today') todayIds = removeId(todayIds, tid)
     else tomorrowIds = removeId(tomorrowIds, tid)
     return { todayTaskIds: todayIds, tomorrowTaskIds: tomorrowIds }

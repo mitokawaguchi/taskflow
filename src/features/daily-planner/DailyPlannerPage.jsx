@@ -158,7 +158,7 @@ export default function DailyPlannerPage({
     >
       <div className="daily-planner">
         <p className="daily-planner__hint text-muted">
-          カードのどこをつかんでもドラッグできます。下の一覧から上の列へ並べます（左が明日・右が今日）。プールへ戻すときは下のドロップゾーンへ。
+          カードのどこをつかんでもドラッグできます。下の一覧から上の列へ並べます（左が明日・右が今日）。列からプールへ戻すときは、プール見出しのすぐ下のエリアへドロップできます。
         </p>
         <div className="daily-planner__top">
           <div ref={refTomorrow}>
