@@ -28,6 +28,11 @@ describe('SettingsModal', () => {
     expect(screen.getByRole('heading', { name: '設定' })).toBeInTheDocument()
   })
 
+  it('カード左帯の凡例を表示する', () => {
+    render(<SettingsModal {...defaultProps} />)
+    expect(screen.getByRole('heading', { name: /タスクカードの「左の帯」と色/ })).toBeInTheDocument()
+  })
+
   it('shows ダーク when theme is dark', () => {
     render(<SettingsModal {...defaultProps} theme="dark" />)
     expect(screen.getByText('ダーク')).toBeInTheDocument()

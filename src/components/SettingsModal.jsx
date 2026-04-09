@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import { insertUser, fetchUsers, updateUser } from '../api'
+import { CardRibbonLegend } from './CardRibbonLegend'
 
 export default function SettingsModal({
   theme,
@@ -73,6 +74,10 @@ export default function SettingsModal({
               onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
             />
           </div>
+        </div>
+
+        <div className="form-group mt-24">
+          <CardRibbonLegend />
         </div>
 
         <div className="form-group mt-24">
