@@ -3,7 +3,7 @@ import { PRIORITY_KEYS, TASK_STATUS_KEYS, TASK_STATUS, getPriorityLabel, getPrio
 /** 左リボン色（index.css の task-card--status-* / kanban-card__bar と対応） */
 const STATUS_RIBBON_HEX = {
   todo: '#64748b',
-  in_progress: '#3a8f52',
+  in_progress: '#5e6ad2',
   review: '#7c3aed',
   done: '#0f766e',
 }

@@ -1,15 +1,18 @@
-/* ドキュメント仕様: メイン#3a8f52 / アクセント#2d7a43 / 淡い緑#e8f5ec / 背景#F7F8FA / カード#FFFFFF / テキスト#1A1A2E / サブ#6B7280 */
+/* テーマ: Linear 系（getdesign.md / linear.app）— ミニマル・紫アクセント */
 :root {
-  --bg: #F7F8FA;
-  --surface: #FFFFFF;
-  --surface2: #FFFFFF;
-  --surface3: #e8f5ec;
-  --border: #E5E7EB;
-  --text: #1A1A2E;
-  --text-muted: #6B7280;
-  --accent: #3a8f52;
-  --accent-hover: #2d7a43;
-  --accent-glow: #e8f5ec;
+  --bg: #f2f3f7;
+  --sidebar-bg: #ffffff;
+  --surface: #ffffff;
+  --surface2: #fafafb;
+  --surface3: #eceef3;
+  --border: #e4e6ed;
+  --text: #0d0d12;
+  --text-muted: #6b7280;
+  --accent: #5e6ad2;
+  --accent-hover: #505eb8;
+  --accent-rgb: 94, 106, 210;
+  --accent-hover-rgb: 80, 94, 184;
+  --accent-glow: rgba(94, 106, 210, 0.1);
 
   --critical: #dc2626;
   --critical-bg: rgba(220,38,38,0.12);
@@ -32,16 +35,19 @@
 
 /* ダークモード（トップバーの切り替えで適用） */
 html.dark {
-  --bg: #0c0c10;
-  --surface: #1a1a22;
-  --surface2: #24242e;
-  --surface3: #2e2e3a;
-  --border: #404052;
-  --text: #ececf4;
-  --text-muted: #a0a4b4;
-  --accent: #3a8f52;
-  --accent-hover: #3d8b55;
-  --accent-glow: rgba(58,143,82,0.28);
+  --bg: #08090a;
+  --sidebar-bg: #0c0c0f;
+  --surface: #121316;
+  --surface2: #18181c;
+  --surface3: #222228;
+  --border: #2a2a32;
+  --text: #ececee;
+  --text-muted: #9ca3af;
+  --accent: #818cf8;
+  --accent-hover: #a5b4fc;
+  --accent-rgb: 129, 140, 248;
+  --accent-hover-rgb: 165, 180, 252;
+  --accent-glow: rgba(129, 140, 248, 0.14);
   --critical: #ff4560;
   --critical-bg: rgba(255,69,96,0.28);
   --critical-border: rgba(255,69,96,0.5);
@@ -55,8 +61,6 @@ html.dark {
   --low-bg: rgba(6,214,160,0.28);
   --low-border: rgba(6,214,160,0.5);
 }
-html.dark .sidebar-item.active { background: var(--accent-glow); color: var(--accent); font-weight: 600; }
-html.dark .sidebar-item.active .badge { background: var(--accent); color: #fff; }
 
 /* iOS風 ライト/ダーク切替トグル */
 .theme-toggle {
@@ -118,8 +122,8 @@ button:focus-visible, [role="button"]:focus-visible, a:focus-visible { outline: 
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Noto Sans JP', sans-serif;
-  font-size: 15px;
+  font-family: 'Inter', 'Noto Sans JP', system-ui, sans-serif;
+  font-size: 14px;
   min-height: 100vh;
   overflow-x: hidden;
   letter-spacing: 0.01em;
@@ -186,14 +190,14 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 .legal-links__sep { opacity: 0.6; user-select: none; }
 .sidebar-legal-links { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); justify-content: flex-start; }
 .sidebar {
-  width: 240px; min-width: 240px;
-  background: var(--surface);
+  width: 232px; min-width: 232px;
+  background: var(--sidebar-bg);
   border-right: 1px solid var(--border);
   display: flex; flex-direction: column;
   overflow-y: auto;
   transition: transform 0.3s;
 }
-.sidebar-header { padding: 24px 20px 16px; border-bottom: 1px solid var(--border); }
+.sidebar-header { padding: 20px 16px 14px; border-bottom: 1px solid var(--border); }
 .logo {
   display: flex;
   align-items: center;
@@ -211,8 +215,8 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
   margin-top: 10px;
   padding: 8px 12px;
   background: var(--accent-glow);
-  border: 1px solid var(--accent);
-  border-radius: 8px;
+  border: 1px solid rgba(var(--accent-rgb), 0.22);
+  border-radius: 6px;
 }
 .sidebar-today-label {
   font-size: 12px;
@@ -227,7 +231,7 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 }
 .sidebar-section { padding: 12px 12px 0; }
 .sidebar-label {
-  font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
   text-transform: uppercase; color: var(--text-muted);
   padding: 0 8px 8px;
 }
@@ -235,7 +239,7 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 .sidebar-project-toggle {
   border: none; background: none; padding: 0; margin: 0;
   font: inherit; color: inherit; cursor: pointer;
-  font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
 }
 .sidebar-project-toggle:hover { color: var(--accent); }
 .sidebar-add-proj {
@@ -246,22 +250,22 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 
 .sidebar-item {
   display: flex; align-items: center; gap: 10px;
-  padding: 9px 10px; border-radius: 8px;
+  padding: 7px 9px; border-radius: 6px;
   cursor: pointer; transition: all 0.15s;
-  font-size: 14px; font-weight: 500; color: var(--text-muted);
+  font-size: 13px; font-weight: 500; color: var(--text-muted);
   border: none; background: none; width: 100%; text-align: left;
   min-width: 0;
   overflow: hidden;
 }
 .sidebar-item:hover { background: var(--surface3); color: var(--text); }
-.sidebar-item.active { background: var(--accent); color: #fff; font-weight: 600; }
-.sidebar-item .icon { font-size: 16px; }
+.sidebar-item.active { background: var(--accent-glow); color: var(--accent); font-weight: 600; }
+.sidebar-item .icon { font-size: 15px; }
 .sidebar-item .badge {
   margin-left: auto; background: var(--accent);
   color: #fff; font-size: 10px; font-weight: 700;
   padding: 1px 6px; border-radius: 20px; font-family: 'Sora', sans-serif;
 }
-.sidebar-item.active .badge { background: rgba(255,255,255,0.9); color: var(--accent); }
+.sidebar-item.active .badge { background: var(--accent); color: #fff; }
 .sidebar-item__label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sidebar-item__count { margin-left: auto; font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
 .project-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
@@ -281,15 +285,20 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
   to { transform: translateX(0); }
 }
 .topbar {
-  padding: 20px 28px;
+  padding: 14px 22px;
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center; gap: 12px;
-  background: var(--bg); position: sticky; top: 0; z-index: 10;
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  backdrop-filter: saturate(160%) blur(12px);
+  position: sticky; top: 0; z-index: 10;
   flex-wrap: wrap;
 }
+html.dark .topbar {
+  background: color-mix(in srgb, var(--surface) 94%, var(--bg));
+}
 .topbar-title {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 600;
   flex: 1;
   min-width: 0;
   white-space: nowrap;
@@ -302,28 +311,28 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  padding: 4px;
+  padding: 3px;
   background: var(--surface3);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 8px;
   margin-left: 8px;
 }
 .topbar-tab {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 5px 10px;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   background: transparent;
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
 .topbar-tab:hover { color: var(--text); background: var(--surface); }
-.topbar-tab--active { background: var(--surface); color: var(--accent); font-weight: 600; border: 1px solid var(--border); }
+.topbar-tab--active { background: var(--surface); color: var(--accent); font-weight: 600; border: 1px solid transparent; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06); }
 .topbar-tab__icon { font-size: 14px; }
 .topbar-right {
   display: flex;
@@ -431,7 +440,7 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
   font-size: 13px; font-weight: 500; transition: all 0.15s;
 }
 .btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(45,122,67,0.25); }
+.btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 2px 10px rgba(var(--accent-rgb), 0.35); }
 .btn-ghost { background: var(--surface); color: var(--text-muted); border: 1px solid var(--border); }
 .btn-ghost:hover { color: var(--text); border-color: var(--text-muted); background: var(--surface3); }
 .btn-ghost.active { background: var(--surface3); color: var(--text); border-color: var(--accent); font-weight: 600; }
@@ -440,7 +449,7 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 .content {
   position: relative;
   min-width: 0;
-  padding: 24px 28px;
+  padding: 20px 24px;
   flex: 0 1 auto;
   display: flex;
   flex-direction: column;
@@ -592,7 +601,7 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
   transition: all 0.18s;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
   padding-right: 16px;
   padding-bottom: 16px;
 }
@@ -616,7 +625,7 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 .task-card--status-review::before { background: #7c3aed; }
 .task-card--status-done::before { background: #0f766e; }
 html.dark .task-card--status-todo::before { background: #94a3b8; }
-html.dark .task-card--status-in_progress::before { background: #4ade80; }
+html.dark .task-card--status-in_progress::before { background: var(--accent); }
 html.dark .task-card--status-review::before { background: #a78bfa; }
 html.dark .task-card--status-done::before { background: #2dd4bf; }
 /* レビュー中: 緊急色の面でも分かるよう上端ストライプ＋点線（確認待ち） */
@@ -635,7 +644,7 @@ html.dark .task-card--status-review:not(.done) {
     inset 0 4px 0 0 #a78bfa,
     inset 0 0 70px rgba(167, 139, 250, 0.09);
 }
-.task-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.task-card:hover { border-color: rgba(var(--accent-rgb), 0.45); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08); }
 .task-card--status-review:not(.done):hover {
   border-color: rgba(124, 58, 237, 0.65);
   box-shadow:
@@ -696,9 +705,9 @@ html.dark .kanban-card--status-review.low {
   margin-bottom: 10px;
   padding: 10px 12px;
   border-radius: 10px;
-  border: 1px solid rgba(58, 143, 82, 0.45);
+  border: 1px solid rgba(var(--accent-rgb), 0.45);
   background: linear-gradient(135deg, var(--accent-glow) 0%, var(--surface2) 100%);
-  box-shadow: 0 1px 0 rgba(58, 143, 82, 0.12);
+  box-shadow: 0 1px 0 rgba(var(--accent-rgb), 0.12);
 }
 .task-purpose-panel__head {
   margin-bottom: 6px;
@@ -737,8 +746,8 @@ html.dark .kanban-card--status-review.low {
   font-weight: 600;
 }
 html.dark .task-purpose-panel {
-  border-color: rgba(74, 222, 128, 0.35);
-  background: linear-gradient(135deg, rgba(58, 143, 82, 0.22) 0%, var(--surface2) 100%);
+  border-color: rgba(var(--accent-rgb), 0.35);
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.22) 0%, var(--surface2) 100%);
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
 }
 html.dark .task-purpose-panel__body {
@@ -771,7 +780,7 @@ input.card-check {
 }
 html:not(.dark) input.card-check:not(:checked):hover {
   border-color: var(--accent);
-  box-shadow: 0 0 0 1px rgba(58, 143, 82, 0.35), inset 0 1px 2px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.35), inset 0 1px 2px rgba(15, 23, 42, 0.06);
 }
 input.card-check:checked {
   background: var(--accent);
@@ -788,7 +797,7 @@ html.dark input.card-check:not(:checked) {
 }
 html.dark input.card-check:not(:checked):hover {
   border-color: var(--accent);
-  box-shadow: 0 0 0 1px rgba(58, 143, 82, 0.4), inset 0 1px 2px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.4), inset 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 .card-check.checked { background: var(--accent); border-color: var(--accent); }
 .card-check.checked::after { content: '✓'; color: #fff; font-size: 11px; }
@@ -862,7 +871,7 @@ html.dark .task-status-badge--todo {
   color: #cbd5e1;
 }
 html.dark .task-status-badge--in_progress {
-  color: #86efac;
+  color: var(--accent-hover);
 }
 html.dark .task-status-badge--review {
   background: rgba(167, 139, 250, 0.15);
@@ -924,7 +933,7 @@ html.dark .task-status-badge--done {
 .form-group--purpose-emphasis {
   padding: 12px 14px;
   border-radius: 10px;
-  border: 1px solid rgba(58, 143, 82, 0.4);
+  border: 1px solid rgba(var(--accent-rgb), 0.4);
   background: var(--accent-glow);
 }
 .form-group--purpose-emphasis .form-label {
@@ -932,8 +941,8 @@ html.dark .task-status-badge--done {
   font-weight: 700;
 }
 html.dark .form-group--purpose-emphasis {
-  border-color: rgba(74, 222, 128, 0.35);
-  background: rgba(58, 143, 82, 0.15);
+  border-color: rgba(var(--accent-rgb), 0.35);
+  background: rgba(var(--accent-rgb), 0.15);
 }
 
 /* 設定: タスクカード左帯（状態）と面の色（重要度）の凡例 */
@@ -1687,7 +1696,7 @@ html.dark .kanban-card--status-review .kanban-card__progress-bar {
 .kanban-card__bar--review { background: #7c3aed; }
 .kanban-card__bar--done { background: #0f766e; }
 html.dark .kanban-card__bar--todo { background: #94a3b8; }
-html.dark .kanban-card__bar--in_progress { background: #4ade80; }
+html.dark .kanban-card__bar--in_progress { background: var(--accent); }
 html.dark .kanban-card__bar--review { background: #a78bfa; }
 html.dark .kanban-card__bar--done { background: #2dd4bf; }
 .kanban-card__body {
@@ -1711,7 +1720,7 @@ html.dark .kanban-card__bar--done { background: #2dd4bf; }
 }
 html:not(.dark) .kanban-card__check:not(:checked):hover {
   border-color: var(--accent);
-  box-shadow: 0 0 0 1px rgba(58, 143, 82, 0.35), inset 0 1px 2px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.35), inset 0 1px 2px rgba(15, 23, 42, 0.06);
 }
 .kanban-card__check:hover {
   border-color: var(--accent);
@@ -1723,7 +1732,7 @@ html.dark .kanban-card__check:not(:checked) {
 }
 html.dark .kanban-card__check:not(:checked):hover {
   border-color: var(--accent);
-  box-shadow: 0 0 0 1px rgba(58, 143, 82, 0.4), inset 0 1px 2px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.4), inset 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 .kanban-card__check:checked {
   background: var(--accent);
@@ -2357,9 +2366,9 @@ html.dark .bf-panel { box-shadow: 0 2px 16px rgba(0, 0, 0, 0.35); }
   border-radius: 999px;
   background: var(--accent-glow);
   color: var(--accent-hover);
-  border: 1px solid rgba(58, 143, 82, 0.25);
+  border: 1px solid rgba(var(--accent-rgb), 0.25);
 }
-html.dark .bf-cat { border-color: rgba(58, 143, 82, 0.4); }
+html.dark .bf-cat { border-color: rgba(var(--accent-rgb), 0.4); }
 .bf-panel .empty-state {
   margin: 8px 0 4px;
   padding: 48px 20px;
@@ -2410,10 +2419,10 @@ html.dark .bf-cat { border-color: rgba(58, 143, 82, 0.4); }
 }
 .notes-screen__lead strong { color: var(--text); font-weight: 600; }
 .notes-screen__lead--readonly {
-  border-color: rgba(58, 143, 82, 0.35);
+  border-color: rgba(var(--accent-rgb), 0.35);
   background: var(--accent-glow);
 }
-html.dark .notes-screen__lead--readonly { border-color: rgba(58, 143, 82, 0.45); }
+html.dark .notes-screen__lead--readonly { border-color: rgba(var(--accent-rgb), 0.45); }
 .notes-readonly-banner {
   flex-shrink: 0;
   margin: 0 0 12px;
@@ -2955,7 +2964,7 @@ html.dark .notes-screen__lead--readonly { border-color: rgba(58, 143, 82, 0.45);
   color: var(--text-muted);
 }
 .kanban-card--highlight {
-  box-shadow: 0 0 0 2px var(--accent), 0 4px 20px rgba(58, 143, 82, 0.35);
+  box-shadow: 0 0 0 2px var(--accent), 0 4px 20px rgba(var(--accent-rgb), 0.35);
 }
 
 .dashboard-consulting {
