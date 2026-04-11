@@ -260,14 +260,14 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 .sidebar-item:hover { background: var(--surface3); color: var(--text); }
 .sidebar-item.active { background: var(--accent-glow); color: var(--accent); font-weight: 600; }
 .sidebar-item .icon {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
-.sidebar-item .icon .app-svg-icon { width: 22px; height: 22px; }
+.sidebar-item .icon .app-svg-icon { width: 24px; height: 24px; }
 .sidebar-item .badge {
   margin-left: auto; background: var(--accent);
   color: #fff; font-size: 10px; font-weight: 700;
@@ -348,7 +348,7 @@ html.dark .topbar {
   justify-content: center;
   color: currentColor;
 }
-.topbar-tab__icon { width: 22px; height: 22px; }
+.topbar-tab__icon { width: 24px; height: 24px; }
 .app-svg-icon { width: 1em; height: 1em; display: block; flex: none; }
 .topbar-right {
   display: flex;
@@ -394,14 +394,14 @@ html.dark .topbar {
 .topbar-search-icon {
   position: absolute;
   left: 12px;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   color: var(--text-muted);
   pointer-events: none;
 }
 .topbar-search {
   width: 200px;
-  padding: 7px 12px 7px 38px;
+  padding: 7px 12px 7px 42px;
   border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--surface);
@@ -414,8 +414,8 @@ html.dark .topbar {
 .topbar-search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent); }
 .topbar-icon-btn {
   position: relative;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -429,7 +429,7 @@ html.dark .topbar {
 }
 .topbar-icon-btn:hover { background: var(--surface3); color: var(--text); border-color: color-mix(in srgb, var(--accent) 16%, var(--border)); }
 .topbar-icon-btn .app-svg-icon,
-.topbar-avatar .app-svg-icon { width: 22px; height: 22px; }
+.topbar-avatar .app-svg-icon { width: 24px; height: 24px; }
 .topbar-icon-dot {
   position: absolute;
   top: 6px;
@@ -441,8 +441,8 @@ html.dark .topbar {
   border: 2px solid var(--bg);
 }
 .topbar-avatar {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1156,23 +1156,23 @@ html.dark .card-ribbon-legend__swatch--ribbon {
 .sidebar-team-avatar:hover { border-color: var(--accent); }
 .sidebar-team-avatar.active { border-color: var(--accent); background: var(--accent-bg); }
 .sidebar-team-avatar__fallback {
-  width: 19px;
-  height: 19px;
+  width: 20px;
+  height: 20px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: var(--text-muted);
 }
 .sidebar-inline-icon {
-  width: 19px;
-  height: 19px;
+  width: 20px;
+  height: 20px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
 .sidebar-inline-icon .app-svg-icon,
-.sidebar-team-avatar__fallback .app-svg-icon { width: 19px; height: 19px; }
+.sidebar-team-avatar__fallback .app-svg-icon { width: 20px; height: 20px; }
 /* 担当者: 期限行の横に並べる（TaskCard / Kanban） */
 .card-assignee-inline {
   display: inline-flex;
