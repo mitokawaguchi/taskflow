@@ -1,4 +1,5 @@
 import { useDraggable } from '@dnd-kit/core'
+import { normalizeTaskStatus } from '../constants'
 import { KanbanCardContent } from './KanbanCardContent'
 
 export function DraggableKanbanCard({
@@ -16,6 +17,7 @@ export function DraggableKanbanCard({
   isHighlighted,
 }) {
   const priorityClass = task.priority ?? 'medium'
+  const statusClass = `kanban-card--status-${normalizeTaskStatus(task)}`
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: task.id,
     data: { task },
@@ -25,7 +27,7 @@ export function DraggableKanbanCard({
     <div
       ref={setNodeRef}
       data-kanban-task-id={task.id}
-      className={`kanban-card kanban-card--draggable ${priorityClass} ${isDragging ? 'kanban-card--dragging' : ''} ${isHighlighted ? 'kanban-card--highlight' : ''}`}
+      className={`kanban-card kanban-card--draggable ${priorityClass} ${statusClass} ${isDragging ? 'kanban-card--dragging' : ''} ${isHighlighted ? 'kanban-card--highlight' : ''}`}
       style={transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` } : undefined}
     >
       <span

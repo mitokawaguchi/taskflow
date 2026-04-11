@@ -1,0 +1,1897 @@
+{
+	"@programName": "ZAP",
+	"@version": "2.17.0",
+	"@generated": "\u571F, 11 4\u6708 2026 13:06:17",
+	"created": "2026-04-11T04:06:17.801281500Z",
+	"insights":[
+		{
+			"level": "低",
+			"reason": "警告",
+			"site": "",
+			"key": "insight.log.error",
+			"description": "ZAP のエラーが記録されました。詳細は zap.log ファイルを参照してください",
+			"statistic": "4"
+		},
+		{
+			"level": "低",
+			"reason": "警告",
+			"site": "",
+			"key": "insight.log.warn",
+			"description": "ZAP の警告が記録されました。詳細は zap.log ファイルを参照してください",
+			"statistic": "32"
+		},
+		{
+			"level": "低",
+			"reason": "Exceeded High",
+			"site": "https://taskflow-mitokawaguchis-projects.vercel.app",
+			"key": "insight.code.4xx",
+			"description": "ステータスコード 4xx のレスポンスの割合",
+			"statistic": "88"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "http://edge.microsoft.com",
+			"key": "insight.code.4xx",
+			"description": "ステータスコード 4xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "http://edge.microsoft.com",
+			"key": "insight.endpoint.method.GET",
+			"description": "メソッド GET のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "http://edge.microsoft.com",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "1"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "http://taskflow-mitokawaguchis-projects.vercel.app",
+			"key": "insight.code.3xx",
+			"description": "ステータスコード 3xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://accounts.google.com",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://accounts.google.com",
+			"key": "insight.endpoint.ctype.application/javascript",
+			"description": "コンテンツタイプ application/javascript のエンドポイントの割合",
+			"statistic": "25"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://accounts.google.com",
+			"key": "insight.endpoint.ctype.application/json",
+			"description": "コンテンツタイプ application/json のエンドポイントの割合",
+			"statistic": "25"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://accounts.google.com",
+			"key": "insight.endpoint.ctype.text/css",
+			"description": "コンテンツタイプ text/css のエンドポイントの割合",
+			"statistic": "25"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://accounts.google.com",
+			"key": "insight.endpoint.ctype.text/html",
+			"description": "コンテンツタイプ text/html のエンドポイントの割合",
+			"statistic": "25"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://accounts.google.com",
+			"key": "insight.endpoint.method.GET",
+			"description": "メソッド GET のエンドポイントの割合",
+			"statistic": "75"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://accounts.google.com",
+			"key": "insight.endpoint.method.POST",
+			"description": "メソッド POST のエンドポイントの割合",
+			"statistic": "25"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://accounts.google.com",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "4"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://accounts.google.com",
+			"key": "insight.response.slow",
+			"description": "低速なレスポンスの割合",
+			"statistic": "25"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://api.github.com",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://api.github.com",
+			"key": "insight.endpoint.ctype.text/plain",
+			"description": "コンテンツタイプ text/plain のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://api.github.com",
+			"key": "insight.endpoint.method.POST",
+			"description": "メソッド POST のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://api.github.com",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "1"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://api.github.com",
+			"key": "insight.response.slow",
+			"description": "低速なレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://assets.vercel.com",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://assets.vercel.com",
+			"key": "insight.endpoint.ctype.image/x-icon",
+			"description": "コンテンツタイプ image/x-icon のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://assets.vercel.com",
+			"key": "insight.endpoint.method.GET",
+			"description": "メソッド GET のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://assets.vercel.com",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "1"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://assets.vercel.com",
+			"key": "insight.response.slow",
+			"description": "低速なレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://avatars.githubusercontent.com",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://avatars.githubusercontent.com",
+			"key": "insight.endpoint.ctype.image/png",
+			"description": "コンテンツタイプ image/png のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://avatars.githubusercontent.com",
+			"key": "insight.endpoint.method.GET",
+			"description": "メソッド GET のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://avatars.githubusercontent.com",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "1"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://cdn1.vercel.com",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://cdn1.vercel.com",
+			"key": "insight.endpoint.ctype.image/svg+xml",
+			"description": "コンテンツタイプ image/svg+xml のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://cdn1.vercel.com",
+			"key": "insight.endpoint.method.GET",
+			"description": "メソッド GET のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://cdn1.vercel.com",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "1"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://cdn2.vercel.com",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://cdn2.vercel.com",
+			"key": "insight.endpoint.ctype.image/svg+xml",
+			"description": "コンテンツタイプ image/svg+xml のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://cdn2.vercel.com",
+			"key": "insight.endpoint.method.GET",
+			"description": "メソッド GET のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://cdn2.vercel.com",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "1"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://collector.github.com",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://collector.github.com",
+			"key": "insight.endpoint.method.POST",
+			"description": "メソッド POST のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://collector.github.com",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "8"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://collector.github.com",
+			"key": "insight.response.slow",
+			"description": "低速なレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://data-edge.smartscreen.microsoft.com",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://data-edge.smartscreen.microsoft.com",
+			"key": "insight.endpoint.ctype.application/octet-stream",
+			"description": "コンテンツタイプ application/octet-stream のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://data-edge.smartscreen.microsoft.com",
+			"key": "insight.endpoint.method.POST",
+			"description": "メソッド POST のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://data-edge.smartscreen.microsoft.com",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "2"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://data-edge.smartscreen.microsoft.com",
+			"key": "insight.response.slow",
+			"description": "低速なレスポンスの割合",
+			"statistic": "50"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://edge-consumer-static.azureedge.net",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://edge-consumer-static.azureedge.net",
+			"key": "insight.endpoint.ctype.application/json",
+			"description": "コンテンツタイプ application/json のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://edge-consumer-static.azureedge.net",
+			"key": "insight.endpoint.method.GET",
+			"description": "メソッド GET のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://edge-consumer-static.azureedge.net",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "1"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://edge.microsoft.com",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://edge.microsoft.com",
+			"key": "insight.endpoint.ctype.application/json",
+			"description": "コンテンツタイプ application/json のエンドポイントの割合",
+			"statistic": "95"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://edge.microsoft.com",
+			"key": "insight.endpoint.method.GET",
+			"description": "メソッド GET のエンドポイントの割合",
+			"statistic": "83"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://edge.microsoft.com",
+			"key": "insight.endpoint.method.POST",
+			"description": "メソッド POST のエンドポイントの割合",
+			"statistic": "16"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://edge.microsoft.com",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "24"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://edge.microsoft.com",
+			"key": "insight.response.slow",
+			"description": "低速なレスポンスの割合",
+			"statistic": "1"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://edgeassetservice.azureedge.net",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://edgeassetservice.azureedge.net",
+			"key": "insight.endpoint.ctype.application/octet-stream",
+			"description": "コンテンツタイプ application/octet-stream のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://edgeassetservice.azureedge.net",
+			"key": "insight.endpoint.method.GET",
+			"description": "メソッド GET のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://edgeassetservice.azureedge.net",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "3"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://edgeassetservice.azureedge.net",
+			"key": "insight.response.slow",
+			"description": "低速なレスポンスの割合",
+			"statistic": "33"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://editor.svc.cloud.microsoft",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://editor.svc.cloud.microsoft",
+			"key": "insight.endpoint.ctype.application/json",
+			"description": "コンテンツタイプ application/json のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://editor.svc.cloud.microsoft",
+			"key": "insight.endpoint.method.POST",
+			"description": "メソッド POST のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://editor.svc.cloud.microsoft",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "1"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://editor.svc.cloud.microsoft",
+			"key": "insight.response.slow",
+			"description": "低速なレスポンスの割合",
+			"statistic": "15"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://fonts.googleapis.com",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://fonts.googleapis.com",
+			"key": "insight.endpoint.ctype.text/css",
+			"description": "コンテンツタイプ text/css のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://fonts.googleapis.com",
+			"key": "insight.endpoint.method.GET",
+			"description": "メソッド GET のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://fonts.googleapis.com",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "1"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://fonts.googleapis.com",
+			"key": "insight.response.slow",
+			"description": "低速なレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://fonts.gstatic.com",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://fonts.gstatic.com",
+			"key": "insight.endpoint.ctype.font/woff2",
+			"description": "コンテンツタイプ font/woff2 のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://fonts.gstatic.com",
+			"key": "insight.endpoint.method.GET",
+			"description": "メソッド GET のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://fonts.gstatic.com",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "52"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://github.com",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "87"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://github.com",
+			"key": "insight.code.3xx",
+			"description": "ステータスコード 3xx のレスポンスの割合",
+			"statistic": "12"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://github.com",
+			"key": "insight.endpoint.ctype.application/manifest+json",
+			"description": "コンテンツタイプ application/manifest+json のエンドポイントの割合",
+			"statistic": "11"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://github.com",
+			"key": "insight.endpoint.ctype.text/html",
+			"description": "コンテンツタイプ text/html のエンドポイントの割合",
+			"statistic": "77"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://github.com",
+			"key": "insight.endpoint.method.GET",
+			"description": "メソッド GET のエンドポイントの割合",
+			"statistic": "55"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://github.com",
+			"key": "insight.endpoint.method.POST",
+			"description": "メソッド POST のエンドポイントの割合",
+			"statistic": "44"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://github.com",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "9"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://github.com",
+			"key": "insight.response.slow",
+			"description": "低速なレスポンスの割合",
+			"statistic": "75"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://github.githubassets.com",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://github.githubassets.com",
+			"key": "insight.endpoint.ctype.application/javascript",
+			"description": "コンテンツタイプ application/javascript のエンドポイントの割合",
+			"statistic": "82"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://github.githubassets.com",
+			"key": "insight.endpoint.ctype.image/png",
+			"description": "コンテンツタイプ image/png のエンドポイントの割合",
+			"statistic": "1"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://github.githubassets.com",
+			"key": "insight.endpoint.ctype.image/svg+xml",
+			"description": "コンテンツタイプ image/svg+xml のエンドポイントの割合",
+			"statistic": "1"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://github.githubassets.com",
+			"key": "insight.endpoint.ctype.text/css",
+			"description": "コンテンツタイプ text/css のエンドポイントの割合",
+			"statistic": "14"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://github.githubassets.com",
+			"key": "insight.endpoint.method.GET",
+			"description": "メソッド GET のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://github.githubassets.com",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "87"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://github.githubassets.com",
+			"key": "insight.response.slow",
+			"description": "低速なレスポンスの割合",
+			"statistic": "1"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://msedgedriver.microsoft.com",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://msedgedriver.microsoft.com",
+			"key": "insight.endpoint.ctype.application/octet-stream",
+			"description": "コンテンツタイプ application/octet-stream のエンドポイントの割合",
+			"statistic": "50"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://msedgedriver.microsoft.com",
+			"key": "insight.endpoint.ctype.application/x-zip-compressed",
+			"description": "コンテンツタイプ application/x-zip-compressed のエンドポイントの割合",
+			"statistic": "50"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://msedgedriver.microsoft.com",
+			"key": "insight.endpoint.method.GET",
+			"description": "メソッド GET のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://msedgedriver.microsoft.com",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "2"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://msedgedriver.microsoft.com",
+			"key": "insight.response.slow",
+			"description": "低速なレスポンスの割合",
+			"statistic": "50"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://mspfoowgslrrgvdmdfke.supabase.co",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "97"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://mspfoowgslrrgvdmdfke.supabase.co",
+			"key": "insight.code.4xx",
+			"description": "ステータスコード 4xx のレスポンスの割合",
+			"statistic": "2"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://mspfoowgslrrgvdmdfke.supabase.co",
+			"key": "insight.endpoint.ctype.application/json",
+			"description": "コンテンツタイプ application/json のエンドポイントの割合",
+			"statistic": "39"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://mspfoowgslrrgvdmdfke.supabase.co",
+			"key": "insight.endpoint.ctype.application/vnd.pgrst.object+json",
+			"description": "コンテンツタイプ application/vnd.pgrst.object+json のエンドポイントの割合",
+			"statistic": "12"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://mspfoowgslrrgvdmdfke.supabase.co",
+			"key": "insight.endpoint.method.GET",
+			"description": "メソッド GET のエンドポイントの割合",
+			"statistic": "33"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://mspfoowgslrrgvdmdfke.supabase.co",
+			"key": "insight.endpoint.method.OPTIONS",
+			"description": "メソッド OPTIONS のエンドポイントの割合",
+			"statistic": "51"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://mspfoowgslrrgvdmdfke.supabase.co",
+			"key": "insight.endpoint.method.PATCH",
+			"description": "メソッド PATCH のエンドポイントの割合",
+			"statistic": "3"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://mspfoowgslrrgvdmdfke.supabase.co",
+			"key": "insight.endpoint.method.POST",
+			"description": "メソッド POST のエンドポイントの割合",
+			"statistic": "12"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://mspfoowgslrrgvdmdfke.supabase.co",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "33"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://mspfoowgslrrgvdmdfke.supabase.co",
+			"key": "insight.response.slow",
+			"description": "低速なレスポンスの割合",
+			"statistic": "60"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://nav-edge.smartscreen.microsoft.com",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://nav-edge.smartscreen.microsoft.com",
+			"key": "insight.endpoint.ctype.application/json",
+			"description": "コンテンツタイプ application/json のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://nav-edge.smartscreen.microsoft.com",
+			"key": "insight.endpoint.method.POST",
+			"description": "メソッド POST のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://nav-edge.smartscreen.microsoft.com",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "3"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://o205439.ingest.sentry.io",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://o205439.ingest.sentry.io",
+			"key": "insight.endpoint.ctype.application/json",
+			"description": "コンテンツタイプ application/json のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://o205439.ingest.sentry.io",
+			"key": "insight.endpoint.method.POST",
+			"description": "メソッド POST のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://o205439.ingest.sentry.io",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "2"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://plausible.io",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://plausible.io",
+			"key": "insight.endpoint.ctype.text/plain",
+			"description": "コンテンツタイプ text/plain のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://plausible.io",
+			"key": "insight.endpoint.method.POST",
+			"description": "メソッド POST のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://plausible.io",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "1"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://plausible.io",
+			"key": "insight.response.slow",
+			"description": "低速なレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://taskflow-mitokawaguchis-projects.vercel.app",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "10"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://taskflow-mitokawaguchis-projects.vercel.app",
+			"key": "insight.code.3xx",
+			"description": "ステータスコード 3xx のレスポンスの割合",
+			"statistic": "1"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://taskflow-mitokawaguchis-projects.vercel.app",
+			"key": "insight.endpoint.ctype.application/javascript",
+			"description": "コンテンツタイプ application/javascript のエンドポイントの割合",
+			"statistic": "40"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://taskflow-mitokawaguchis-projects.vercel.app",
+			"key": "insight.endpoint.ctype.application/pdf",
+			"description": "コンテンツタイプ application/pdf のエンドポイントの割合",
+			"statistic": "10"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://taskflow-mitokawaguchis-projects.vercel.app",
+			"key": "insight.endpoint.ctype.image/png",
+			"description": "コンテンツタイプ image/png のエンドポイントの割合",
+			"statistic": "10"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://taskflow-mitokawaguchis-projects.vercel.app",
+			"key": "insight.endpoint.ctype.text/css",
+			"description": "コンテンツタイプ text/css のエンドポイントの割合",
+			"statistic": "10"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://taskflow-mitokawaguchis-projects.vercel.app",
+			"key": "insight.endpoint.ctype.text/html",
+			"description": "コンテンツタイプ text/html のエンドポイントの割合",
+			"statistic": "20"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://taskflow-mitokawaguchis-projects.vercel.app",
+			"key": "insight.endpoint.method.GET",
+			"description": "メソッド GET のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://taskflow-mitokawaguchis-projects.vercel.app",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "10"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://taskflow-mitokawaguchis-projects.vercel.app",
+			"key": "insight.response.slow",
+			"description": "低速なレスポンスの割合",
+			"statistic": "1"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://telem-edge.smartscreen.microsoft.com",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://telem-edge.smartscreen.microsoft.com",
+			"key": "insight.endpoint.method.POST",
+			"description": "メソッド POST のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://telem-edge.smartscreen.microsoft.com",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "3"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://vercel.com",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "96"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://vercel.com",
+			"key": "insight.code.3xx",
+			"description": "ステータスコード 3xx のレスポンスの割合",
+			"statistic": "2"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://vercel.com",
+			"key": "insight.code.4xx",
+			"description": "ステータスコード 4xx のレスポンスの割合",
+			"statistic": "1"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://vercel.com",
+			"key": "insight.endpoint.ctype.application/javascript",
+			"description": "コンテンツタイプ application/javascript のエンドポイントの割合",
+			"statistic": "77"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://vercel.com",
+			"key": "insight.endpoint.ctype.application/json",
+			"description": "コンテンツタイプ application/json のエンドポイントの割合",
+			"statistic": "2"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://vercel.com",
+			"key": "insight.endpoint.ctype.font/woff2",
+			"description": "コンテンツタイプ font/woff2 のエンドポイントの割合",
+			"statistic": "1"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://vercel.com",
+			"key": "insight.endpoint.ctype.image/svg+xml",
+			"description": "コンテンツタイプ image/svg+xml のエンドポイントの割合",
+			"statistic": "2"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://vercel.com",
+			"key": "insight.endpoint.ctype.text/css",
+			"description": "コンテンツタイプ text/css のエンドポイントの割合",
+			"statistic": "9"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://vercel.com",
+			"key": "insight.endpoint.ctype.text/html",
+			"description": "コンテンツタイプ text/html のエンドポイントの割合",
+			"statistic": "1"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://vercel.com",
+			"key": "insight.endpoint.ctype.text/plain",
+			"description": "コンテンツタイプ text/plain のエンドポイントの割合",
+			"statistic": "1"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://vercel.com",
+			"key": "insight.endpoint.ctype.text/x-component",
+			"description": "コンテンツタイプ text/x-component のエンドポイントの割合",
+			"statistic": "1"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://vercel.com",
+			"key": "insight.endpoint.method.GET",
+			"description": "メソッド GET のエンドポイントの割合",
+			"statistic": "97"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://vercel.com",
+			"key": "insight.endpoint.method.POST",
+			"description": "メソッド POST のエンドポイントの割合",
+			"statistic": "2"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://vercel.com",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "184"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://vercel.com",
+			"key": "insight.response.slow",
+			"description": "低速なレスポンスの割合",
+			"statistic": "8"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://www.bing.com",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://www.bing.com",
+			"key": "insight.endpoint.ctype.application/json",
+			"description": "コンテンツタイプ application/json のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://www.bing.com",
+			"key": "insight.endpoint.method.GET",
+			"description": "メソッド GET のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://www.bing.com",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "2"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://www.googleapis.com",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://www.googleapis.com",
+			"key": "insight.endpoint.ctype.application/json",
+			"description": "コンテンツタイプ application/json のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://www.googleapis.com",
+			"key": "insight.endpoint.method.POST",
+			"description": "メソッド POST のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://www.googleapis.com",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "1"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://www.googleapis.com",
+			"key": "insight.response.slow",
+			"description": "低速なレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://xpaywalletcdn-prod.azureedge.net",
+			"key": "insight.code.2xx",
+			"description": "ステータスコード 2xx のレスポンスの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://xpaywalletcdn-prod.azureedge.net",
+			"key": "insight.endpoint.ctype.text/plain",
+			"description": "コンテンツタイプ text/plain のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://xpaywalletcdn-prod.azureedge.net",
+			"key": "insight.endpoint.method.GET",
+			"description": "メソッド GET のエンドポイントの割合",
+			"statistic": "100"
+		},
+		{
+			"level": "情報",
+			"reason": "情報",
+			"site": "https://xpaywalletcdn-prod.azureedge.net",
+			"key": "insight.endpoint.total",
+			"description": "エンドポイントの総数",
+			"statistic": "1"
+		}
+	],
+	"site":[ 
+		{
+			"@name": "https://taskflow-mitokawaguchis-projects.vercel.app",
+			"@host": "taskflow-mitokawaguchis-projects.vercel.app",
+			"@port": "443",
+			"@ssl": "true",
+			"alerts": [ 
+				{
+					"pluginid": "10038",
+					"alertRef": "10038-1",
+					"alert": "Content Security Policy (CSP) \u30D8\u30C3\u30C0\u30FC\u304C\u8A2D\u5B9A\u3055\u308C\u3066\u3044\u306A\u3044",
+					"name": "Content Security Policy (CSP) \u30D8\u30C3\u30C0\u30FC\u304C\u8A2D\u5B9A\u3055\u308C\u3066\u3044\u306A\u3044",
+					"riskcode": "2",
+					"confidence": "3",
+					"riskdesc": "\u4E2D (\u9AD8)",
+					"desc": "<p>Content Security Policy (CSP) \u306F\u3001\u30AF\u30ED\u30B9\u30B5\u30A4\u30C8\u30B9\u30AF\u30EA\u30D7\u30C6\u30A3\u30F3\u30B0 (XSS) \u3084\u30B3\u30FC\u30C9\u30A4\u30F3\u30B8\u30A7\u30AF\u30B7\u30E7\u30F3\u653B\u6483\u306A\u3069\u306E\u7279\u5B9A\u306E\u653B\u6483\u3092\u691C\u51FA\u30FB\u8EFD\u6E1B\u3059\u308B\u305F\u3081\u306E\u8FFD\u52A0\u30BB\u30AD\u30E5\u30EA\u30C6\u30A3\u6A5F\u69CB\u3067\u3059\u3002\u3053\u308C\u3089\u306E\u653B\u6483\u306F\u3001\u30C7\u30FC\u30BF\u7A83\u53D6\u3001\u30B5\u30A4\u30C8\u6539\u3056\u3093\u3001\u30DE\u30EB\u30A6\u30A7\u30A2\u914D\u5E03\u306A\u3069\u69D8\u3005\u306A\u60AA\u610F\u306E\u3042\u308B\u6D3B\u52D5\u306B\u5229\u7528\u3055\u308C\u307E\u3059\u3002CSP\u306FWeb\u30B5\u30A4\u30C8\u7BA1\u7406\u8005\u304C\u30D6\u30E9\u30A6\u30B6\u306B\u5BFE\u3057\u3066\u30DA\u30FC\u30B8\u4E0A\u3067\u8AAD\u307F\u8FBC\u307F\u8A31\u53EF\u3059\u308B\u30EA\u30BD\u30FC\u30B9\u306E\u4FE1\u983C\u3067\u304D\u308B\u30BD\u30FC\u30B9\u3092\u5BA3\u8A00\u3059\u308B\u305F\u3081\u306E\u6A19\u6E96HTTP\u30D8\u30C3\u30C0\u30FC\u7FA4\u3092\u63D0\u4F9B\u3057\u307E\u3059\u3002\u5236\u5FA1\u5BFE\u8C61\u306B\u306F\u3001JavaScript\u3001CSS\u3001\u30D5\u30EC\u30FC\u30E0\u3001\u30D5\u30A9\u30F3\u30C8\u3001\u753B\u50CF\u3001\u30E1\u30C7\u30A3\u30A2\u30D5\u30A1\u30A4\u30EB\u306A\u3069\u306E\u5404\u7A2E\u30EA\u30BD\u30FC\u30B9\u304C\u542B\u307E\u308C\u307E\u3059\u3002</p>",
+					"instances":[ 
+						{
+							"id": "16",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						}
+					],
+					"count": "1",
+					"systemic": true,
+					"solution": "<p>Web\u30B5\u30FC\u30D0\u30FC\u3001\u30A2\u30D7\u30EA\u30B1\u30FC\u30B7\u30E7\u30F3\u30B5\u30FC\u30D0\u30FC\u3001\u30ED\u30FC\u30C9\u30D0\u30E9\u30F3\u30B5\u30FC\u306A\u3069\u304C\u3001Content-Security-Policy\u30D8\u30C3\u30C0\u30FC\u3092\u8A2D\u5B9A\u3059\u308B\u3088\u3046\u306B\u69CB\u6210\u3055\u308C\u3066\u3044\u308B\u3053\u3068\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044\u3002</p>",
+					"otherinfo": "",
+					"reference": "<p>https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP</p><p>https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html</p><p>https://www.w3.org/TR/CSP/</p><p>https://w3c.github.io/webappsec-csp/</p><p>https://web.dev/articles/csp</p><p>https://caniuse.com/#feat=contentsecuritypolicy</p><p>https://content-security-policy.com/</p>",
+					"cweid": "693",
+					"wascid": "15",
+					"sourceid": "30"
+				},
+				{
+					"pluginid": "10020",
+					"alertRef": "10020-1",
+					"alert": "\u30AF\u30EA\u30C3\u30AF\u30B8\u30E3\u30C3\u30AD\u30F3\u30B0\u5BFE\u7B56\u30D8\u30C3\u30C0\u30FC\u306E\u6B20\u5982",
+					"name": "\u30AF\u30EA\u30C3\u30AF\u30B8\u30E3\u30C3\u30AD\u30F3\u30B0\u5BFE\u7B56\u30D8\u30C3\u30C0\u30FC\u306E\u6B20\u5982",
+					"riskcode": "2",
+					"confidence": "2",
+					"riskdesc": "\u4E2D (\u4E2D)",
+					"desc": "<p>\u3053\u306E\u30EC\u30B9\u30DD\u30F3\u30B9\u306F\u300C\u30AF\u30EA\u30C3\u30AF\u30B8\u30E3\u30C3\u30AD\u30F3\u30B0\u300D\u653B\u6483\u304B\u3089\u4FDD\u8B77\u3055\u308C\u3066\u3044\u307E\u305B\u3093\u3002Content-Security-Policy \u306E 'frame-ancestors' \u30C7\u30A3\u30EC\u30AF\u30C6\u30A3\u30D6\u3001\u307E\u305F\u306F X-Frame-Options \u306E\u3044\u305A\u308C\u304B\u3092\u542B\u3081\u308B\u5FC5\u8981\u304C\u3042\u308A\u307E\u3059\u3002</p>",
+					"instances":[ 
+						{
+							"id": "1846",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/",
+							"method": "GET",
+							"param": "x-frame-options",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						}
+					],
+					"count": "1",
+					"systemic": true,
+					"solution": "<p>\u73FE\u4EE3\u306EWeb\u30D6\u30E9\u30A6\u30B6\u306F Content-Security-Policy \u304A\u3088\u3073 X-Frame-Options HTTP\u30D8\u30C3\u30C0\u30FC\u306B\u5BFE\u5FDC\u3057\u3066\u3044\u307E\u3059\u3002\u30B5\u30A4\u30C8/\u30A2\u30D7\u30EA\u304C\u8FD4\u3059\u3059\u3079\u3066\u306EWeb\u30DA\u30FC\u30B8\u3067\u3001\u3053\u308C\u3089\u306E\u3044\u305A\u308C\u304B\u304C\u8A2D\u5B9A\u3055\u308C\u3066\u3044\u308B\u3053\u3068\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044\u3002\u30DA\u30FC\u30B8\u304C\u540C\u4E00\u30B5\u30FC\u30D0\u30FC\u306E\u30DA\u30FC\u30B8\u304B\u3089\u306E\u307F\u30D5\u30EC\u30FC\u30E0\u306B\u57CB\u3081\u8FBC\u307E\u308C\u308B\u3053\u3068\u3092\u60F3\u5B9A\u3059\u308B\u5834\u5408 (\u4F8B: \u540C\u4E00\u30B5\u30A4\u30C8\u5185\u306Eiframe) \u306F SAMEORIGIN \u3092\u3001\u30DA\u30FC\u30B8\u304C\u4E00\u5207\u30D5\u30EC\u30FC\u30E0\u306B\u57CB\u3081\u8FBC\u307E\u308C\u308B\u3053\u3068\u3092\u60F3\u5B9A\u3057\u306A\u3044\u5834\u5408\u306F DENY \u3092\u4F7F\u7528\u3057\u3066\u304F\u3060\u3055\u3044\u3002\u3088\u308A\u67D4\u8EDF\u306A\u5236\u5FA1\u306B\u306F\u3001Content Security Policy \u306E\u300Cframe-ancestors\u300D\u30C7\u30A3\u30EC\u30AF\u30C6\u30A3\u30D6\u306E\u5B9F\u88C5\u3092\u63A8\u5968\u3057\u307E\u3059\u3002</p>",
+					"otherinfo": "",
+					"reference": "<p>https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-Frame-Options</p>",
+					"cweid": "1021",
+					"wascid": "15",
+					"sourceid": "568"
+				},
+				{
+					"pluginid": "10098",
+					"alertRef": "10098",
+					"alert": "\u30AF\u30ED\u30B9\u30C9\u30E1\u30A4\u30F3\u8A2D\u5B9A\u30DF\u30B9",
+					"name": "\u30AF\u30ED\u30B9\u30C9\u30E1\u30A4\u30F3\u8A2D\u5B9A\u30DF\u30B9",
+					"riskcode": "2",
+					"confidence": "2",
+					"riskdesc": "\u4E2D (\u4E2D)",
+					"desc": "<p>Web\u30B5\u30FC\u30D0\u30FC\u4E0A\u306ECORS (\u30AF\u30ED\u30B9\u30AA\u30EA\u30B8\u30F3\u30EA\u30BD\u30FC\u30B9\u5171\u6709) \u306E\u8A2D\u5B9A\u30DF\u30B9\u306B\u3088\u308A\u3001Web\u30D6\u30E9\u30A6\u30B6\u3067\u306E\u30C7\u30FC\u30BF\u8AAD\u307F\u8FBC\u307F\u304C\u53EF\u80FD\u306B\u306A\u308B\u53EF\u80FD\u6027\u304C\u3042\u308A\u307E\u3059\u3002</p>",
+					"instances":[ 
+						{
+							"id": "1849",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "Access-Control-Allow-Origin: *",
+							"otherinfo": "Web\u30B5\u30FC\u30D0\u30FC\u306ECORS\u8A2D\u5B9A\u306B\u4E0D\u5099\u304C\u3042\u308A\u3001\u4EFB\u610F\u306E\u30B5\u30FC\u30C9\u30D1\u30FC\u30C6\u30A3\u30C9\u30E1\u30A4\u30F3\u304B\u3089\u3053\u306E\u30C9\u30E1\u30A4\u30F3\u306E\u975E\u8A8D\u8A3CAPI\u306B\u5BFE\u3059\u308B\u30AF\u30ED\u30B9\u30AA\u30EA\u30B8\u30F3\u8AAD\u307F\u53D6\u308A\u30EA\u30AF\u30A8\u30B9\u30C8\u304C\u8A31\u53EF\u3055\u308C\u3066\u3044\u307E\u3059\u3002\u305F\u3060\u3057\u3001Web\u30D6\u30E9\u30A6\u30B6\u306E\u5B9F\u88C5\u306B\u3088\u308A\u3001\u4EFB\u610F\u306E\u30B5\u30FC\u30C9\u30D1\u30FC\u30C6\u30A3\u304C\u8CC7\u683C\u60C5\u5831\u3092\u4F34\u3046API\u30EC\u30B9\u30DD\u30F3\u30B9\u3092\u8AAD\u307F\u53D6\u308B\u3053\u3068\u306F\u3067\u304D\u306A\u3044\u305F\u3081\u3001\u30EA\u30B9\u30AF\u306F\u3042\u308B\u7A0B\u5EA6\u5236\u9650\u3055\u308C\u3066\u3044\u307E\u3059\u3002\u3053\u306E\u8A2D\u5B9A\u4E0D\u5099\u306B\u3088\u308A\u3001\u653B\u6483\u8005\u306F\u8A8D\u8A3C\u306A\u3057\u3067\u30A2\u30AF\u30BB\u30B9\u53EF\u80FD\u3060\u304C\u3001IP\u30A2\u30C9\u30EC\u30B9\u8A31\u53EF\u30EA\u30B9\u30C8\u306A\u3069\u306E\u4ED6\u306E\u30BB\u30AD\u30E5\u30EA\u30C6\u30A3\u5236\u5FA1\u306B\u4F9D\u5B58\u3057\u3066\u3044\u308B\u30C7\u30FC\u30BF\u3092\u3001\u88AB\u5BB3\u8005\u306E\u30D6\u30E9\u30A6\u30B6\u3092\u7D4C\u7531\u3057\u3066\u53D6\u5F97\u3059\u308B\u53EF\u80FD\u6027\u304C\u3042\u308A\u307E\u3059\u3002"
+						},
+						{
+							"id": "1857",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/assets/dnd-kit-5-8M634Q.js",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/assets\/dnd-kit-5-8M634Q.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "Access-Control-Allow-Origin: *",
+							"otherinfo": "Web\u30B5\u30FC\u30D0\u30FC\u306ECORS\u8A2D\u5B9A\u306B\u4E0D\u5099\u304C\u3042\u308A\u3001\u4EFB\u610F\u306E\u30B5\u30FC\u30C9\u30D1\u30FC\u30C6\u30A3\u30C9\u30E1\u30A4\u30F3\u304B\u3089\u3053\u306E\u30C9\u30E1\u30A4\u30F3\u306E\u975E\u8A8D\u8A3CAPI\u306B\u5BFE\u3059\u308B\u30AF\u30ED\u30B9\u30AA\u30EA\u30B8\u30F3\u8AAD\u307F\u53D6\u308A\u30EA\u30AF\u30A8\u30B9\u30C8\u304C\u8A31\u53EF\u3055\u308C\u3066\u3044\u307E\u3059\u3002\u305F\u3060\u3057\u3001Web\u30D6\u30E9\u30A6\u30B6\u306E\u5B9F\u88C5\u306B\u3088\u308A\u3001\u4EFB\u610F\u306E\u30B5\u30FC\u30C9\u30D1\u30FC\u30C6\u30A3\u304C\u8CC7\u683C\u60C5\u5831\u3092\u4F34\u3046API\u30EC\u30B9\u30DD\u30F3\u30B9\u3092\u8AAD\u307F\u53D6\u308B\u3053\u3068\u306F\u3067\u304D\u306A\u3044\u305F\u3081\u3001\u30EA\u30B9\u30AF\u306F\u3042\u308B\u7A0B\u5EA6\u5236\u9650\u3055\u308C\u3066\u3044\u307E\u3059\u3002\u3053\u306E\u8A2D\u5B9A\u4E0D\u5099\u306B\u3088\u308A\u3001\u653B\u6483\u8005\u306F\u8A8D\u8A3C\u306A\u3057\u3067\u30A2\u30AF\u30BB\u30B9\u53EF\u80FD\u3060\u304C\u3001IP\u30A2\u30C9\u30EC\u30B9\u8A31\u53EF\u30EA\u30B9\u30C8\u306A\u3069\u306E\u4ED6\u306E\u30BB\u30AD\u30E5\u30EA\u30C6\u30A3\u5236\u5FA1\u306B\u4F9D\u5B58\u3057\u3066\u3044\u308B\u30C7\u30FC\u30BF\u3092\u3001\u88AB\u5BB3\u8005\u306E\u30D6\u30E9\u30A6\u30B6\u3092\u7D4C\u7531\u3057\u3066\u53D6\u5F97\u3059\u308B\u53EF\u80FD\u6027\u304C\u3042\u308A\u307E\u3059\u3002"
+						},
+						{
+							"id": "1852",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/assets/index-CHrPrqMN.js",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/assets\/index-CHrPrqMN.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "Access-Control-Allow-Origin: *",
+							"otherinfo": "Web\u30B5\u30FC\u30D0\u30FC\u306ECORS\u8A2D\u5B9A\u306B\u4E0D\u5099\u304C\u3042\u308A\u3001\u4EFB\u610F\u306E\u30B5\u30FC\u30C9\u30D1\u30FC\u30C6\u30A3\u30C9\u30E1\u30A4\u30F3\u304B\u3089\u3053\u306E\u30C9\u30E1\u30A4\u30F3\u306E\u975E\u8A8D\u8A3CAPI\u306B\u5BFE\u3059\u308B\u30AF\u30ED\u30B9\u30AA\u30EA\u30B8\u30F3\u8AAD\u307F\u53D6\u308A\u30EA\u30AF\u30A8\u30B9\u30C8\u304C\u8A31\u53EF\u3055\u308C\u3066\u3044\u307E\u3059\u3002\u305F\u3060\u3057\u3001Web\u30D6\u30E9\u30A6\u30B6\u306E\u5B9F\u88C5\u306B\u3088\u308A\u3001\u4EFB\u610F\u306E\u30B5\u30FC\u30C9\u30D1\u30FC\u30C6\u30A3\u304C\u8CC7\u683C\u60C5\u5831\u3092\u4F34\u3046API\u30EC\u30B9\u30DD\u30F3\u30B9\u3092\u8AAD\u307F\u53D6\u308B\u3053\u3068\u306F\u3067\u304D\u306A\u3044\u305F\u3081\u3001\u30EA\u30B9\u30AF\u306F\u3042\u308B\u7A0B\u5EA6\u5236\u9650\u3055\u308C\u3066\u3044\u307E\u3059\u3002\u3053\u306E\u8A2D\u5B9A\u4E0D\u5099\u306B\u3088\u308A\u3001\u653B\u6483\u8005\u306F\u8A8D\u8A3C\u306A\u3057\u3067\u30A2\u30AF\u30BB\u30B9\u53EF\u80FD\u3060\u304C\u3001IP\u30A2\u30C9\u30EC\u30B9\u8A31\u53EF\u30EA\u30B9\u30C8\u306A\u3069\u306E\u4ED6\u306E\u30BB\u30AD\u30E5\u30EA\u30C6\u30A3\u5236\u5FA1\u306B\u4F9D\u5B58\u3057\u3066\u3044\u308B\u30C7\u30FC\u30BF\u3092\u3001\u88AB\u5BB3\u8005\u306E\u30D6\u30E9\u30A6\u30B6\u3092\u7D4C\u7531\u3057\u3066\u53D6\u5F97\u3059\u308B\u53EF\u80FD\u6027\u304C\u3042\u308A\u307E\u3059\u3002"
+						},
+						{
+							"id": "1850",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/assets/index-DwHMTQ1N.css",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/assets\/index-DwHMTQ1N.css",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "Access-Control-Allow-Origin: *",
+							"otherinfo": "Web\u30B5\u30FC\u30D0\u30FC\u306ECORS\u8A2D\u5B9A\u306B\u4E0D\u5099\u304C\u3042\u308A\u3001\u4EFB\u610F\u306E\u30B5\u30FC\u30C9\u30D1\u30FC\u30C6\u30A3\u30C9\u30E1\u30A4\u30F3\u304B\u3089\u3053\u306E\u30C9\u30E1\u30A4\u30F3\u306E\u975E\u8A8D\u8A3CAPI\u306B\u5BFE\u3059\u308B\u30AF\u30ED\u30B9\u30AA\u30EA\u30B8\u30F3\u8AAD\u307F\u53D6\u308A\u30EA\u30AF\u30A8\u30B9\u30C8\u304C\u8A31\u53EF\u3055\u308C\u3066\u3044\u307E\u3059\u3002\u305F\u3060\u3057\u3001Web\u30D6\u30E9\u30A6\u30B6\u306E\u5B9F\u88C5\u306B\u3088\u308A\u3001\u4EFB\u610F\u306E\u30B5\u30FC\u30C9\u30D1\u30FC\u30C6\u30A3\u304C\u8CC7\u683C\u60C5\u5831\u3092\u4F34\u3046API\u30EC\u30B9\u30DD\u30F3\u30B9\u3092\u8AAD\u307F\u53D6\u308B\u3053\u3068\u306F\u3067\u304D\u306A\u3044\u305F\u3081\u3001\u30EA\u30B9\u30AF\u306F\u3042\u308B\u7A0B\u5EA6\u5236\u9650\u3055\u308C\u3066\u3044\u307E\u3059\u3002\u3053\u306E\u8A2D\u5B9A\u4E0D\u5099\u306B\u3088\u308A\u3001\u653B\u6483\u8005\u306F\u8A8D\u8A3C\u306A\u3057\u3067\u30A2\u30AF\u30BB\u30B9\u53EF\u80FD\u3060\u304C\u3001IP\u30A2\u30C9\u30EC\u30B9\u8A31\u53EF\u30EA\u30B9\u30C8\u306A\u3069\u306E\u4ED6\u306E\u30BB\u30AD\u30E5\u30EA\u30C6\u30A3\u5236\u5FA1\u306B\u4F9D\u5B58\u3057\u3066\u3044\u308B\u30C7\u30FC\u30BF\u3092\u3001\u88AB\u5BB3\u8005\u306E\u30D6\u30E9\u30A6\u30B6\u3092\u7D4C\u7531\u3057\u3066\u53D6\u5F97\u3059\u308B\u53EF\u80FD\u6027\u304C\u3042\u308A\u307E\u3059\u3002"
+						},
+						{
+							"id": "1854",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/assets/vendor-Ds5aUNbU.js",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/assets\/vendor-Ds5aUNbU.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "Access-Control-Allow-Origin: *",
+							"otherinfo": "Web\u30B5\u30FC\u30D0\u30FC\u306ECORS\u8A2D\u5B9A\u306B\u4E0D\u5099\u304C\u3042\u308A\u3001\u4EFB\u610F\u306E\u30B5\u30FC\u30C9\u30D1\u30FC\u30C6\u30A3\u30C9\u30E1\u30A4\u30F3\u304B\u3089\u3053\u306E\u30C9\u30E1\u30A4\u30F3\u306E\u975E\u8A8D\u8A3CAPI\u306B\u5BFE\u3059\u308B\u30AF\u30ED\u30B9\u30AA\u30EA\u30B8\u30F3\u8AAD\u307F\u53D6\u308A\u30EA\u30AF\u30A8\u30B9\u30C8\u304C\u8A31\u53EF\u3055\u308C\u3066\u3044\u307E\u3059\u3002\u305F\u3060\u3057\u3001Web\u30D6\u30E9\u30A6\u30B6\u306E\u5B9F\u88C5\u306B\u3088\u308A\u3001\u4EFB\u610F\u306E\u30B5\u30FC\u30C9\u30D1\u30FC\u30C6\u30A3\u304C\u8CC7\u683C\u60C5\u5831\u3092\u4F34\u3046API\u30EC\u30B9\u30DD\u30F3\u30B9\u3092\u8AAD\u307F\u53D6\u308B\u3053\u3068\u306F\u3067\u304D\u306A\u3044\u305F\u3081\u3001\u30EA\u30B9\u30AF\u306F\u3042\u308B\u7A0B\u5EA6\u5236\u9650\u3055\u308C\u3066\u3044\u307E\u3059\u3002\u3053\u306E\u8A2D\u5B9A\u4E0D\u5099\u306B\u3088\u308A\u3001\u653B\u6483\u8005\u306F\u8A8D\u8A3C\u306A\u3057\u3067\u30A2\u30AF\u30BB\u30B9\u53EF\u80FD\u3060\u304C\u3001IP\u30A2\u30C9\u30EC\u30B9\u8A31\u53EF\u30EA\u30B9\u30C8\u306A\u3069\u306E\u4ED6\u306E\u30BB\u30AD\u30E5\u30EA\u30C6\u30A3\u5236\u5FA1\u306B\u4F9D\u5B58\u3057\u3066\u3044\u308B\u30C7\u30FC\u30BF\u3092\u3001\u88AB\u5BB3\u8005\u306E\u30D6\u30E9\u30A6\u30B6\u3092\u7D4C\u7531\u3057\u3066\u53D6\u5F97\u3059\u308B\u53EF\u80FD\u6027\u304C\u3042\u308A\u307E\u3059\u3002"
+						}
+					],
+					"count": "5",
+					"systemic": true,
+					"solution": "<p>\u6A5F\u5BC6\u30C7\u30FC\u30BF\u306B\u5BFE\u3057\u3066\u9069\u5207\u306A\u8A8D\u8A3C\u30E1\u30AB\u30CB\u30BA\u30E0\u3092\u5B9F\u88C5\u3057\u3001IP\u30A2\u30C9\u30EC\u30B9\u8A31\u53EF\u30EA\u30B9\u30C8\u306A\u3069\u306E\u88DC\u5B8C\u7684\u30BB\u30AD\u30E5\u30EA\u30C6\u30A3\u5236\u5FA1\u306E\u307F\u306B\u4F9D\u5B58\u3057\u306A\u3044\u3088\u3046\u306B\u3057\u3066\u304F\u3060\u3055\u3044\u3002\u300CAccess-Control-Allow-Origin\u300DHTTP\u30D8\u30C3\u30C0\u30FC\u3092\u5FC5\u8981\u6700\u5C0F\u9650\u306E\u30C9\u30E1\u30A4\u30F3\u306B\u5236\u9650\u3059\u308B\u304B\u3001\u30AF\u30ED\u30B9\u30AA\u30EA\u30B8\u30F3\u30A2\u30AF\u30BB\u30B9\u304C\u4E0D\u8981\u306A\u5834\u5408\u306FCORS\u30D8\u30C3\u30C0\u30FC\u3092\u5B8C\u5168\u306B\u524A\u9664\u3057\u3066\u3001Web\u30D6\u30E9\u30A6\u30B6\u306ESame Origin Policy (SOP) \u306B\u3088\u308B\u53B3\u683C\u306A\u5236\u5FA1\u3092\u6709\u52B9\u306B\u3057\u3066\u304F\u3060\u3055\u3044\u3002</p>",
+					"otherinfo": "<p>Web\u30B5\u30FC\u30D0\u30FC\u306ECORS\u8A2D\u5B9A\u306B\u4E0D\u5099\u304C\u3042\u308A\u3001\u4EFB\u610F\u306E\u30B5\u30FC\u30C9\u30D1\u30FC\u30C6\u30A3\u30C9\u30E1\u30A4\u30F3\u304B\u3089\u3053\u306E\u30C9\u30E1\u30A4\u30F3\u306E\u975E\u8A8D\u8A3CAPI\u306B\u5BFE\u3059\u308B\u30AF\u30ED\u30B9\u30AA\u30EA\u30B8\u30F3\u8AAD\u307F\u53D6\u308A\u30EA\u30AF\u30A8\u30B9\u30C8\u304C\u8A31\u53EF\u3055\u308C\u3066\u3044\u307E\u3059\u3002\u305F\u3060\u3057\u3001Web\u30D6\u30E9\u30A6\u30B6\u306E\u5B9F\u88C5\u306B\u3088\u308A\u3001\u4EFB\u610F\u306E\u30B5\u30FC\u30C9\u30D1\u30FC\u30C6\u30A3\u304C\u8CC7\u683C\u60C5\u5831\u3092\u4F34\u3046API\u30EC\u30B9\u30DD\u30F3\u30B9\u3092\u8AAD\u307F\u53D6\u308B\u3053\u3068\u306F\u3067\u304D\u306A\u3044\u305F\u3081\u3001\u30EA\u30B9\u30AF\u306F\u3042\u308B\u7A0B\u5EA6\u5236\u9650\u3055\u308C\u3066\u3044\u307E\u3059\u3002\u3053\u306E\u8A2D\u5B9A\u4E0D\u5099\u306B\u3088\u308A\u3001\u653B\u6483\u8005\u306F\u8A8D\u8A3C\u306A\u3057\u3067\u30A2\u30AF\u30BB\u30B9\u53EF\u80FD\u3060\u304C\u3001IP\u30A2\u30C9\u30EC\u30B9\u8A31\u53EF\u30EA\u30B9\u30C8\u306A\u3069\u306E\u4ED6\u306E\u30BB\u30AD\u30E5\u30EA\u30C6\u30A3\u5236\u5FA1\u306B\u4F9D\u5B58\u3057\u3066\u3044\u308B\u30C7\u30FC\u30BF\u3092\u3001\u88AB\u5BB3\u8005\u306E\u30D6\u30E9\u30A6\u30B6\u3092\u7D4C\u7531\u3057\u3066\u53D6\u5F97\u3059\u308B\u53EF\u80FD\u6027\u304C\u3042\u308A\u307E\u3059\u3002</p>",
+					"reference": "<p>https://vulncat.fortify.com/en/detail?category=HTML5&subcategory=Overly%20Permissive%20CORS%20Policy</p>",
+					"cweid": "264",
+					"wascid": "14",
+					"sourceid": "568"
+				},
+				{
+					"pluginid": "90003",
+					"alertRef": "90003",
+					"alert": "\u30B5\u30D6\u30EA\u30BD\u30FC\u30B9\u6574\u5408\u6027\u5C5E\u6027\u306E\u6B20\u843D",
+					"name": "\u30B5\u30D6\u30EA\u30BD\u30FC\u30B9\u6574\u5408\u6027\u5C5E\u6027\u306E\u6B20\u843D",
+					"riskcode": "2",
+					"confidence": "3",
+					"riskdesc": "\u4E2D (\u9AD8)",
+					"desc": "<p>\u5916\u90E8\u30B5\u30FC\u30D0\u30FC\u304B\u3089\u63D0\u4F9B\u3055\u308C\u308B\u30B9\u30AF\u30EA\u30D7\u30C8\u307E\u305F\u306F\u30EA\u30F3\u30AF\u30BF\u30B0\u306B\u3001integrity \u5C5E\u6027\u304C\u3042\u308A\u307E\u305B\u3093\u3002\u3053\u306E\u5C5E\u6027\u306F\u3001\u653B\u6483\u8005\u304C\u3053\u306E\u30B5\u30FC\u30D0\u30FC\u3078\u306E\u30A2\u30AF\u30BB\u30B9\u3092\u7372\u5F97\u3057\u305F\u5834\u5408\u306B\u3001\u60AA\u610F\u306E\u3042\u308B\u30B3\u30F3\u30C6\u30F3\u30C4\u3092\u6CE8\u5165\u3059\u308B\u306E\u3092\u9632\u304E\u307E\u3059\u3002</p>",
+					"instances":[ 
+						{
+							"id": "1855",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "<link href=\"https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap\" rel=\"stylesheet\">",
+							"otherinfo": ""
+						}
+					],
+					"count": "1",
+					"systemic": true,
+					"solution": "<p>\u30BF\u30B0\u306B\u6709\u52B9\u306A integrity \u5C5E\u6027\u3092\u8FFD\u52A0\u3057\u3066\u304F\u3060\u3055\u3044\u3002</p>",
+					"otherinfo": "",
+					"reference": "<p>https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity</p>",
+					"cweid": "345",
+					"wascid": "15",
+					"sourceid": "568"
+				},
+				{
+					"pluginid": "10021",
+					"alertRef": "10021",
+					"alert": "X-Content-Type-Options\u30D8\u30C3\u30C0\u30FC\u304C\u3042\u308A\u307E\u305B\u3093",
+					"name": "X-Content-Type-Options\u30D8\u30C3\u30C0\u30FC\u304C\u3042\u308A\u307E\u305B\u3093",
+					"riskcode": "1",
+					"confidence": "2",
+					"riskdesc": "\u4F4E (\u4E2D)",
+					"desc": "<p>MIME\u63A8\u6E2C\u9632\u6B62\u30D8\u30C3\u30C0\u30FC X-Content-Type-Options \u304C 'nosniff' \u306B\u8A2D\u5B9A\u3055\u308C\u3066\u3044\u307E\u305B\u3093\u3002\u3053\u306E\u8A2D\u5B9A\u306B\u3088\u308A\u3001\u30D6\u30E9\u30A6\u30B6\u304CContent-Type\u30D8\u30C3\u30C0\u30FC\u3092\u7121\u8996\u3057\u3066\u30D5\u30A1\u30A4\u30EB\u5185\u5BB9\u304B\u3089\u63A8\u6E2C\u3067MIME\u30BF\u30A4\u30D7\u3092\u6C7A\u5B9A\u3059\u308B\u53EF\u80FD\u6027\u304C\u3042\u308A\u307E\u3059\u3002\u3053\u308C\u306F\u3001\u653B\u6483\u8005\u304C\u30A2\u30C3\u30D7\u30ED\u30FC\u30C9\u3057\u305F\u30D5\u30A1\u30A4\u30EB\u3092\u610F\u56F3\u3057\u306A\u3044\u30B3\u30F3\u30C6\u30F3\u30C4\u30BF\u30A4\u30D7 (JavaScript\u3001HTML\u306A\u3069) \u3068\u3057\u3066\u5B9F\u884C\u3055\u305B\u3001XSS\u653B\u6483\u3092\u5B9F\u884C\u3059\u308B\u624B\u6CD5\u306B\u60AA\u7528\u3055\u308C\u308B\u6050\u308C\u304C\u3042\u308A\u307E\u3059\u3002\u73FE\u4EE3\u306E\u30D6\u30E9\u30A6\u30B6\u3067\u3082\u3001\u3053\u306E\u8A2D\u5B9A\u304C\u306A\u3044\u5834\u5408\u306FMIME\u63A8\u6E2C\u304C\u5B9F\u884C\u3055\u308C\u308B\u53EF\u80FD\u6027\u304C\u3042\u308A\u307E\u3059\u3002</p>",
+					"instances":[ 
+						{
+							"id": "1858",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/",
+							"method": "GET",
+							"param": "x-content-type-options",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "\u3053\u306E\u554F\u984C\u306F\u30A8\u30E9\u30FC\u30DA\u30FC\u30B8 (401\u3001403\u3001500\u306A\u3069) \u306B\u3082\u4F9D\u7136\u3068\u3057\u3066\u95A2\u9023\u3057\u307E\u3059\u3002\u3053\u308C\u3089\u306E\u30DA\u30FC\u30B8\u306F\u30A4\u30F3\u30B8\u30A7\u30AF\u30B7\u30E7\u30F3\u554F\u984C\u306E\u5F71\u97FF\u3092\u53D7\u3051\u308B\u3053\u3068\u304C\u591A\u304F\u3001\u305D\u306E\u5834\u5408\u3001\u30D6\u30E9\u30A6\u30B6\u304C\u672C\u6765\u306E\u30B3\u30F3\u30C6\u30F3\u30C4\u30BF\u30A4\u30D7\u3068\u306F\u7570\u306A\u308B\u30DA\u30FC\u30B8\u3068\u3057\u3066\u8A8D\u8B58\u3057\u3066\u3057\u307E\u3046\u61F8\u5FF5\u304C\u4F9D\u7136\u3068\u3057\u3066\u6B8B\u308A\u307E\u3059\u3002\n\u300C\u9AD8 (High)\u300D\u3057\u304D\u3044\u5024\u3067\u306F\u3001\u3053\u306E\u30B9\u30AD\u30E3\u30F3\u30EB\u30FC\u30EB\u306F\u30AF\u30E9\u30A4\u30A2\u30F3\u30C8\u307E\u305F\u306F\u30B5\u30FC\u30D0\u30FC\u306E\u30A8\u30E9\u30FC\u30EC\u30B9\u30DD\u30F3\u30B9\u3067\u30A2\u30E9\u30FC\u30C8\u3092\u767A\u5831\u3057\u307E\u305B\u3093\u3002"
+						},
+						{
+							"id": "1864",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/assets/dnd-kit-5-8M634Q.js",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/assets\/dnd-kit-5-8M634Q.js",
+							"method": "GET",
+							"param": "x-content-type-options",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "\u3053\u306E\u554F\u984C\u306F\u30A8\u30E9\u30FC\u30DA\u30FC\u30B8 (401\u3001403\u3001500\u306A\u3069) \u306B\u3082\u4F9D\u7136\u3068\u3057\u3066\u95A2\u9023\u3057\u307E\u3059\u3002\u3053\u308C\u3089\u306E\u30DA\u30FC\u30B8\u306F\u30A4\u30F3\u30B8\u30A7\u30AF\u30B7\u30E7\u30F3\u554F\u984C\u306E\u5F71\u97FF\u3092\u53D7\u3051\u308B\u3053\u3068\u304C\u591A\u304F\u3001\u305D\u306E\u5834\u5408\u3001\u30D6\u30E9\u30A6\u30B6\u304C\u672C\u6765\u306E\u30B3\u30F3\u30C6\u30F3\u30C4\u30BF\u30A4\u30D7\u3068\u306F\u7570\u306A\u308B\u30DA\u30FC\u30B8\u3068\u3057\u3066\u8A8D\u8B58\u3057\u3066\u3057\u307E\u3046\u61F8\u5FF5\u304C\u4F9D\u7136\u3068\u3057\u3066\u6B8B\u308A\u307E\u3059\u3002\n\u300C\u9AD8 (High)\u300D\u3057\u304D\u3044\u5024\u3067\u306F\u3001\u3053\u306E\u30B9\u30AD\u30E3\u30F3\u30EB\u30FC\u30EB\u306F\u30AF\u30E9\u30A4\u30A2\u30F3\u30C8\u307E\u305F\u306F\u30B5\u30FC\u30D0\u30FC\u306E\u30A8\u30E9\u30FC\u30EC\u30B9\u30DD\u30F3\u30B9\u3067\u30A2\u30E9\u30FC\u30C8\u3092\u767A\u5831\u3057\u307E\u305B\u3093\u3002"
+						},
+						{
+							"id": "1924",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/assets/index-CHrPrqMN.js",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/assets\/index-CHrPrqMN.js",
+							"method": "GET",
+							"param": "x-content-type-options",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "\u3053\u306E\u554F\u984C\u306F\u30A8\u30E9\u30FC\u30DA\u30FC\u30B8 (401\u3001403\u3001500\u306A\u3069) \u306B\u3082\u4F9D\u7136\u3068\u3057\u3066\u95A2\u9023\u3057\u307E\u3059\u3002\u3053\u308C\u3089\u306E\u30DA\u30FC\u30B8\u306F\u30A4\u30F3\u30B8\u30A7\u30AF\u30B7\u30E7\u30F3\u554F\u984C\u306E\u5F71\u97FF\u3092\u53D7\u3051\u308B\u3053\u3068\u304C\u591A\u304F\u3001\u305D\u306E\u5834\u5408\u3001\u30D6\u30E9\u30A6\u30B6\u304C\u672C\u6765\u306E\u30B3\u30F3\u30C6\u30F3\u30C4\u30BF\u30A4\u30D7\u3068\u306F\u7570\u306A\u308B\u30DA\u30FC\u30B8\u3068\u3057\u3066\u8A8D\u8B58\u3057\u3066\u3057\u307E\u3046\u61F8\u5FF5\u304C\u4F9D\u7136\u3068\u3057\u3066\u6B8B\u308A\u307E\u3059\u3002\n\u300C\u9AD8 (High)\u300D\u3057\u304D\u3044\u5024\u3067\u306F\u3001\u3053\u306E\u30B9\u30AD\u30E3\u30F3\u30EB\u30FC\u30EB\u306F\u30AF\u30E9\u30A4\u30A2\u30F3\u30C8\u307E\u305F\u306F\u30B5\u30FC\u30D0\u30FC\u306E\u30A8\u30E9\u30FC\u30EC\u30B9\u30DD\u30F3\u30B9\u3067\u30A2\u30E9\u30FC\u30C8\u3092\u767A\u5831\u3057\u307E\u305B\u3093\u3002"
+						},
+						{
+							"id": "1860",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/assets/index-DwHMTQ1N.css",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/assets\/index-DwHMTQ1N.css",
+							"method": "GET",
+							"param": "x-content-type-options",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "\u3053\u306E\u554F\u984C\u306F\u30A8\u30E9\u30FC\u30DA\u30FC\u30B8 (401\u3001403\u3001500\u306A\u3069) \u306B\u3082\u4F9D\u7136\u3068\u3057\u3066\u95A2\u9023\u3057\u307E\u3059\u3002\u3053\u308C\u3089\u306E\u30DA\u30FC\u30B8\u306F\u30A4\u30F3\u30B8\u30A7\u30AF\u30B7\u30E7\u30F3\u554F\u984C\u306E\u5F71\u97FF\u3092\u53D7\u3051\u308B\u3053\u3068\u304C\u591A\u304F\u3001\u305D\u306E\u5834\u5408\u3001\u30D6\u30E9\u30A6\u30B6\u304C\u672C\u6765\u306E\u30B3\u30F3\u30C6\u30F3\u30C4\u30BF\u30A4\u30D7\u3068\u306F\u7570\u306A\u308B\u30DA\u30FC\u30B8\u3068\u3057\u3066\u8A8D\u8B58\u3057\u3066\u3057\u307E\u3046\u61F8\u5FF5\u304C\u4F9D\u7136\u3068\u3057\u3066\u6B8B\u308A\u307E\u3059\u3002\n\u300C\u9AD8 (High)\u300D\u3057\u304D\u3044\u5024\u3067\u306F\u3001\u3053\u306E\u30B9\u30AD\u30E3\u30F3\u30EB\u30FC\u30EB\u306F\u30AF\u30E9\u30A4\u30A2\u30F3\u30C8\u307E\u305F\u306F\u30B5\u30FC\u30D0\u30FC\u306E\u30A8\u30E9\u30FC\u30EC\u30B9\u30DD\u30F3\u30B9\u3067\u30A2\u30E9\u30FC\u30C8\u3092\u767A\u5831\u3057\u307E\u305B\u3093\u3002"
+						},
+						{
+							"id": "1922",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/assets/supabase-jY4wIOEF.js",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/assets\/supabase-jY4wIOEF.js",
+							"method": "GET",
+							"param": "x-content-type-options",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "\u3053\u306E\u554F\u984C\u306F\u30A8\u30E9\u30FC\u30DA\u30FC\u30B8 (401\u3001403\u3001500\u306A\u3069) \u306B\u3082\u4F9D\u7136\u3068\u3057\u3066\u95A2\u9023\u3057\u307E\u3059\u3002\u3053\u308C\u3089\u306E\u30DA\u30FC\u30B8\u306F\u30A4\u30F3\u30B8\u30A7\u30AF\u30B7\u30E7\u30F3\u554F\u984C\u306E\u5F71\u97FF\u3092\u53D7\u3051\u308B\u3053\u3068\u304C\u591A\u304F\u3001\u305D\u306E\u5834\u5408\u3001\u30D6\u30E9\u30A6\u30B6\u304C\u672C\u6765\u306E\u30B3\u30F3\u30C6\u30F3\u30C4\u30BF\u30A4\u30D7\u3068\u306F\u7570\u306A\u308B\u30DA\u30FC\u30B8\u3068\u3057\u3066\u8A8D\u8B58\u3057\u3066\u3057\u307E\u3046\u61F8\u5FF5\u304C\u4F9D\u7136\u3068\u3057\u3066\u6B8B\u308A\u307E\u3059\u3002\n\u300C\u9AD8 (High)\u300D\u3057\u304D\u3044\u5024\u3067\u306F\u3001\u3053\u306E\u30B9\u30AD\u30E3\u30F3\u30EB\u30FC\u30EB\u306F\u30AF\u30E9\u30A4\u30A2\u30F3\u30C8\u307E\u305F\u306F\u30B5\u30FC\u30D0\u30FC\u306E\u30A8\u30E9\u30FC\u30EC\u30B9\u30DD\u30F3\u30B9\u3067\u30A2\u30E9\u30FC\u30C8\u3092\u767A\u5831\u3057\u307E\u305B\u3093\u3002"
+						}
+					],
+					"count": "5",
+					"systemic": true,
+					"solution": "<p>\u30A2\u30D7\u30EA\u30B1\u30FC\u30B7\u30E7\u30F3\u3084Web\u30B5\u30FC\u30D0\u30FC\u304C\u3001Content-Type\u30D8\u30C3\u30C0\u30FC\u3092\u9069\u5207\u306B\u8A2D\u5B9A\u3057\u3001\u3059\u3079\u3066\u306EWeb\u30DA\u30FC\u30B8\u3067X-Content-Type-Options\u30D8\u30C3\u30C0\u30FC\u3092 'nosniff' \u306B\u8A2D\u5B9A\u3057\u3066\u3044\u308B\u3053\u3068\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044\u3002</p><p>\u53EF\u80FD\u3067\u3042\u308C\u3070\u3001\u30A8\u30F3\u30C9\u30E6\u30FC\u30B6\u30FC\u304CMIME\u63A8\u6E2C\u3092\u4E00\u5207\u884C\u308F\u306A\u3044\u3001\u307E\u305F\u306FWeb\u30A2\u30D7\u30EA\u30B1\u30FC\u30B7\u30E7\u30F3\u3084Web\u30B5\u30FC\u30D0\u30FC\u306B\u3088\u3063\u3066MIME\u63A8\u6E2C\u3092\u884C\u308F\u306A\u3044\u3088\u3046\u306B\u6307\u793A\u3067\u304D\u308B\u3001\u6A19\u6E96\u306B\u6E96\u62E0\u3057\u305F\u6700\u65B0\u306EWeb\u30D6\u30E9\u30A6\u30B6\u3092\u4F7F\u7528\u3057\u3066\u3044\u308B\u3053\u3068\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044\u3002</p>",
+					"otherinfo": "<p>\u3053\u306E\u554F\u984C\u306F\u30A8\u30E9\u30FC\u30DA\u30FC\u30B8 (401\u3001403\u3001500\u306A\u3069) \u306B\u3082\u4F9D\u7136\u3068\u3057\u3066\u95A2\u9023\u3057\u307E\u3059\u3002\u3053\u308C\u3089\u306E\u30DA\u30FC\u30B8\u306F\u30A4\u30F3\u30B8\u30A7\u30AF\u30B7\u30E7\u30F3\u554F\u984C\u306E\u5F71\u97FF\u3092\u53D7\u3051\u308B\u3053\u3068\u304C\u591A\u304F\u3001\u305D\u306E\u5834\u5408\u3001\u30D6\u30E9\u30A6\u30B6\u304C\u672C\u6765\u306E\u30B3\u30F3\u30C6\u30F3\u30C4\u30BF\u30A4\u30D7\u3068\u306F\u7570\u306A\u308B\u30DA\u30FC\u30B8\u3068\u3057\u3066\u8A8D\u8B58\u3057\u3066\u3057\u307E\u3046\u61F8\u5FF5\u304C\u4F9D\u7136\u3068\u3057\u3066\u6B8B\u308A\u307E\u3059\u3002</p><p>\u300C\u9AD8 (High)\u300D\u3057\u304D\u3044\u5024\u3067\u306F\u3001\u3053\u306E\u30B9\u30AD\u30E3\u30F3\u30EB\u30FC\u30EB\u306F\u30AF\u30E9\u30A4\u30A2\u30F3\u30C8\u307E\u305F\u306F\u30B5\u30FC\u30D0\u30FC\u306E\u30A8\u30E9\u30FC\u30EC\u30B9\u30DD\u30F3\u30B9\u3067\u30A2\u30E9\u30FC\u30C8\u3092\u767A\u5831\u3057\u307E\u305B\u3093\u3002</p>",
+					"reference": "<p>https://learn.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/compatibility/gg622941(v=vs.85)</p><p>https://owasp.org/www-community/Security_Headers</p>",
+					"cweid": "693",
+					"wascid": "15",
+					"sourceid": "568"
+				},
+				{
+					"pluginid": "120001",
+					"alertRef": "120001-1",
+					"alert": "\u60C5\u5831\u6F0F\u6D29 - \u30D6\u30E9\u30A6\u30B6\u5185\u306E\u6A5F\u5BC6\u60C5\u5831 localStorage",
+					"name": "\u60C5\u5831\u6F0F\u6D29 - \u30D6\u30E9\u30A6\u30B6\u5185\u306E\u6A5F\u5BC6\u60C5\u5831 localStorage",
+					"riskcode": "1",
+					"confidence": "2",
+					"riskdesc": "\u4F4E (\u4E2D)",
+					"desc": "<p>\u6A5F\u5BC6\u60C5\u5831\u304C\u30D6\u30E9\u30A6\u30B6 localStorage \u306B\u4FDD\u5B58\u3055\u308C\u3066\u3044\u308B\u3053\u3068\u304C\u691C\u51FA\u3055\u308C\u307E\u3057\u305F\u3002\u3053\u308C\u306FPCI DSS\u304A\u3088\u3073\u591A\u304F\u306E\u7D44\u7E54\u306E\u30B3\u30F3\u30D7\u30E9\u30A4\u30A2\u30F3\u30B9\u898F\u7A0B\u306B\u9055\u53CD\u3059\u308B\u53EF\u80FD\u6027\u304C\u3042\u308A\u307E\u3059\u3002\u8A73\u7D30\u306B\u3064\u3044\u3066\u306F\u3001\u30AF\u30E9\u30A4\u30A2\u30F3\u30C8\u30BF\u30D6\u3092\u3054\u78BA\u8A8D\u304F\u3060\u3055\u3044\u3002\u3053\u306E\u60C5\u5831\u306F\u30D6\u30E9\u30A6\u30B6\u306B\u76F4\u63A5\u8A2D\u5B9A\u3055\u308C\u3066\u3044\u308B\u305F\u3081\u3001HTTP(S)\u901A\u4FE1\u30E1\u30C3\u30BB\u30FC\u30B8\u306B\u306F\u5FC5\u305A\u3057\u3082\u540C\u3058\u5F62\u5F0F\u3067\u8868\u793A\u3055\u308C\u307E\u305B\u3093\u3002</p>",
+					"instances":[ 
+						{
+							"id": "1980",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/",
+							"method": "GET",
+							"param": "sb-mspfoowgslrrgvdmdfke-auth-token",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "\u4EE5\u4E0B\u306E\u30C7\u30FC\u30BF (\u30AD\u30FC=\u5024) \u304C\u8A2D\u5B9A\u3055\u308C\u307E\u3057\u305F: sb-mspfoowgslrrgvdmdfke-auth-token={\"access_token\":\"eyJhbGciOiJIUzI1NiIsImtpZCI6ImRhMGMyOGYxLWQzZDUtNGU3Ni04Yzg1LTI1YWFiNzUyNzI1NyIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL21zcGZvb3dnc2xycmd2ZG1kZmtlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI3ZTdlZGUyMC1lNGQzLTQzMjItOTM3OS0zYmQxOTUxY2VjZjMiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc1ODgzNDIzLCJpYXQiOjE3NzU4Nzk4MjMsImVtYWlsIjoibWl0b2thd2FndWNoaUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImRpc3BsYXlfbmFtZSI6Im1pdG8iLCJlbWFpbCI6Im1pdG9rYXdhZ3VjaGlAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiN2U3ZWRlMjAtZTRkMy00MzIyLTkzNzktM2JkMTk1MWNlY2YzIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NzU4Nzk4MjN9XSwic2Vzc2lvbl9pZCI6Ijk3MDk3NWM0LTU0ZjQtNDhmOS04MmMyLTNmMDJmNDk4OWJiOCIsImlzX2Fub255bW91cyI6ZmFsc2V9.dcadefxm615CsINwpEIaJTERN9i1csXds4Dpu0riuD4\",\"token_type\":\"bearer\",\"expires_in\":3600,\"expires_at\":1775883423,\"refresh_token\":\"cyuktbn3d7zp\",\"user\":{\"id\":\"7e7ede20-e4d3-4322-9379-3bd1951cecf3\",\"aud\":\"authenticated\",\"role\":\"authenticated\",\"email\":\"mitokawaguchi@gmail.com\",\"email_confirmed_at\":\"2026-03-09T08:46:57.925339Z\",\"phone\":\"\",\"confirmation_sent_at\":\"2026-03-09T08:46:38.939332Z\",\"confirmed_at\":\"2026-03-09T08:46:57.925339Z\",\"last_sign_in_at\":\"2026-04-11T03:57:03.748535001Z\",\"app_metadata\":{\"provider\":\"email\",\"providers\":[\"email\"]},\"user_metadata\":{\"display_name\":\"mito\",\"email\":\"mitokawaguchi@gmail.com\",\"email_verified\":true,\"phone_verified\":false,\"sub\":\"7e7ede20-e4d3-4322-9379-3bd1951cecf3\"},\"identities\":[{\"identity_id\":\"b88c4fc7-251c-4555-80d1-ad747b6629cf\",\"id\":\"7e7ede20-e4d3-4322-9379-3bd1951cecf3\",\"user_id\":\"7e7ede20-e4d3-4322-9379-3bd1951cecf3\",\"identity_data\":{\"email\":\"mitokawaguchi@gmail.com\",\"email_verified\":true,\"phone_verified\":false,\"sub\":\"7e7ede20-e4d3-4322-9379-3bd1951cecf3\"},\"provider\":\"email\",\"last_sign_in_at\":\"2026-03-09T08:46:38.93086Z\",\"created_at\":\"2026-03-09T08:46:38.930917Z\",\"updated_at\":\"2026-03-09T08:46:38.930917Z\",\"email\":\"mitokawaguchi@gmail.com\"}],\"created_at\":\"2026-03-09T08:46:38.887082Z\",\"updated_at\":\"2026-04-11T03:57:03.820417Z\",\"is_anonymous\":false},\"weak_password\":null}\n\u3053\u308C\u306F\u30E1\u30FC\u30EB\u30A2\u30C9\u30EC\u30B9\u306E\u30D1\u30BF\u30FC\u30F3\u306B\u4E00\u81F4\u3057\u307E\u3059\u3002\n\u6CE8\u610F: \u3053\u306E\u30A2\u30E9\u30FC\u30C8\u306F\u3001URL\u30AD\u30FC\u3054\u3068\u306B\u4E00\u5EA6\u3060\u3051\u767A\u751F\u3057\u307E\u3059\u3002"
+						}
+					],
+					"count": "1",
+					"systemic": false,
+					"solution": "<p>\u6A5F\u5BC6\u60C5\u5831\u3092\u30D6\u30E9\u30A6\u30B6\u30B9\u30C8\u30EC\u30FC\u30B8\u306B\u4FDD\u5B58\u3057\u306A\u3044\u3067\u304F\u3060\u3055\u3044\u3002 </p>",
+					"otherinfo": "<p>\u4EE5\u4E0B\u306E\u30C7\u30FC\u30BF (\u30AD\u30FC=\u5024) \u304C\u8A2D\u5B9A\u3055\u308C\u307E\u3057\u305F: sb-mspfoowgslrrgvdmdfke-auth-token={\"access_token\":\"eyJhbGciOiJIUzI1NiIsImtpZCI6ImRhMGMyOGYxLWQzZDUtNGU3Ni04Yzg1LTI1YWFiNzUyNzI1NyIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL21zcGZvb3dnc2xycmd2ZG1kZmtlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI3ZTdlZGUyMC1lNGQzLTQzMjItOTM3OS0zYmQxOTUxY2VjZjMiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc1ODgzNDIzLCJpYXQiOjE3NzU4Nzk4MjMsImVtYWlsIjoibWl0b2thd2FndWNoaUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImRpc3BsYXlfbmFtZSI6Im1pdG8iLCJlbWFpbCI6Im1pdG9rYXdhZ3VjaGlAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiN2U3ZWRlMjAtZTRkMy00MzIyLTkzNzktM2JkMTk1MWNlY2YzIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NzU4Nzk4MjN9XSwic2Vzc2lvbl9pZCI6Ijk3MDk3NWM0LTU0ZjQtNDhmOS04MmMyLTNmMDJmNDk4OWJiOCIsImlzX2Fub255bW91cyI6ZmFsc2V9.dcadefxm615CsINwpEIaJTERN9i1csXds4Dpu0riuD4\",\"token_type\":\"bearer\",\"expires_in\":3600,\"expires_at\":1775883423,\"refresh_token\":\"cyuktbn3d7zp\",\"user\":{\"id\":\"7e7ede20-e4d3-4322-9379-3bd1951cecf3\",\"aud\":\"authenticated\",\"role\":\"authenticated\",\"email\":\"mitokawaguchi@gmail.com\",\"email_confirmed_at\":\"2026-03-09T08:46:57.925339Z\",\"phone\":\"\",\"confirmation_sent_at\":\"2026-03-09T08:46:38.939332Z\",\"confirmed_at\":\"2026-03-09T08:46:57.925339Z\",\"last_sign_in_at\":\"2026-04-11T03:57:03.748535001Z\",\"app_metadata\":{\"provider\":\"email\",\"providers\":[\"email\"]},\"user_metadata\":{\"display_name\":\"mito\",\"email\":\"mitokawaguchi@gmail.com\",\"email_verified\":true,\"phone_verified\":false,\"sub\":\"7e7ede20-e4d3-4322-9379-3bd1951cecf3\"},\"identities\":[{\"identity_id\":\"b88c4fc7-251c-4555-80d1-ad747b6629cf\",\"id\":\"7e7ede20-e4d3-4322-9379-3bd1951cecf3\",\"user_id\":\"7e7ede20-e4d3-4322-9379-3bd1951cecf3\",\"identity_data\":{\"email\":\"mitokawaguchi@gmail.com\",\"email_verified\":true,\"phone_verified\":false,\"sub\":\"7e7ede20-e4d3-4322-9379-3bd1951cecf3\"},\"provider\":\"email\",\"last_sign_in_at\":\"2026-03-09T08:46:38.93086Z\",\"created_at\":\"2026-03-09T08:46:38.930917Z\",\"updated_at\":\"2026-03-09T08:46:38.930917Z\",\"email\":\"mitokawaguchi@gmail.com\"}],\"created_at\":\"2026-03-09T08:46:38.887082Z\",\"updated_at\":\"2026-04-11T03:57:03.820417Z\",\"is_anonymous\":false},\"weak_password\":null}</p><p>\u3053\u308C\u306F\u30E1\u30FC\u30EB\u30A2\u30C9\u30EC\u30B9\u306E\u30D1\u30BF\u30FC\u30F3\u306B\u4E00\u81F4\u3057\u307E\u3059\u3002</p><p>\u6CE8\u610F: \u3053\u306E\u30A2\u30E9\u30FC\u30C8\u306F\u3001URL\u30AD\u30FC\u3054\u3068\u306B\u4E00\u5EA6\u3060\u3051\u767A\u751F\u3057\u307E\u3059\u3002</p>",
+					"reference": "",
+					"cweid": "359",
+					"wascid": "13",
+					"sourceid": "568"
+				},
+				{
+					"pluginid": "10015",
+					"alertRef": "10015",
+					"alert": "Cache-control\u30C7\u30A3\u30EC\u30AF\u30C6\u30A3\u30D6\u3092\u518D\u78BA\u8A8D\u3059\u308B",
+					"name": "Cache-control\u30C7\u30A3\u30EC\u30AF\u30C6\u30A3\u30D6\u3092\u518D\u78BA\u8A8D\u3059\u308B",
+					"riskcode": "0",
+					"confidence": "1",
+					"riskdesc": "\u60C5\u5831 (\u4F4E)",
+					"desc": "<p>Cache-Control\u30D8\u30C3\u30C0\u30FC\u304C\u9069\u5207\u306B\u8A2D\u5B9A\u3055\u308C\u3066\u3044\u306A\u3044\u304B\u6B20\u843D\u3057\u3066\u3044\u308B\u305F\u3081\u3001\u30D6\u30E9\u30A6\u30B6\u3084\u30D7\u30ED\u30AD\u30B7\u306B\u3088\u308B\u30B3\u30F3\u30C6\u30F3\u30C4\u306E\u30AD\u30E3\u30C3\u30B7\u30E5\u304C\u53EF\u80FD\u306B\u306A\u3063\u3066\u3044\u307E\u3059\u3002CSS\u3001JavaScript\u3001\u753B\u50CF\u306A\u3069\u306E\u30D1\u30C3\u30B7\u30D6\u30EA\u30BD\u30FC\u30B9\u3067\u306F\u30AD\u30E3\u30C3\u30B7\u30E5\u304C\u9069\u5207\u306A\u5834\u5408\u3082\u3042\u308A\u307E\u3059\u304C\u3001\u6A5F\u5BC6\u60C5\u5831\u3092\u542B\u3080\u30DA\u30FC\u30B8\u304C\u30AD\u30E3\u30C3\u30B7\u30E5\u3055\u308C\u306A\u3044\u3088\u3046\u3001\u3059\u3079\u3066\u306E\u30EA\u30BD\u30FC\u30B9\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044\u3002</p>",
+					"instances":[ 
+						{
+							"id": "1847",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/",
+							"method": "GET",
+							"param": "cache-control",
+							"attack": "",
+							"evidence": "public, max-age=0, must-revalidate",
+							"otherinfo": ""
+						}
+					],
+					"count": "1",
+					"systemic": true,
+					"solution": "<p>\u6A5F\u5BC6\u6027\u306E\u9AD8\u3044\u30B3\u30F3\u30C6\u30F3\u30C4\u306B\u306F\u3001Cache-control HTTP\u30D8\u30C3\u30C0\u30FC\u306B \"no-cache, no-store, must-revalidate\" \u3092\u8A2D\u5B9A\u3059\u308B\u3088\u3046\u306B\u3057\u3066\u304F\u3060\u3055\u3044\u3002\u30A2\u30BB\u30C3\u30C8\u3092\u30AD\u30E3\u30C3\u30B7\u30E5\u3059\u308B\u5FC5\u8981\u304C\u3042\u308B\u5834\u5408\u306F\u3001\"public, max-age, immutable\" \u30C7\u30A3\u30EC\u30AF\u30C6\u30A3\u30D6\u306E\u8A2D\u5B9A\u3092\u691C\u8A0E\u3057\u3066\u304F\u3060\u3055\u3044\u3002</p>",
+					"otherinfo": "",
+					"reference": "<p>https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#web-content-caching</p><p>https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control</p><p>https://grayduck.mn/2021/09/13/cache-control-recommendations/</p>",
+					"cweid": "525",
+					"wascid": "13",
+					"sourceid": "568"
+				},
+				{
+					"pluginid": "10050",
+					"alertRef": "10050-2",
+					"alert": "\u30AD\u30E3\u30C3\u30B7\u30E5\u304B\u3089\u53D6\u5F97",
+					"name": "\u30AD\u30E3\u30C3\u30B7\u30E5\u304B\u3089\u53D6\u5F97",
+					"riskcode": "0",
+					"confidence": "2",
+					"riskdesc": "\u60C5\u5831 (\u4E2D)",
+					"desc": "<p>\u30B3\u30F3\u30C6\u30F3\u30C4\u304C\u5171\u6709\u30AD\u30E3\u30C3\u30B7\u30E5\u304B\u3089\u914D\u4FE1\u3055\u308C\u3066\u3044\u307E\u3059\u3002\u3053\u306E\u30EC\u30B9\u30DD\u30F3\u30B9\u306B\u6A5F\u5BC6\u60C5\u5831\u3001\u500B\u4EBA\u30C7\u30FC\u30BF\u3001\u307E\u305F\u306F\u30E6\u30FC\u30B6\u30FC\u56FA\u6709\u306E\u60C5\u5831\u304C\u542B\u307E\u308C\u3066\u3044\u308B\u5834\u5408\u3001\u610F\u56F3\u3057\u306A\u3044\u60C5\u5831\u6F0F\u6D29\u304C\u767A\u751F\u3059\u308B\u53EF\u80FD\u6027\u304C\u3042\u308A\u307E\u3059\u3002\u7279\u306B\u6DF1\u523B\u306A\u30B1\u30FC\u30B9\u3067\u306F\u3001\u4ED6\u306E\u30E6\u30FC\u30B6\u30FC\u306E\u30BB\u30C3\u30B7\u30E7\u30F3\u60C5\u5831\u306B\u30A2\u30AF\u30BB\u30B9\u3057\u3001\u30A2\u30AB\u30A6\u30F3\u30C8\u4E57\u3063\u53D6\u308A\u304C\u767A\u751F\u3059\u308B\u6050\u308C\u304C\u3042\u308A\u307E\u3059\u3002\u3053\u306E\u554F\u984C\u306F\u4E3B\u306B\u3001\u4F01\u696D\u3084\u6559\u80B2\u6A5F\u95A2\u306E\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u306B\u8A2D\u7F6E\u3055\u308C\u305F\u30D7\u30ED\u30AD\u30B7\u30AD\u30E3\u30C3\u30B7\u30E5\u30B5\u30FC\u30D0\u30FC\u3067\u767A\u751F\u3057\u307E\u3059\u3002</p>",
+					"instances":[ 
+						{
+							"id": "1853",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "Age: 101817",
+							"otherinfo": "Age \u30D8\u30C3\u30C0\u30FC\u306E\u5B58\u5728\u306F\u3001HTTP/1.1\u306B\u6E96\u62E0\u3057\u305F\u30AD\u30E3\u30C3\u30B7\u30E5\u30B5\u30FC\u30D0\u30FC\u304C\u4F7F\u7528\u3055\u308C\u3066\u3044\u308B\u3053\u3068\u3092\u793A\u3057\u307E\u3059\u3002"
+						},
+						{
+							"id": "1861",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/assets/dnd-kit-5-8M634Q.js",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/assets\/dnd-kit-5-8M634Q.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "Age: 101817",
+							"otherinfo": "Age \u30D8\u30C3\u30C0\u30FC\u306E\u5B58\u5728\u306F\u3001HTTP/1.1\u306B\u6E96\u62E0\u3057\u305F\u30AD\u30E3\u30C3\u30B7\u30E5\u30B5\u30FC\u30D0\u30FC\u304C\u4F7F\u7528\u3055\u308C\u3066\u3044\u308B\u3053\u3068\u3092\u793A\u3057\u307E\u3059\u3002"
+						},
+						{
+							"id": "1923",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/assets/index-CHrPrqMN.js",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/assets\/index-CHrPrqMN.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "Age: 101816",
+							"otherinfo": "Age \u30D8\u30C3\u30C0\u30FC\u306E\u5B58\u5728\u306F\u3001HTTP/1.1\u306B\u6E96\u62E0\u3057\u305F\u30AD\u30E3\u30C3\u30B7\u30E5\u30B5\u30FC\u30D0\u30FC\u304C\u4F7F\u7528\u3055\u308C\u3066\u3044\u308B\u3053\u3068\u3092\u793A\u3057\u307E\u3059\u3002"
+						},
+						{
+							"id": "1856",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/assets/index-DwHMTQ1N.css",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/assets\/index-DwHMTQ1N.css",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "Age: 101817",
+							"otherinfo": "Age \u30D8\u30C3\u30C0\u30FC\u306E\u5B58\u5728\u306F\u3001HTTP/1.1\u306B\u6E96\u62E0\u3057\u305F\u30AD\u30E3\u30C3\u30B7\u30E5\u30B5\u30FC\u30D0\u30FC\u304C\u4F7F\u7528\u3055\u308C\u3066\u3044\u308B\u3053\u3068\u3092\u793A\u3057\u307E\u3059\u3002"
+						},
+						{
+							"id": "1921",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/assets/supabase-jY4wIOEF.js",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/assets\/supabase-jY4wIOEF.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "Age: 101817",
+							"otherinfo": "Age \u30D8\u30C3\u30C0\u30FC\u306E\u5B58\u5728\u306F\u3001HTTP/1.1\u306B\u6E96\u62E0\u3057\u305F\u30AD\u30E3\u30C3\u30B7\u30E5\u30B5\u30FC\u30D0\u30FC\u304C\u4F7F\u7528\u3055\u308C\u3066\u3044\u308B\u3053\u3068\u3092\u793A\u3057\u307E\u3059\u3002"
+						}
+					],
+					"count": "5",
+					"systemic": true,
+					"solution": "<p>\u30EC\u30B9\u30DD\u30F3\u30B9\u306B\u6A5F\u5BC6\u60C5\u5831\u3001\u500B\u4EBA\u60C5\u5831\u3001\u307E\u305F\u306F\u30E6\u30FC\u30B6\u30FC\u56FA\u6709\u306E\u60C5\u5831\u304C\u542B\u307E\u308C\u3066\u3044\u306A\u3044\u304B\u691C\u8A3C\u3057\u3066\u304F\u3060\u3055\u3044\u3002\u6A5F\u5BC6\u60C5\u5831\u304C\u542B\u307E\u308C\u3066\u3044\u308B\u5834\u5408\u306F\u3001\u4EE5\u4E0B\u306EHTTP\u30EC\u30B9\u30DD\u30F3\u30B9\u30D8\u30C3\u30C0\u30FC\u3092\u8A2D\u5B9A\u3057\u3066\u3001\u4ED6\u306E\u30E6\u30FC\u30B6\u30FC\u306B\u3088\u308B\u30AD\u30E3\u30C3\u30B7\u30E5\u304B\u3089\u306E\u30A2\u30AF\u30BB\u30B9\u3092\u9632\u6B62\u3057\u3066\u304F\u3060\u3055\u3044\uFF1A</p><p>Cache-Control: no-cache, no-store, must-revalidate, private</p><p>Pragma: no-cache</p><p>Expires: 0</p><p>\u3053\u306E\u8A2D\u5B9A\u306F\u3001HTTP/1.0\u304A\u3088\u3073HTTP/1.1\u6E96\u62E0\u306E\u30AD\u30E3\u30C3\u30B7\u30E5\u30B5\u30FC\u30D0\u30FC\u306B\u5BFE\u3057\u3066\u3001\u30EC\u30B9\u30DD\u30F3\u30B9\u3092\u30AD\u30E3\u30C3\u30B7\u30E5\u306B\u4FDD\u5B58\u305B\u305A\u3001\u540C\u69D8\u306E\u30EA\u30AF\u30A8\u30B9\u30C8\u306B\u5BFE\u3057\u3066\u3082\u30AD\u30E3\u30C3\u30B7\u30E5\u304B\u3089\u306E\u914D\u4FE1\u3092\u884C\u308F\u306A\u3044\u3088\u3046\u6307\u793A\u3057\u307E\u3059\u3002</p>",
+					"otherinfo": "<p>Age \u30D8\u30C3\u30C0\u30FC\u306E\u5B58\u5728\u306F\u3001HTTP/1.1\u306B\u6E96\u62E0\u3057\u305F\u30AD\u30E3\u30C3\u30B7\u30E5\u30B5\u30FC\u30D0\u30FC\u304C\u4F7F\u7528\u3055\u308C\u3066\u3044\u308B\u3053\u3068\u3092\u793A\u3057\u307E\u3059\u3002</p>",
+					"reference": "<p>https://datatracker.ietf.org/doc/html/rfc7234</p><p>https://datatracker.ietf.org/doc/html/rfc7231</p><p>https://www.rfc-editor.org/rfc/rfc9110.html</p>",
+					"cweid": "525",
+					"wascid": "-1",
+					"sourceid": "568"
+				},
+				{
+					"pluginid": "10112",
+					"alertRef": "10112",
+					"alert": "\u30BB\u30C3\u30B7\u30E7\u30F3\u7BA1\u7406\u30EC\u30B9\u30DD\u30F3\u30B9\u306E\u7279\u5B9A",
+					"name": "\u30BB\u30C3\u30B7\u30E7\u30F3\u7BA1\u7406\u30EC\u30B9\u30DD\u30F3\u30B9\u306E\u7279\u5B9A",
+					"riskcode": "0",
+					"confidence": "2",
+					"riskdesc": "\u60C5\u5831 (\u4E2D)",
+					"desc": "<p>\u6307\u5B9A\u3055\u308C\u305F\u30EC\u30B9\u30DD\u30F3\u30B9\u306B\u30BB\u30C3\u30B7\u30E7\u30F3\u7BA1\u7406\u30C8\u30FC\u30AF\u30F3\u304C\u542B\u307E\u308C\u3066\u3044\u308B\u3053\u3068\u304C\u8B58\u5225\u3055\u308C\u307E\u3057\u305F\u3002\u300C\u8FFD\u52A0\u60C5\u5831\u300D\u30D5\u30A3\u30FC\u30EB\u30C9\u306B\u306F\u3001\u30D8\u30C3\u30C0\u30FC\u30D9\u30FC\u30B9\u30BB\u30C3\u30B7\u30E7\u30F3\u7BA1\u7406\u65B9\u5F0F\u3067\u4F7F\u7528\u53EF\u80FD\u306A\u30D8\u30C3\u30C0\u30FC\u30C8\u30FC\u30AF\u30F3\u306E\u30BB\u30C3\u30C8\u304C\u542B\u307E\u308C\u3066\u3044\u307E\u3059\u3002\u3053\u306E\u30EA\u30AF\u30A8\u30B9\u30C8\u304C\u30BB\u30C3\u30B7\u30E7\u30F3\u7BA1\u7406\u65B9\u5F0F\u3092\u300C\u81EA\u52D5\u691C\u51FA\u300D\u306B\u8A2D\u5B9A\u3057\u305F\u30B3\u30F3\u30C6\u30AD\u30B9\u30C8\u5185\u306B\u3042\u308B\u5834\u5408\u3001\u3053\u306E\u30EB\u30FC\u30EB\u306B\u3088\u3063\u3066\u8B58\u5225\u3055\u308C\u305F\u30C8\u30FC\u30AF\u30F3\u3092\u5229\u7528\u3057\u305F\u30BB\u30C3\u30B7\u30E7\u30F3\u7BA1\u7406\u65B9\u5F0F\u306B\u5909\u66F4\u3055\u308C\u307E\u3059\u3002</p>",
+					"instances":[ 
+						{
+							"id": "27",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/",
+							"method": "GET",
+							"param": "_vercel_sso_nonce",
+							"attack": "",
+							"evidence": "_vercel_sso_nonce",
+							"otherinfo": "cookie:_vercel_sso_nonce"
+						},
+						{
+							"id": "1843",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/?_vercel_jwt=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzc28tcHJvdGVjdGlvbi1jYWxsYmFjayIsImF1ZCI6InRhc2tmbG93LW1pdG9rYXdhZ3VjaGlzLXByb2plY3RzLnZlcmNlbC5hcHAiLCJpYXQiOjE3NzU4Nzk3OTQsImV4cCI6MTc3NTg3OTgwNCwidXNlcklkIjoicXJPQUJ4UWh3b0tWQ0ZWaTBQWVdpdWJoIiwidXNlcm5hbWUiOiJtaXRva2F3YWd1Y2hpLTcxNTEiLCJub25jZSI6ImI5NWZiNGMyMDhlOTgyYWUwYTljYjVkZDJlZDNiZmUwNGU0OWU4ZTBkOTEwMzZjNzJhYjRkNjRlZTM1YTRjNzEifQ.NDqQ50QcycN_Mk0Z6Mr05eJwjHhkmZUsv_BvytVhvAg&_vercel_jwe=eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..JDba8Fzh2BW2xC4n.lmxh-61XInktX0Ij4iP0ZI-Nc-bye3mPT4VITEDpkeRvtDY-QiqxvTIF9Upkple2phr-TVtWhADf8zk4fmSS36m1Kfy-6vhGJSZ7P4e2IJ3wNfjEQwEL6EDnVufSIQkElj-rGIalbFIUE5CCJQ6mun08NkwCt9RUNR9o9mhSVqbnFc1G44galtZuRiDA9tCyKoFRzbwNvs-h-Z1tM53b79vb6qCyT7Sh4pSOC4uyrDja9g_CoiBscuguVTBsEzqlUn99UNkpQmNZfrfgwAh19dqxXNOnkcHDlewz9KWLJnF5iIBq_7NzCBktQBYghRhoW_1gnC6bq5CbHFHTIA.l82ZxigyhyjB8xsJHSz5QA",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/ (_vercel_jwe,_vercel_jwt)",
+							"method": "GET",
+							"param": "_vercel_jwt",
+							"attack": "",
+							"evidence": "_vercel_jwt",
+							"otherinfo": "cookie:_vercel_jwt\ncookie:_vercel_jwe"
+						},
+						{
+							"id": "17",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/",
+							"method": "GET",
+							"param": "_vercel_sso_nonce",
+							"attack": "",
+							"evidence": "_vercel_sso_nonce",
+							"otherinfo": "cookie:_vercel_sso_nonce"
+						}
+					],
+					"count": "3",
+					"systemic": false,
+					"solution": "<p>\u3053\u308C\u306F\u8106\u5F31\u6027\u3067\u306F\u306A\u304F\u60C5\u5831\u63D0\u4F9B\u306E\u30A2\u30E9\u30FC\u30C8\u3067\u3042\u308B\u305F\u3081\u3001\u4FEE\u6B63\u3059\u3079\u304D\u70B9\u306F\u3042\u308A\u307E\u305B\u3093\u3002</p>",
+					"otherinfo": "<p>cookie:_vercel_sso_nonce</p>",
+					"reference": "<p>https://www.zaproxy.org/docs/desktop/addons/authentication-helper/session-mgmt-id/</p>",
+					"cweid": "-1",
+					"wascid": "-1",
+					"sourceid": "30"
+				},
+				{
+					"pluginid": "10109",
+					"alertRef": "10109",
+					"alert": "\u30E2\u30C0\u30F3Web\u30A2\u30D7\u30EA\u30B1\u30FC\u30B7\u30E7\u30F3",
+					"name": "\u30E2\u30C0\u30F3Web\u30A2\u30D7\u30EA\u30B1\u30FC\u30B7\u30E7\u30F3",
+					"riskcode": "0",
+					"confidence": "2",
+					"riskdesc": "\u60C5\u5831 (\u4E2D)",
+					"desc": "<p>\u3053\u306E\u30A2\u30D7\u30EA\u30B1\u30FC\u30B7\u30E7\u30F3\u306F\u73FE\u4EE3\u7684\u306AWeb\u30A2\u30D7\u30EA\u30B1\u30FC\u30B7\u30E7\u30F3\u306E\u3088\u3046\u3067\u3059\u3002\u81EA\u52D5\u7684\u306B\u63A2\u7D22\u3059\u308B\u5FC5\u8981\u304C\u3042\u308B\u5834\u5408\u306F\u3001AJAX\u30B9\u30D1\u30A4\u30C0\u30FC\u304C\u6A19\u6E96\u306E\u30B9\u30D1\u30A4\u30C0\u30FC\u3088\u308A\u3082\u52B9\u679C\u7684\u3067\u3042\u308B\u53EF\u80FD\u6027\u304C\u9AD8\u3044\u3067\u3059\u3002</p>",
+					"instances":[ 
+						{
+							"id": "21",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "<noscript><meta http-equiv=refresh content=\"1; URL=https://vercel.com/sso-api?url=https%3A%2F%2Ftaskflow-mitokawaguchis-projects.vercel.app%2F&nonce=b95fb4c208e982ae0a9cb5dd2ed3bfe04e49e8e0d91036c72ab4d64ee35a4c71\"></noscript>",
+							"otherinfo": "noScript \u30BF\u30B0\u304C\u898B\u3064\u304B\u308A\u307E\u3057\u305F\u3002\u3053\u308C\u306F\u3001\u3053\u306E\u30A2\u30D7\u30EA\u30B1\u30FC\u30B7\u30E7\u30F3\u304CJavaScript\u304C\u6709\u52B9\u306A\u5834\u5408\u3068\u7121\u52B9\u306A\u5834\u5408\u3067\u52D5\u4F5C\u304C\u7570\u306A\u308B\u3053\u3068\u3092\u793A\u3057\u3066\u3044\u307E\u3059\u3002"
+						},
+						{
+							"id": "1851",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "<script type=\"module\" crossorigin src=\"/assets/index-CHrPrqMN.js\"></script>",
+							"otherinfo": "\u30B9\u30AF\u30EA\u30D7\u30C8\u306F\u5B58\u5728\u3059\u308B\u3082\u306E\u306E\u3001\u30EA\u30F3\u30AF\u304C\u898B\u3064\u304B\u308A\u307E\u305B\u3093\u3067\u3057\u305F\u3002\u3053\u308C\u306F\u3001\u30E2\u30C0\u30F3Web\u30A2\u30D7\u30EA\u30B1\u30FC\u30B7\u30E7\u30F3\u3067\u3042\u308B\u3053\u3068\u3092\u793A\u3057\u3066\u3044\u307E\u3059\u3002"
+						}
+					],
+					"count": "2",
+					"systemic": true,
+					"solution": "<p>\u3053\u308C\u306F\u60C5\u5831\u30A2\u30E9\u30FC\u30C8\u3067\u3042\u308B\u305F\u3081\u3001\u5909\u66F4\u306F\u5FC5\u8981\u3042\u308A\u307E\u305B\u3093\u3002</p>",
+					"otherinfo": "<p>noScript \u30BF\u30B0\u304C\u898B\u3064\u304B\u308A\u307E\u3057\u305F\u3002\u3053\u308C\u306F\u3001\u3053\u306E\u30A2\u30D7\u30EA\u30B1\u30FC\u30B7\u30E7\u30F3\u304CJavaScript\u304C\u6709\u52B9\u306A\u5834\u5408\u3068\u7121\u52B9\u306A\u5834\u5408\u3067\u52D5\u4F5C\u304C\u7570\u306A\u308B\u3053\u3068\u3092\u793A\u3057\u3066\u3044\u307E\u3059\u3002</p>",
+					"reference": "",
+					"cweid": "-1",
+					"wascid": "-1",
+					"sourceid": "30"
+				},
+				{
+					"pluginid": "10104",
+					"alertRef": "10104",
+					"alert": "\u30E6\u30FC\u30B6\u30FC\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8\u30D5\u30A1\u30B6\u30FC (User Agent Fuzzer)",
+					"name": "\u30E6\u30FC\u30B6\u30FC\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8\u30D5\u30A1\u30B6\u30FC (User Agent Fuzzer)",
+					"riskcode": "0",
+					"confidence": "2",
+					"riskdesc": "\u60C5\u5831 (\u4E2D)",
+					"desc": "<p>\u30D5\u30A1\u30BA\u3055\u308C\u305F (fuzzed) \u30E6\u30FC\u30B6\u30FC\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8 (\u4F8B: \u30E2\u30D0\u30A4\u30EB\u30B5\u30A4\u30C8\u3001\u691C\u7D22\u30A8\u30F3\u30B8\u30F3\u306E\u30AF\u30ED\u30FC\u30E9\u30FC\u3068\u3057\u3066\u30A2\u30AF\u30BB\u30B9) \u306B\u57FA\u3065\u3044\u3066\u3001\u30EC\u30B9\u30DD\u30F3\u30B9\u306E\u9055\u3044\u3092\u30C1\u30A7\u30C3\u30AF\u3057\u307E\u3059\u3002\u30EC\u30B9\u30DD\u30F3\u30B9\u306E\u30B9\u30C6\u30FC\u30BF\u30B9\u30B3\u30FC\u30C9\u3068\u30EC\u30B9\u30DD\u30F3\u30B9\u30DC\u30C7\u30A3\u306E\u30CF\u30C3\u30B7\u30E5\u30B3\u30FC\u30C9\u3092\u5143\u306E\u30EC\u30B9\u30DD\u30F3\u30B9\u3068\u6BD4\u8F03\u3057\u307E\u3059\u3002</p><p></p>",
+					"instances":[ 
+						{
+							"id": "2331",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app",
+							"method": "GET",
+							"param": "\u30D8\u30C3\u30C0\u30FC\uFF1AUser-Agent",
+							"attack": "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1)",
+							"evidence": "",
+							"otherinfo": ""
+						},
+						{
+							"id": "2332",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/",
+							"method": "GET",
+							"param": "\u30D8\u30C3\u30C0\u30FC\uFF1AUser-Agent",
+							"attack": "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)",
+							"evidence": "",
+							"otherinfo": ""
+						},
+						{
+							"id": "2329",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/",
+							"method": "GET",
+							"param": "\u30D8\u30C3\u30C0\u30FC\uFF1AUser-Agent",
+							"attack": "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1)",
+							"evidence": "",
+							"otherinfo": ""
+						},
+						{
+							"id": "2333",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/?_vercel_jwt=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzc28tcHJvdGVjdGlvbi1jYWxsYmFjayIsImF1ZCI6InRhc2tmbG93LW1pdG9rYXdhZ3VjaGlzLXByb2plY3RzLnZlcmNlbC5hcHAiLCJpYXQiOjE3NzU4Nzk3OTQsImV4cCI6MTc3NTg3OTgwNCwidXNlcklkIjoicXJPQUJ4UWh3b0tWQ0ZWaTBQWVdpdWJoIiwidXNlcm5hbWUiOiJtaXRva2F3YWd1Y2hpLTcxNTEiLCJub25jZSI6ImI5NWZiNGMyMDhlOTgyYWUwYTljYjVkZDJlZDNiZmUwNGU0OWU4ZTBkOTEwMzZjNzJhYjRkNjRlZTM1YTRjNzEifQ.NDqQ50QcycN_Mk0Z6Mr05eJwjHhkmZUsv_BvytVhvAg&_vercel_jwe=eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..JDba8Fzh2BW2xC4n.lmxh-61XInktX0Ij4iP0ZI-Nc-bye3mPT4VITEDpkeRvtDY-QiqxvTIF9Upkple2phr-TVtWhADf8zk4fmSS36m1Kfy-6vhGJSZ7P4e2IJ3wNfjEQwEL6EDnVufSIQkElj-rGIalbFIUE5CCJQ6mun08NkwCt9RUNR9o9mhSVqbnFc1G44galtZuRiDA9tCyKoFRzbwNvs-h-Z1tM53b79vb6qCyT7Sh4pSOC4uyrDja9g_CoiBscuguVTBsEzqlUn99UNkpQmNZfrfgwAh19dqxXNOnkcHDlewz9KWLJnF5iIBq_7NzCBktQBYghRhoW_1gnC6bq5CbHFHTIA.l82ZxigyhyjB8xsJHSz5QA",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/ (_vercel_jwe,_vercel_jwt)",
+							"method": "GET",
+							"param": "\u30D8\u30C3\u30C0\u30FC\uFF1AUser-Agent",
+							"attack": "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)",
+							"evidence": "",
+							"otherinfo": ""
+						},
+						{
+							"id": "2330",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/?_vercel_jwt=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzc28tcHJvdGVjdGlvbi1jYWxsYmFjayIsImF1ZCI6InRhc2tmbG93LW1pdG9rYXdhZ3VjaGlzLXByb2plY3RzLnZlcmNlbC5hcHAiLCJpYXQiOjE3NzU4Nzk3OTQsImV4cCI6MTc3NTg3OTgwNCwidXNlcklkIjoicXJPQUJ4UWh3b0tWQ0ZWaTBQWVdpdWJoIiwidXNlcm5hbWUiOiJtaXRva2F3YWd1Y2hpLTcxNTEiLCJub25jZSI6ImI5NWZiNGMyMDhlOTgyYWUwYTljYjVkZDJlZDNiZmUwNGU0OWU4ZTBkOTEwMzZjNzJhYjRkNjRlZTM1YTRjNzEifQ.NDqQ50QcycN_Mk0Z6Mr05eJwjHhkmZUsv_BvytVhvAg&_vercel_jwe=eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..JDba8Fzh2BW2xC4n.lmxh-61XInktX0Ij4iP0ZI-Nc-bye3mPT4VITEDpkeRvtDY-QiqxvTIF9Upkple2phr-TVtWhADf8zk4fmSS36m1Kfy-6vhGJSZ7P4e2IJ3wNfjEQwEL6EDnVufSIQkElj-rGIalbFIUE5CCJQ6mun08NkwCt9RUNR9o9mhSVqbnFc1G44galtZuRiDA9tCyKoFRzbwNvs-h-Z1tM53b79vb6qCyT7Sh4pSOC4uyrDja9g_CoiBscuguVTBsEzqlUn99UNkpQmNZfrfgwAh19dqxXNOnkcHDlewz9KWLJnF5iIBq_7NzCBktQBYghRhoW_1gnC6bq5CbHFHTIA.l82ZxigyhyjB8xsJHSz5QA",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/ (_vercel_jwe,_vercel_jwt)",
+							"method": "GET",
+							"param": "\u30D8\u30C3\u30C0\u30FC\uFF1AUser-Agent",
+							"attack": "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1)",
+							"evidence": "",
+							"otherinfo": ""
+						}
+					],
+					"count": "5",
+					"systemic": true,
+					"solution": "",
+					"otherinfo": "",
+					"reference": "<p>https://owasp.org/wstg</p>",
+					"cweid": "0",
+					"wascid": "0",
+					"sourceid": "1556"
+				},
+				{
+					"pluginid": "120000",
+					"alertRef": "120000-1",
+					"alert": "\u60C5\u5831\u6F0F\u6D29 - \u30D6\u30E9\u30A6\u30B6\u5185\u306E\u60C5\u5831 localStorage",
+					"name": "\u60C5\u5831\u6F0F\u6D29 - \u30D6\u30E9\u30A6\u30B6\u5185\u306E\u60C5\u5831 localStorage",
+					"riskcode": "0",
+					"confidence": "3",
+					"riskdesc": "\u60C5\u5831 (\u9AD8)",
+					"desc": "<p>\u60C5\u5831\u304C\u30D6\u30E9\u30A6\u30B6 localStorage \u306B\u4FDD\u5B58\u3055\u308C\u307E\u3057\u305F\u3002</p><p>\u3053\u308C\u306F\u901A\u5E38\u306E\u52D5\u4F5C\u3067\u3042\u308A\u3001\u5371\u967A\u6027\u306F\u3042\u308A\u307E\u305B\u3093\u3002\u3053\u306E\u53C2\u8003\u60C5\u5831\u306F\u3001\u30A2\u30D7\u30EA\u30B1\u30FC\u30B7\u30E7\u30F3\u306E\u52D5\u4F5C\u3092\u3088\u308A\u826F\u304F\u7406\u89E3\u3057\u3066\u3044\u305F\u3060\u304F\u305F\u3081\u306B\u8868\u793A\u3055\u308C\u3066\u3044\u307E\u3059\u3002\u8A73\u7D30\u306B\u3064\u3044\u3066\u306F\u3001\u30AF\u30E9\u30A4\u30A2\u30F3\u30C8\u30BF\u30D6\u3092\u3054\u78BA\u8A8D\u304F\u3060\u3055\u3044\u3002\u3053\u306E\u60C5\u5831\u306F\u30D6\u30E9\u30A6\u30B6\u306B\u76F4\u63A5\u8A2D\u5B9A\u3055\u308C\u3066\u3044\u308B\u305F\u3081\u3001HTTP(S)\u901A\u4FE1\u30E1\u30C3\u30BB\u30FC\u30B8\u306B\u306F\u5FC5\u305A\u3057\u3082\u540C\u3058\u5F62\u5F0F\u3067\u8868\u793A\u3055\u308C\u307E\u305B\u3093\u3002</p>",
+					"instances":[ 
+						{
+							"id": "1979",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/",
+							"method": "GET",
+							"param": "sb-mspfoowgslrrgvdmdfke-auth-token",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "\u6B21\u306E\u30C7\u30FC\u30BF (\u30AD\u30FC=\u5024) \u304C\u8A2D\u5B9A\u3055\u308C\u307E\u3057\u305F: sb-mspfoowgslrrgvdmdfke-auth-token={\"access_token\":\"eyJhbGciOiJIUzI1NiIsImtpZCI6ImRhMGMyOGYxLWQzZDUtNGU3Ni04Yzg1LTI1YWFiNzUyNzI1NyIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL21zcGZvb3dnc2xycmd2ZG1kZmtlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI3ZTdlZGUyMC1lNGQzLTQzMjItOTM3OS0zYmQxOTUxY2VjZjMiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc1ODgzNDIzLCJpYXQiOjE3NzU4Nzk4MjMsImVtYWlsIjoibWl0b2thd2FndWNoaUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImRpc3BsYXlfbmFtZSI6Im1pdG8iLCJlbWFpbCI6Im1pdG9rYXdhZ3VjaGlAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiN2U3ZWRlMjAtZTRkMy00MzIyLTkzNzktM2JkMTk1MWNlY2YzIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NzU4Nzk4MjN9XSwic2Vzc2lvbl9pZCI6Ijk3MDk3NWM0LTU0ZjQtNDhmOS04MmMyLTNmMDJmNDk4OWJiOCIsImlzX2Fub255bW91cyI6ZmFsc2V9.dcadefxm615CsINwpEIaJTERN9i1csXds4Dpu0riuD4\",\"token_type\":\"bearer\",\"expires_in\":3600,\"expires_at\":1775883423,\"refresh_token\":\"cyuktbn3d7zp\",\"user\":{\"id\":\"7e7ede20-e4d3-4322-9379-3bd1951cecf3\",\"aud\":\"authenticated\",\"role\":\"authenticated\",\"email\":\"mitokawaguchi@gmail.com\",\"email_confirmed_at\":\"2026-03-09T08:46:57.925339Z\",\"phone\":\"\",\"confirmation_sent_at\":\"2026-03-09T08:46:38.939332Z\",\"confirmed_at\":\"2026-03-09T08:46:57.925339Z\",\"last_sign_in_at\":\"2026-04-11T03:57:03.748535001Z\",\"app_metadata\":{\"provider\":\"email\",\"providers\":[\"email\"]},\"user_metadata\":{\"display_name\":\"mito\",\"email\":\"mitokawaguchi@gmail.com\",\"email_verified\":true,\"phone_verified\":false,\"sub\":\"7e7ede20-e4d3-4322-9379-3bd1951cecf3\"},\"identities\":[{\"identity_id\":\"b88c4fc7-251c-4555-80d1-ad747b6629cf\",\"id\":\"7e7ede20-e4d3-4322-9379-3bd1951cecf3\",\"user_id\":\"7e7ede20-e4d3-4322-9379-3bd1951cecf3\",\"identity_data\":{\"email\":\"mitokawaguchi@gmail.com\",\"email_verified\":true,\"phone_verified\":false,\"sub\":\"7e7ede20-e4d3-4322-9379-3bd1951cecf3\"},\"provider\":\"email\",\"last_sign_in_at\":\"2026-03-09T08:46:38.93086Z\",\"created_at\":\"2026-03-09T08:46:38.930917Z\",\"updated_at\":\"2026-03-09T08:46:38.930917Z\",\"email\":\"mitokawaguchi@gmail.com\"}],\"created_at\":\"2026-03-09T08:46:38.887082Z\",\"updated_at\":\"2026-04-11T03:57:03.820417Z\",\"is_anonymous\":false},\"weak_password\":null}\n\u6CE8\u610F: \u3053\u306E\u30A2\u30E9\u30FC\u30C8\u306F\u3001URL\u30AD\u30FC\u3054\u3068\u306B\u4E00\u5EA6\u3060\u3051\u767A\u751F\u3057\u307E\u3059\u3002"
+						},
+						{
+							"id": "1789",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/",
+							"method": "GET",
+							"param": "taskflow_notify_reminder",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "\u6B21\u306E\u30C7\u30FC\u30BF (\u30AD\u30FC=\u5024) \u304C\u8A2D\u5B9A\u3055\u308C\u307E\u3057\u305F: taskflow_notify_reminder=true\n\u6CE8\u610F: \u3053\u306E\u30A2\u30E9\u30FC\u30C8\u306F\u3001URL\u30AD\u30FC\u3054\u3068\u306B\u4E00\u5EA6\u3060\u3051\u767A\u751F\u3057\u307E\u3059\u3002"
+						},
+						{
+							"id": "1790",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/",
+							"method": "GET",
+							"param": "taskflow_theme",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "\u6B21\u306E\u30C7\u30FC\u30BF (\u30AD\u30FC=\u5024) \u304C\u8A2D\u5B9A\u3055\u308C\u307E\u3057\u305F: taskflow_theme=light\n\u6CE8\u610F: \u3053\u306E\u30A2\u30E9\u30FC\u30C8\u306F\u3001URL\u30AD\u30FC\u3054\u3068\u306B\u4E00\u5EA6\u3060\u3051\u767A\u751F\u3057\u307E\u3059\u3002"
+						},
+						{
+							"id": "2147",
+							"uri": "https://taskflow-mitokawaguchis-projects.vercel.app/",
+							"nodeName": "https:\/\/taskflow-mitokawaguchis-projects.vercel.app\/",
+							"method": "GET",
+							"param": "tf_morning",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "\u6B21\u306E\u30C7\u30FC\u30BF (\u30AD\u30FC=\u5024) \u304C\u8A2D\u5B9A\u3055\u308C\u307E\u3057\u305F: tf_morning=2026-04-11\n\u6CE8\u610F: \u3053\u306E\u30A2\u30E9\u30FC\u30C8\u306F\u3001URL\u30AD\u30FC\u3054\u3068\u306B\u4E00\u5EA6\u3060\u3051\u767A\u751F\u3057\u307E\u3059\u3002"
+						}
+					],
+					"count": "4",
+					"systemic": false,
+					"solution": "<p>\u3053\u308C\u306F\u60C5\u5831\u63D0\u4F9B\u306E\u30A2\u30E9\u30FC\u30C8\u3067\u3042\u308A\u3001\u30A2\u30AF\u30B7\u30E7\u30F3\u306F\u4E0D\u8981\u3067\u3059 </p>",
+					"otherinfo": "<p>\u6B21\u306E\u30C7\u30FC\u30BF (\u30AD\u30FC=\u5024) \u304C\u8A2D\u5B9A\u3055\u308C\u307E\u3057\u305F: sb-mspfoowgslrrgvdmdfke-auth-token={\"access_token\":\"eyJhbGciOiJIUzI1NiIsImtpZCI6ImRhMGMyOGYxLWQzZDUtNGU3Ni04Yzg1LTI1YWFiNzUyNzI1NyIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL21zcGZvb3dnc2xycmd2ZG1kZmtlLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI3ZTdlZGUyMC1lNGQzLTQzMjItOTM3OS0zYmQxOTUxY2VjZjMiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc1ODgzNDIzLCJpYXQiOjE3NzU4Nzk4MjMsImVtYWlsIjoibWl0b2thd2FndWNoaUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImRpc3BsYXlfbmFtZSI6Im1pdG8iLCJlbWFpbCI6Im1pdG9rYXdhZ3VjaGlAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiN2U3ZWRlMjAtZTRkMy00MzIyLTkzNzktM2JkMTk1MWNlY2YzIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NzU4Nzk4MjN9XSwic2Vzc2lvbl9pZCI6Ijk3MDk3NWM0LTU0ZjQtNDhmOS04MmMyLTNmMDJmNDk4OWJiOCIsImlzX2Fub255bW91cyI6ZmFsc2V9.dcadefxm615CsINwpEIaJTERN9i1csXds4Dpu0riuD4\",\"token_type\":\"bearer\",\"expires_in\":3600,\"expires_at\":1775883423,\"refresh_token\":\"cyuktbn3d7zp\",\"user\":{\"id\":\"7e7ede20-e4d3-4322-9379-3bd1951cecf3\",\"aud\":\"authenticated\",\"role\":\"authenticated\",\"email\":\"mitokawaguchi@gmail.com\",\"email_confirmed_at\":\"2026-03-09T08:46:57.925339Z\",\"phone\":\"\",\"confirmation_sent_at\":\"2026-03-09T08:46:38.939332Z\",\"confirmed_at\":\"2026-03-09T08:46:57.925339Z\",\"last_sign_in_at\":\"2026-04-11T03:57:03.748535001Z\",\"app_metadata\":{\"provider\":\"email\",\"providers\":[\"email\"]},\"user_metadata\":{\"display_name\":\"mito\",\"email\":\"mitokawaguchi@gmail.com\",\"email_verified\":true,\"phone_verified\":false,\"sub\":\"7e7ede20-e4d3-4322-9379-3bd1951cecf3\"},\"identities\":[{\"identity_id\":\"b88c4fc7-251c-4555-80d1-ad747b6629cf\",\"id\":\"7e7ede20-e4d3-4322-9379-3bd1951cecf3\",\"user_id\":\"7e7ede20-e4d3-4322-9379-3bd1951cecf3\",\"identity_data\":{\"email\":\"mitokawaguchi@gmail.com\",\"email_verified\":true,\"phone_verified\":false,\"sub\":\"7e7ede20-e4d3-4322-9379-3bd1951cecf3\"},\"provider\":\"email\",\"last_sign_in_at\":\"2026-03-09T08:46:38.93086Z\",\"created_at\":\"2026-03-09T08:46:38.930917Z\",\"updated_at\":\"2026-03-09T08:46:38.930917Z\",\"email\":\"mitokawaguchi@gmail.com\"}],\"created_at\":\"2026-03-09T08:46:38.887082Z\",\"updated_at\":\"2026-04-11T03:57:03.820417Z\",\"is_anonymous\":false},\"weak_password\":null}</p><p>\u6CE8\u610F: \u3053\u306E\u30A2\u30E9\u30FC\u30C8\u306F\u3001URL\u30AD\u30FC\u3054\u3068\u306B\u4E00\u5EA6\u3060\u3051\u767A\u751F\u3057\u307E\u3059\u3002</p>",
+					"reference": "",
+					"cweid": "359",
+					"wascid": "13",
+					"sourceid": "568"
+				}
+			]
+		}
+	],
+	"sequences":[
+	]
+
+}

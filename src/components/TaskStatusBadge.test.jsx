@@ -13,4 +13,10 @@ describe('TaskStatusBadge', () => {
     render(<TaskStatusBadge statusKey="in_progress" />)
     expect(screen.getByText('進行中')).toBeInTheDocument()
   })
+
+  it('review shows wait hint in title', () => {
+    render(<TaskStatusBadge statusKey="review" />)
+    expect(screen.getByText('レビュー中')).toBeInTheDocument()
+    expect(screen.getByTitle('進捗: レビュー中（確認待ち）')).toBeInTheDocument()
+  })
 })

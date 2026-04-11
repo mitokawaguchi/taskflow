@@ -619,7 +619,33 @@ html.dark .task-card--status-todo::before { background: #94a3b8; }
 html.dark .task-card--status-in_progress::before { background: #4ade80; }
 html.dark .task-card--status-review::before { background: #a78bfa; }
 html.dark .task-card--status-done::before { background: #2dd4bf; }
+/* レビュー中: 作業中とは別レイヤー（確認待ち）として点線枠＋淡い紫の面 */
+.task-card--status-review:not(.done) {
+  border-style: dashed;
+  border-color: rgba(124, 58, 237, 0.42);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    inset 0 0 60px rgba(124, 58, 237, 0.06);
+}
+html.dark .task-card--status-review:not(.done) {
+  border-color: rgba(167, 139, 250, 0.48);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.22),
+    inset 0 0 70px rgba(167, 139, 250, 0.07);
+}
 .task-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.task-card--status-review:not(.done):hover {
+  border-color: rgba(124, 58, 237, 0.58);
+  box-shadow:
+    0 4px 14px rgba(124, 58, 237, 0.14),
+    inset 0 0 60px rgba(124, 58, 237, 0.08);
+}
+html.dark .task-card--status-review:not(.done):hover {
+  border-color: rgba(192, 181, 252, 0.65);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.28),
+    inset 0 0 70px rgba(167, 139, 250, 0.1);
+}
 .task-card.done { opacity: 0.7; }
 
 .card-project-banner {
@@ -1558,6 +1584,38 @@ html.dark select.input {
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 .kanban-card:hover { border-color: var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.kanban-card--status-review {
+  border-style: dashed;
+  border-color: rgba(124, 58, 237, 0.42);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    inset 0 0 50px rgba(124, 58, 237, 0.06);
+}
+html.dark .kanban-card--status-review {
+  border-color: rgba(167, 139, 250, 0.48);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.22),
+    inset 0 0 60px rgba(167, 139, 250, 0.07);
+}
+.kanban-card--status-review:hover {
+  border-color: rgba(124, 58, 237, 0.58);
+  box-shadow:
+    0 4px 14px rgba(124, 58, 237, 0.14),
+    inset 0 0 50px rgba(124, 58, 237, 0.08);
+}
+html.dark .kanban-card--status-review:hover {
+  border-color: rgba(192, 181, 252, 0.65);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.28),
+    inset 0 0 60px rgba(167, 139, 250, 0.1);
+}
+.kanban-card--status-review .kanban-card__progress-bar {
+  background: linear-gradient(90deg, #6d28d9, #a78bfa);
+  opacity: 1;
+}
+html.dark .kanban-card--status-review .kanban-card__progress-bar {
+  background: linear-gradient(90deg, #a78bfa, #ddd6fe);
+}
 .kanban-card--dragging { opacity: 0.5; }
 .kanban-card--overlay { cursor: grabbing; box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
 .kanban-card--draggable { display: flex; align-items: flex-start; gap: 4px; }

@@ -4,8 +4,13 @@ import { getStatusLabel } from '../constants'
 const STATUS_MARK = {
   todo: '□',
   in_progress: '▶',
-  review: '◆',
+  review: '⌛',
   done: '✓',
+}
+
+function badgeTitle(statusKey) {
+  if (statusKey === 'review') return '進捗: レビュー中（確認待ち）'
+  return `進捗: ${getStatusLabel(statusKey)}`
 }
 
 /**
@@ -15,7 +20,7 @@ export function TaskStatusBadge({ statusKey }) {
   const label = getStatusLabel(statusKey)
   const mark = STATUS_MARK[statusKey] ?? '·'
   return (
-    <span className={`task-status-badge task-status-badge--${statusKey}`.trim()} title={`進捗: ${label}`}>
+    <span className={`task-status-badge task-status-badge--${statusKey}`.trim()} title={badgeTitle(statusKey)}>
       <span className="task-status-badge__mark" aria-hidden="true">
         {mark}
       </span>

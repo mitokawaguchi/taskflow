@@ -1,7 +1,9 @@
+import { normalizeTaskStatus } from '../constants'
 import { KanbanCardContent } from './KanbanCardContent'
 
 export function KanbanCard({ task, projects, categories = [], users = [], projectsMap, usersMap, onClick, isOverlay, onToggleDone }) {
   const priorityClass = task.priority ?? 'medium'
+  const statusClass = `kanban-card--status-${normalizeTaskStatus(task)}`
   const content = (
     <KanbanCardContent
       task={task}
@@ -16,13 +18,13 @@ export function KanbanCard({ task, projects, categories = [], users = [], projec
 
   if (isOverlay) {
     return (
-      <div className={`kanban-card kanban-card--overlay ${priorityClass}`}>{content}</div>
+      <div className={`kanban-card kanban-card--overlay ${priorityClass} ${statusClass}`}>{content}</div>
     )
   }
 
   return (
     <div
-      className={`kanban-card ${priorityClass}`}
+      className={`kanban-card ${priorityClass} ${statusClass}`}
       onClick={() => onClick(task)}
       role="button"
       tabIndex={0}
