@@ -4,8 +4,17 @@
 import { useState, useEffect, useCallback } from 'react'
 import { getLegalPageFromHash } from '../legalContent'
 import { today } from '../utils'
+import { ACCENT_STORAGE_KEY, applyAccentToDocument, parseHexColor } from '../utils/accentColor'
 
 const TOAST_DURATION_MS = 2400
+
+function readStoredAccentHex() {
+  const raw = localStorage.getItem(ACCENT_STORAGE_KEY) ?? ''
+  const t = raw.trim()
+  if (!t) return ''
+  const withHash = t.startsWith('#') ? t : `#${t}`
+  return parseHexColor(withHash) ? withHash.toLowerCase() : ''
+}
 
 export function useAppUI() {
   const [showClientForm, setShowClientForm] = useState(false)
@@ -24,6 +33,7 @@ export function useAppUI() {
   const [notifGranted, setNotifGranted] = useState(false)
   const [showMorning, setShowMorning] = useState(() => localStorage.getItem('tf_morning') !== today())
   const [theme, setTheme] = useState(() => localStorage.getItem('taskflow_theme') || 'light')
+  const [accentHex, setAccentHex] = useState(readStoredAccentHex)
   const [searchQuery, setSearchQuery] = useState('')
   const [showSettings, setShowSettings] = useState(false)
   const [notifyReminderEnabled, setNotifyReminderEnabled] = useState(
@@ -48,6 +58,24 @@ export function useAppUI() {
     document.documentElement.classList.toggle('dark', theme === 'dark')
     localStorage.setItem('taskflow_theme', theme)
   }, [theme])
+
+  useEffect(() => {
+    const trimmed = accentHex.trim()
+    const mode = theme === 'dark' ? 'dark' : 'light'
+    if (!trimmed) {
+      applyAccentToDocument(null, mode)
+      localStorage.removeItem(ACCENT_STORAGE_KEY)
+      return
+    }
+    const candidate = trimmed.startsWith('#') ? trimmed : `#${trimmed}`
+    if (!parseHexColor(candidate)) {
+      applyAccentToDocument(null, mode)
+      localStorage.removeItem(ACCENT_STORAGE_KEY)
+      return
+    }
+    applyAccentToDocument(candidate.toLowerCase(), mode)
+    localStorage.setItem(ACCENT_STORAGE_KEY, candidate.toLowerCase())
+  }, [accentHex, theme])
 
   useEffect(() => {
     localStorage.setItem('taskflow_notify_reminder', notifyReminderEnabled ? 'true' : 'false')
@@ -105,6 +133,8 @@ export function useAppUI() {
     setShowMorning,
     theme,
     setTheme,
+    accentHex,
+    setAccentHex,
     searchQuery,
     setSearchQuery,
     showSettings,

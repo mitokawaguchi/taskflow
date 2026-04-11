@@ -23,7 +23,7 @@
       ]
     },
     {
-      "source": "/((?!assets/).*)",
+      "source": "/((?!assets/)(?!materials/).*)",
       "headers": [
         {
           "key": "Strict-Transport-Security",

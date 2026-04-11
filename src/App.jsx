@@ -136,7 +136,8 @@ export default function App() {
         onCloseTplForm={() => { app.setShowTplForm(false); app.setEditTemplate(null) }}
         showClientForm={app.showClientForm} editClient={app.editClient} onSaveClient={app.saveClient} onRemoveClient={app.removeClient}
         onCloseClientForm={() => { app.setShowClientForm(false); app.setEditClient(null) }}
-        showSettings={app.showSettings} theme={app.theme} setTheme={app.setTheme} onCloseSettings={() => app.setShowSettings(false)}
+        showSettings={app.showSettings} theme={app.theme} setTheme={app.setTheme}
+        accentHex={app.accentHex} setAccentHex={app.setAccentHex} onCloseSettings={() => app.setShowSettings(false)}
         users={app.users} setUsers={app.setUsers} notifyReminderEnabled={app.notifyReminderEnabled} setNotifyReminderEnabled={app.setNotifyReminderEnabled}
         addToast={app.addToast} showProfileModal={app.showProfileModal} authUser={app.authUser}
         onCloseProfile={() => app.setShowProfileModal(false)} setAuthUser={app.setAuthUser} toasts={app.toasts}

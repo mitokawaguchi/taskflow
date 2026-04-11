@@ -11,6 +11,8 @@ describe('SettingsModal', () => {
   const defaultProps = {
     theme: 'dark',
     setTheme: vi.fn(),
+    accentHex: '',
+    setAccentHex: vi.fn(),
     onClose: vi.fn(),
     users: [],
     setUsers: vi.fn(),
@@ -26,6 +28,12 @@ describe('SettingsModal', () => {
   it('renders 設定 title', () => {
     render(<SettingsModal {...defaultProps} />)
     expect(screen.getByRole('heading', { name: '設定' })).toBeInTheDocument()
+  })
+
+  it('キーカラーのプリセットを表示する', () => {
+    render(<SettingsModal {...defaultProps} />)
+    expect(screen.getByText('キーカラー')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'アプリ既定' })).toBeInTheDocument()
   })
 
   it('カード左帯の凡例を表示する', () => {

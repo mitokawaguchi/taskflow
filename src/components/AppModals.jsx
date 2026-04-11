@@ -38,6 +38,8 @@ export default function AppModals({
   showSettings,
   theme,
   setTheme,
+  accentHex,
+  setAccentHex,
   onCloseSettings,
   users,
   setUsers,
@@ -96,6 +98,8 @@ export default function AppModals({
         <SettingsModal
           theme={theme}
           setTheme={setTheme}
+          accentHex={accentHex}
+          setAccentHex={setAccentHex}
           onClose={onCloseSettings}
           users={users}
           setUsers={setUsers}

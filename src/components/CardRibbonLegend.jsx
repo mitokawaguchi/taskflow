@@ -1,9 +1,8 @@
 import { PRIORITY_KEYS, TASK_STATUS_KEYS, TASK_STATUS, getPriorityLabel, getPriorityColor } from '../constants'
 
-/** 左リボン色（index.css の task-card--status-* / kanban-card__bar と対応） */
+/** 左リボン色（index.css の task-card--status-* / kanban-card__bar と対応）。進行中は --accent（設定のキーカラー） */
 const STATUS_RIBBON_HEX = {
   todo: '#64748b',
-  in_progress: '#5e6ad2',
   review: '#7c3aed',
   done: '#0f766e',
 }
@@ -24,8 +23,8 @@ export function CardRibbonLegend() {
         {TASK_STATUS_KEYS.map((key) => (
           <li key={key} className="card-ribbon-legend__item">
             <span
-              className="card-ribbon-legend__swatch card-ribbon-legend__swatch--ribbon"
-              style={{ background: STATUS_RIBBON_HEX[key] }}
+              className={`card-ribbon-legend__swatch card-ribbon-legend__swatch--ribbon ${key === 'in_progress' ? 'card-ribbon-legend__swatch--accent-ribbon' : ''}`.trim()}
+              style={key === 'in_progress' ? undefined : { background: STATUS_RIBBON_HEX[key] }}
               aria-hidden
             />
             <span>{TASK_STATUS[key].label}</span>

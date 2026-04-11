@@ -1,10 +1,13 @@
 import { useState, useCallback } from 'react'
 import { insertUser, fetchUsers, updateUser } from '../api'
 import { CardRibbonLegend } from './CardRibbonLegend'
+import { SettingsAccentColor } from './SettingsAccentColor'
 
 export default function SettingsModal({
   theme,
   setTheme,
+  accentHex,
+  setAccentHex,
   onClose,
   users,
   setUsers,
@@ -74,6 +77,10 @@ export default function SettingsModal({
               onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
             />
           </div>
+        </div>
+
+        <div className="form-group mt-24">
+          <SettingsAccentColor accentHex={accentHex} setAccentHex={setAccentHex} theme={theme} />
         </div>
 
         <div className="form-group mt-24">
