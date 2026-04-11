@@ -259,7 +259,15 @@ h1,h2,h3,h4,.logo,.modal-title,.topbar-title,.proj-detail-name,.project-name,.ca
 }
 .sidebar-item:hover { background: var(--surface3); color: var(--text); }
 .sidebar-item.active { background: var(--accent-glow); color: var(--accent); font-weight: 600; }
-.sidebar-item .icon { font-size: 15px; }
+.sidebar-item .icon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.sidebar-item .icon .app-svg-icon { width: 18px; height: 18px; }
 .sidebar-item .badge {
   margin-left: auto; background: var(--accent);
   color: #fff; font-size: 10px; font-weight: 700;
@@ -340,8 +348,8 @@ html.dark .topbar {
   justify-content: center;
   color: currentColor;
 }
-.topbar-tab__icon { width: 16px; height: 16px; }
-.topbar-svg-icon { width: 1em; height: 1em; display: block; flex: none; }
+.topbar-tab__icon { width: 18px; height: 18px; }
+.app-svg-icon { width: 1em; height: 1em; display: block; flex: none; }
 .topbar-right {
   display: flex;
   align-items: center;
@@ -386,8 +394,8 @@ html.dark .topbar {
 .topbar-search-icon {
   position: absolute;
   left: 12px;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   color: var(--text-muted);
   pointer-events: none;
 }
@@ -420,6 +428,8 @@ html.dark .topbar {
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 .topbar-icon-btn:hover { background: var(--surface3); color: var(--text); border-color: color-mix(in srgb, var(--accent) 16%, var(--border)); }
+.topbar-icon-btn .app-svg-icon,
+.topbar-avatar .app-svg-icon { width: 18px; height: 18px; }
 .topbar-icon-dot {
   position: absolute;
   top: 6px;
@@ -1145,6 +1155,24 @@ html.dark .card-ribbon-legend__swatch--ribbon {
 .sidebar-team-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .sidebar-team-avatar:hover { border-color: var(--accent); }
 .sidebar-team-avatar.active { border-color: var(--accent); background: var(--accent-bg); }
+.sidebar-team-avatar__fallback {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+.sidebar-inline-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.sidebar-inline-icon .app-svg-icon,
+.sidebar-team-avatar__fallback .app-svg-icon { width: 16px; height: 16px; }
 /* 担当者: 期限行の横に並べる（TaskCard / Kanban） */
 .card-assignee-inline {
   display: inline-flex;
@@ -2317,6 +2345,9 @@ html.dark .kanban-card__check:not(:checked):hover {
   border-radius: 8px;
 }
 .sidebar-notif-box__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 12px;
   font-weight: 600;
   margin-bottom: 4px;

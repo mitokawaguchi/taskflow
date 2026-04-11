@@ -1,4 +1,4 @@
-import { TopBarIcon } from './TopBarIcons'
+import { AppIcon } from './AppIcons'
 
 /**
  * メインエリアのトップバー（戻る・タイトル・タブ・テーマ・フィルター・検索・アクション）
@@ -55,7 +55,7 @@ export default function TopBar({
               onClick={() => setView(tab.key)}
             >
               <span className="topbar-tab__icon" aria-hidden>
-                <TopBarIcon name={tab.icon} />
+                <AppIcon name={tab.icon} />
               </span>
               {tab.label}
             </button>
@@ -73,7 +73,7 @@ export default function TopBar({
               aria-label="通知"
               title="今日のタスク・朝の確認"
             >
-              <TopBarIcon name="bell" />
+              <AppIcon name="bell" />
               {(todayCount > 0 || overdueCount > 0) && <span className="topbar-icon-dot" />}
             </button>
             <button
@@ -83,7 +83,7 @@ export default function TopBar({
               aria-label="プロフィール・設定"
               title="プロフィール"
             >
-              <TopBarIcon name="user" />
+              <AppIcon name="user" />
             </button>
           </>
         )}
@@ -114,13 +114,13 @@ export default function TopBar({
               onClick={() => setFilterOpen((o) => !o)}
               aria-label="フィルター"
             >
-              <TopBarIcon name="filter" />
+              <AppIcon name="filter" />
               フィルター
               {activeFilterCount > 0 && <span className="topbar-filter-badge">{activeFilterCount}</span>}
             </button>
             <label className="topbar-search-wrap">
               <span className="topbar-search-icon" aria-hidden>
-                <TopBarIcon name="search" />
+                <AppIcon name="search" />
               </span>
               <input
                 type="search"

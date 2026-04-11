@@ -1,15 +1,16 @@
 import { formatTodayDisplay } from '../utils'
+import { AppIcon } from './AppIcons'
 import { LegalLinks } from './LegalLinks'
 
 const SIDEBAR_MENU_ITEMS = [
-  { key: 'projects', icon: '📁', label: 'プロジェクト' },
-  { key: 'all', icon: '📋', label: 'すべてのタスク' },
-  { key: 'week-tasks', icon: '📆', label: '今週タスク', badgeKey: 'todayCount' },
-  { key: 'daily-today', icon: '☀️', label: '今日・明日', isDailyPlanner: true },
-  { key: 'overdue', icon: '🚨', label: '期限超過', badgeKey: 'overdueCount' },
-  { key: 'kanban', icon: '📌', label: 'カンバン' },
-  { key: 'dashboard', icon: '📊', label: 'ダッシュボード' },
-  { key: 'gantt', icon: '📅', label: 'タイムライン' },
+  { key: 'projects', icon: 'projects', label: 'プロジェクト' },
+  { key: 'all', icon: 'all', label: 'すべてのタスク' },
+  { key: 'week-tasks', icon: 'today', label: '今週タスク', badgeKey: 'todayCount' },
+  { key: 'daily-today', icon: 'sun', label: '今日・明日', isDailyPlanner: true },
+  { key: 'overdue', icon: 'warning', label: '期限超過', badgeKey: 'overdueCount' },
+  { key: 'kanban', icon: 'kanban', label: 'カンバン' },
+  { key: 'dashboard', icon: 'dashboard', label: 'ダッシュボード' },
+  { key: 'gantt', icon: 'gantt', label: 'タイムライン' },
 ]
 
 export default function Sidebar({
@@ -58,7 +59,12 @@ export default function Sidebar({
 
       {!notifGranted && (
         <div className="sidebar-notif-box">
-          <div className="sidebar-notif-box__title">🔔 通知を有効化</div>
+          <div className="sidebar-notif-box__title">
+            <span className="sidebar-inline-icon" aria-hidden>
+              <AppIcon name="bell" />
+            </span>
+            通知を有効化
+          </div>
           <p className="sidebar-notif-box__p">
             アプリを開いたときに「今日が期限」のタスクがあれば通知します。スマホではバックグラウンド通知には未対応です。
           </p>
@@ -87,8 +93,10 @@ export default function Sidebar({
                 setSidebarOpen(false)
               }}
             >
-              <span className="icon">{item.icon}</span>
-              {item.label}
+              <span className="icon" aria-hidden>
+                <AppIcon name={item.icon} />
+              </span>
+              <span className="sidebar-item__label">{item.label}</span>
               {item.key === 'all' && <span className="sidebar-item-count">{allTaskCount}</span>}
               {badge > 0 && <span className="badge">{badge}</span>}
             </button>
@@ -125,7 +133,7 @@ export default function Sidebar({
               }}
             >
               <span className="project-dot" style={{ background: p.color }} />
-              <span className="sidebar-item__label">{p.icon} {p.name}</span>
+              <span className="sidebar-item__label">{p.name}</span>
               <span className="sidebar-item__count">{tasks.filter((t) => t.projectId === p.id && !t.done).length}</span>
             </button>
           ))}
@@ -141,7 +149,8 @@ export default function Sidebar({
             setSidebarOpen(false)
           }}
         >
-          <span className="icon">🗂</span>プロジェクト管理
+          <span className="icon" aria-hidden><AppIcon name="projects" /></span>
+          <span className="sidebar-item__label">プロジェクト管理</span>
         </button>
         <button
           type="button"
@@ -151,7 +160,8 @@ export default function Sidebar({
             setSidebarOpen(false)
           }}
         >
-          <span className="icon">📋</span>テンプレート
+          <span className="icon" aria-hidden><AppIcon name="templates" /></span>
+          <span className="sidebar-item__label">テンプレート</span>
         </button>
         <button
           type="button"
@@ -161,7 +171,8 @@ export default function Sidebar({
             setSidebarOpen(false)
           }}
         >
-          <span className="icon">📝</span>上司の指摘
+          <span className="icon" aria-hidden><AppIcon name="boss-feedback" /></span>
+          <span className="sidebar-item__label">上司の指摘</span>
         </button>
         <button
           type="button"
@@ -171,7 +182,8 @@ export default function Sidebar({
             setSidebarOpen(false)
           }}
         >
-          <span className="icon">✉️</span>未返信
+          <span className="icon" aria-hidden><AppIcon name="mail-tracker" /></span>
+          <span className="sidebar-item__label">未返信</span>
         </button>
         <button
           type="button"
@@ -181,7 +193,8 @@ export default function Sidebar({
             setSidebarOpen(false)
           }}
         >
-          <span className="icon">📌</span>覚えておくこと
+          <span className="icon" aria-hidden><AppIcon name="remember" /></span>
+          <span className="sidebar-item__label">覚えておくこと</span>
         </button>
         <button
           type="button"
@@ -191,7 +204,8 @@ export default function Sidebar({
             setSidebarOpen(false)
           }}
         >
-          <span className="icon">🏷</span>カテゴリ
+          <span className="icon" aria-hidden><AppIcon name="categories" /></span>
+          <span className="sidebar-item__label">カテゴリ</span>
         </button>
         <button
           type="button"
@@ -201,7 +215,8 @@ export default function Sidebar({
             setSidebarOpen(false)
           }}
         >
-          <span className="icon">📚</span>教材集
+          <span className="icon" aria-hidden><AppIcon name="materials" /></span>
+          <span className="sidebar-item__label">教材集</span>
         </button>
         <button
           type="button"
@@ -211,7 +226,8 @@ export default function Sidebar({
             setSidebarOpen(false)
           }}
         >
-          <span className="icon">📝</span>週のふりかえり
+          <span className="icon" aria-hidden><AppIcon name="review" /></span>
+          <span className="sidebar-item__label">週のふりかえり</span>
         </button>
       </div>
 
@@ -235,21 +251,32 @@ export default function Sidebar({
                 title={`${u.name}で絞り込み`}
                 aria-label={`${u.name}で絞り込み`}
               >
-                {u.avatarUrl ? <img src={u.avatarUrl} alt="" /> : <span>👤</span>}
+                {u.avatarUrl ? (
+                  <img src={u.avatarUrl} alt="" />
+                ) : (
+                  <span className="sidebar-team-avatar__fallback" aria-hidden>
+                    <AppIcon name="user" />
+                  </span>
+                )}
               </button>
             ))
           )}
         </div>
         <button type="button" className="sidebar-item" onClick={() => { onOpenSettings(); setSidebarOpen(false) }}>
-          <span className="icon">⚙️</span>設定
+          <span className="icon" aria-hidden><AppIcon name="settings" /></span>
+          <span className="sidebar-item__label">設定</span>
         </button>
         <button type="button" className="sidebar-item sidebar-item--logout" onClick={() => { onOpenProfile(); setSidebarOpen(false) }}>
-          <span className="icon">🚪</span>ログアウト
+          <span className="icon" aria-hidden><AppIcon name="logout" /></span>
+          <span className="sidebar-item__label">ログアウト</span>
         </button>
       </div>
       <div className="sidebar-bottom">
         <button type="button" className="btn btn-ghost btn-sm w-100" onClick={onShowMorning}>
-          ☀️ 朝の確認を表示
+          <span className="sidebar-inline-icon" aria-hidden>
+            <AppIcon name="sun" />
+          </span>
+          朝の確認を表示
         </button>
         <LegalLinks className="sidebar-legal-links" />
       </div>
