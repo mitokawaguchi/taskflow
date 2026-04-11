@@ -42,7 +42,7 @@ function IconFrame({
       className={`app-svg-icon ${className}`.trim()}
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.9"
+      strokeWidth="2.15"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
