@@ -87,7 +87,7 @@ export default function TopBar({
             </button>
           </>
         )}
-        {!isProjectView && view !== 'projects' && view !== 'templates' && view !== 'boss-feedback' && view !== 'mail-tracker' && view !== 'materials' && view !== 'weekly-review' && view !== 'daily-today' && view !== 'daily-tomorrow' && view !== 'clients' && !view.startsWith('c:') && (
+        {!isProjectView && view !== 'projects' && view !== 'templates' && view !== 'boss-feedback' && view !== 'mail-tracker' && view !== 'materials' && view !== 'weekly-review' && view !== 'clients' && !view.startsWith('c:') && (
           <button type="button" className="btn btn-primary" onClick={onAddTask}>
             + 追加
           </button>

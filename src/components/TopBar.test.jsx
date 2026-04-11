@@ -49,6 +49,11 @@ describe('TopBar', () => {
     expect(addBtn.closest('.topbar-right')).toBeTruthy()
   })
 
+  it('renders add button on daily planner views', () => {
+    render(<TopBar {...baseProps} view="daily-today" />)
+    expect(screen.getByRole('button', { name: /追加/ })).toBeInTheDocument()
+  })
+
   it('renders notification bell in primary row', () => {
     render(<TopBar {...baseProps} />)
     const bellBtn = screen.getByRole('button', { name: '通知' })
