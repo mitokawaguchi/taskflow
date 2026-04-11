@@ -2078,9 +2078,20 @@ html.dark .kanban-card__check:not(:checked):hover {
   .app.sidebar-open .main { overflow: hidden; touch-action: none; }
   .hamburger { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface2); cursor: pointer; font-size: 18px; color: var(--text); margin-right: 8px; flex-shrink: 0; }
   .topbar { flex-wrap: wrap; gap: 8px; padding: 14px 18px; }
-  .topbar-tabs { margin-left: 0; }
-  .topbar-right { flex-wrap: wrap; }
-  .topbar-secondary { flex-wrap: wrap; }
+  .topbar-title { order: 1; flex: 1 1 auto; }
+  .topbar-right { order: 2; margin-left: 0; flex-wrap: wrap; justify-content: flex-end; }
+  .topbar-tabs {
+    order: 3;
+    flex: 1 1 100%;
+    margin-left: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .topbar-tabs::-webkit-scrollbar { display: none; }
+  .topbar-tab { flex: 0 0 auto; white-space: nowrap; }
+  .topbar-secondary { order: 4; flex-wrap: wrap; width: 100%; }
+  .topbar-search-wrap { flex: 1 1 220px; min-width: 0; }
   .topbar-search { width: 160px; }
 }
 
@@ -2103,13 +2114,34 @@ html.dark .kanban-card__check:not(:checked):hover {
     white-space: nowrap;
     font-size: 16px;
   }
-  .topbar-right { gap: 6px; }
-  .topbar-secondary { gap: 6px; }
+  .topbar-right {
+    width: 100%;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+  .topbar-tabs {
+    padding: 3px;
+    border-radius: 12px;
+  }
+  .topbar-tab {
+    gap: 6px;
+    padding: 7px 12px;
+    font-size: 12px;
+  }
+  .topbar-secondary {
+    gap: 6px;
+    align-items: stretch;
+  }
   .topbar .btn,
   .topbar .btn-sm {
     flex-shrink: 0;
     padding: 6px 10px;
     font-size: 12px;
+  }
+  .topbar-filter-btn,
+  .theme-toggle,
+  .topbar-secondary > .btn-ghost.btn-sm {
+    min-height: 36px;
   }
   .topbar .btn-ghost:not([aria-label]) {
     max-width: 120px;
@@ -2118,7 +2150,8 @@ html.dark .kanban-card__check:not(:checked):hover {
     white-space: nowrap;
   }
   .theme-toggle__label { display: none; }
-  .topbar-search { width: 120px; }
+  .topbar-search-wrap { flex: 1 1 100%; }
+  .topbar-search { width: 100%; }
   .content {
     padding: 14px 12px;
     padding-left: max(12px, env(safe-area-inset-left));
@@ -2347,6 +2380,14 @@ html.dark .kanban-card__check:not(:checked):hover {
 @media (max-width: 480px) {
   .topbar { padding: 10px 12px; }
   .topbar-title { font-size: 15px; }
+  .topbar-tabs {
+    gap: 3px;
+    padding: 3px;
+  }
+  .topbar-tab {
+    padding: 7px 10px;
+    font-size: 11px;
+  }
   .topbar-search-wrap { display: none; }
   .topbar-right { gap: 4px; }
   .topbar-secondary { gap: 4px; }
