@@ -78,9 +78,9 @@ export const SORT_OPTIONS = [
 
 /** TopBar タブ（カンバン / タイムライン / インサイト） */
 export const VIEW_TABS = [
-  { key: 'kanban', label: 'カンバン', icon: '📌' },
-  { key: 'gantt', label: 'タイムライン', icon: '📅' },
-  { key: 'dashboard', label: 'インサイト', icon: '📊' },
+  { key: 'kanban', label: 'カンバン', icon: 'kanban' },
+  { key: 'gantt', label: 'タイムライン', icon: 'gantt' },
+  { key: 'dashboard', label: 'インサイト', icon: 'dashboard' },
 ]
 
 export const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 }

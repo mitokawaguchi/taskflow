@@ -1,3 +1,5 @@
+import { TopBarIcon } from './TopBarIcons'
+
 /**
  * メインエリアのトップバー（戻る・タイトル・タブ・テーマ・フィルター・検索・アクション）
  * ARCH-001: App.jsx 200行以下化のため抽出
@@ -52,7 +54,9 @@ export default function TopBar({
               className={`topbar-tab ${view === tab.key ? 'topbar-tab--active' : ''}`}
               onClick={() => setView(tab.key)}
             >
-              <span className="topbar-tab__icon">{tab.icon}</span>
+              <span className="topbar-tab__icon" aria-hidden>
+                <TopBarIcon name={tab.icon} />
+              </span>
               {tab.label}
             </button>
           ))}
@@ -69,7 +73,7 @@ export default function TopBar({
               aria-label="通知"
               title="今日のタスク・朝の確認"
             >
-              🔔
+              <TopBarIcon name="bell" />
               {(todayCount > 0 || overdueCount > 0) && <span className="topbar-icon-dot" />}
             </button>
             <button
@@ -79,7 +83,7 @@ export default function TopBar({
               aria-label="プロフィール・設定"
               title="プロフィール"
             >
-              👤
+              <TopBarIcon name="user" />
             </button>
           </>
         )}
@@ -110,12 +114,13 @@ export default function TopBar({
               onClick={() => setFilterOpen((o) => !o)}
               aria-label="フィルター"
             >
+              <TopBarIcon name="filter" />
               フィルター
               {activeFilterCount > 0 && <span className="topbar-filter-badge">{activeFilterCount}</span>}
             </button>
             <label className="topbar-search-wrap">
               <span className="topbar-search-icon" aria-hidden>
-                🔍
+                <TopBarIcon name="search" />
               </span>
               <input
                 type="search"

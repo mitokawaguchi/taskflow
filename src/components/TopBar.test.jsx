@@ -8,9 +8,9 @@ const baseProps = {
   setView: vi.fn(),
   viewTitle: () => 'すべてのタスク',
   viewTabs: [
-    { key: 'kanban', label: 'カンバン', icon: '📌' },
-    { key: 'gantt', label: 'タイムライン', icon: '📅' },
-    { key: 'dashboard', label: 'インサイト', icon: '📊' },
+    { key: 'kanban', label: 'カンバン', icon: 'kanban' },
+    { key: 'gantt', label: 'タイムライン', icon: 'gantt' },
+    { key: 'dashboard', label: 'インサイト', icon: 'dashboard' },
   ],
   isMainView: true,
   theme: 'light',
