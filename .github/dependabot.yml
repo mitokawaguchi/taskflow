@@ -11,3 +11,8 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    groups:
+      react-types:
+        patterns:
+          - '@types/react'
+          - '@types/react-dom'

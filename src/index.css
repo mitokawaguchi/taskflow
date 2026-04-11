@@ -650,6 +650,39 @@ html.dark .task-card--status-review:not(.done):hover {
     inset 0 4px 0 0 #c4b5fd,
     inset 0 0 70px rgba(167, 139, 250, 0.12);
 }
+/* レビュー中×優先度: 全面の優先度色を紫と合成（状態が主役になる） */
+.task-card--status-review:not(.done).critical,
+.kanban-card--status-review.critical {
+  background: linear-gradient(165deg, rgba(124, 58, 237, 0.32) 0%, rgba(124, 58, 237, 0.12) 38%, var(--critical-bg) 100%);
+}
+.task-card--status-review:not(.done).high,
+.kanban-card--status-review.high {
+  background: linear-gradient(165deg, rgba(124, 58, 237, 0.28) 0%, rgba(124, 58, 237, 0.1) 40%, var(--high-bg) 100%);
+}
+.task-card--status-review:not(.done).medium,
+.kanban-card--status-review.medium {
+  background: linear-gradient(165deg, rgba(124, 58, 237, 0.24) 0%, rgba(124, 58, 237, 0.08) 42%, var(--medium-bg) 100%);
+}
+.task-card--status-review:not(.done).low,
+.kanban-card--status-review.low {
+  background: linear-gradient(165deg, rgba(124, 58, 237, 0.22) 0%, rgba(124, 58, 237, 0.07) 42%, var(--low-bg) 100%);
+}
+html.dark .task-card--status-review:not(.done).critical,
+html.dark .kanban-card--status-review.critical {
+  background: linear-gradient(165deg, rgba(167, 139, 250, 0.3) 0%, rgba(167, 139, 250, 0.1) 38%, var(--critical-bg) 100%);
+}
+html.dark .task-card--status-review:not(.done).high,
+html.dark .kanban-card--status-review.high {
+  background: linear-gradient(165deg, rgba(167, 139, 250, 0.26) 0%, rgba(167, 139, 250, 0.09) 40%, var(--high-bg) 100%);
+}
+html.dark .task-card--status-review:not(.done).medium,
+html.dark .kanban-card--status-review.medium {
+  background: linear-gradient(165deg, rgba(167, 139, 250, 0.22) 0%, rgba(167, 139, 250, 0.07) 42%, var(--medium-bg) 100%);
+}
+html.dark .task-card--status-review:not(.done).low,
+html.dark .kanban-card--status-review.low {
+  background: linear-gradient(165deg, rgba(167, 139, 250, 0.2) 0%, rgba(167, 139, 250, 0.06) 42%, var(--low-bg) 100%);
+}
 .task-card.done { opacity: 0.7; }
 
 .card-project-banner {
