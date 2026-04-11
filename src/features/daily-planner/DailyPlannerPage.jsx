@@ -52,7 +52,11 @@ export default function DailyPlannerPage({
       const ta = prev.todayTaskIds.filter((i) => ids.has(i))
       const tb = prev.tomorrowTaskIds.filter((i) => ids.has(i))
       if (ta.length === prev.todayTaskIds.length && tb.length === prev.tomorrowTaskIds.length) return prev
-      return { todayTaskIds: ta, tomorrowTaskIds: tb }
+      return {
+        todayTaskIds: ta,
+        tomorrowTaskIds: tb,
+        plannerAnchorYmd: prev.plannerAnchorYmd ?? null,
+      }
     })
   }, [tasks, setDailyPlanner])
 
@@ -71,8 +75,9 @@ export default function DailyPlannerPage({
     (e) => {
       const next = applyPlannerDragEnd(e, dailyPlanner)
       if (next) {
-        setDailyPlanner(next)
-        saveDebounced(next)
+        const full = { ...next, plannerAnchorYmd: dailyPlanner.plannerAnchorYmd ?? null }
+        setDailyPlanner(full)
+        saveDebounced(full)
       }
     },
     [dailyPlanner, setDailyPlanner, saveDebounced]

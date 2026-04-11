@@ -30,6 +30,12 @@ CREATE UNIQUE INDEX IF NOT EXISTS weekly_reviews_owner_week_idx ON public.weekly
 
 ALTER TABLE public.weekly_reviews ENABLE ROW LEVEL SECURITY;
 
+-- 既存 DB / 再適用時の重複を避ける（policy は IF NOT EXISTS がないため DROP してから作成）
+DROP POLICY IF EXISTS "weekly_reviews_select_own" ON public.weekly_reviews;
+DROP POLICY IF EXISTS "weekly_reviews_insert_own" ON public.weekly_reviews;
+DROP POLICY IF EXISTS "weekly_reviews_update_own" ON public.weekly_reviews;
+DROP POLICY IF EXISTS "weekly_reviews_delete_own" ON public.weekly_reviews;
+
 CREATE POLICY "weekly_reviews_select_own"
   ON public.weekly_reviews FOR SELECT
   USING (owner_id = auth.uid());
@@ -60,6 +66,8 @@ CREATE TABLE IF NOT EXISTS public.consulting_frameworks (
 );
 
 ALTER TABLE public.consulting_frameworks ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "consulting_frameworks_select_authenticated" ON public.consulting_frameworks;
 
 CREATE POLICY "consulting_frameworks_select_authenticated"
   ON public.consulting_frameworks FOR SELECT

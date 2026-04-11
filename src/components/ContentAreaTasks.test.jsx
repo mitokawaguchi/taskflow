@@ -61,7 +61,7 @@ const baseProps = {
   onToggleTask: vi.fn(),
   patchTask: vi.fn(),
   weeklyReviews: [],
-  dailyPlanner: { todayTaskIds: [], tomorrowTaskIds: [] },
+  dailyPlanner: { todayTaskIds: [], tomorrowTaskIds: [], plannerAnchorYmd: null },
   setDailyPlanner: vi.fn(),
   addToast: vi.fn(),
 }

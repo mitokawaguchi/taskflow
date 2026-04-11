@@ -10,6 +10,11 @@ CREATE INDEX IF NOT EXISTS tf_user_daily_planner_updated_idx ON public.tf_user_d
 
 ALTER TABLE public.tf_user_daily_planner ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "tf_user_daily_planner_select_own" ON public.tf_user_daily_planner;
+DROP POLICY IF EXISTS "tf_user_daily_planner_insert_own" ON public.tf_user_daily_planner;
+DROP POLICY IF EXISTS "tf_user_daily_planner_update_own" ON public.tf_user_daily_planner;
+DROP POLICY IF EXISTS "tf_user_daily_planner_delete_own" ON public.tf_user_daily_planner;
+
 CREATE POLICY "tf_user_daily_planner_select_own"
   ON public.tf_user_daily_planner FOR SELECT
   USING (owner_id = auth.uid());
