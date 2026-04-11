@@ -348,7 +348,14 @@ html.dark .topbar {
   justify-content: center;
   color: currentColor;
 }
-.topbar-tab__icon { width: 24px; height: 24px; }
+.topbar-tab__icon {
+  width: 28px;
+  height: 28px;
+}
+.topbar-tab__icon .app-svg-icon {
+  width: 28px;
+  height: 28px;
+}
 .app-svg-icon { width: 1em; height: 1em; display: block; flex: none; }
 .topbar-right {
   display: flex;
@@ -399,6 +406,10 @@ html.dark .topbar {
   color: var(--text-muted);
   pointer-events: none;
 }
+.topbar-search-icon .app-svg-icon {
+  width: 22px;
+  height: 22px;
+}
 .topbar-search {
   width: 200px;
   padding: 7px 12px 7px 42px;
@@ -429,7 +440,7 @@ html.dark .topbar {
 }
 .topbar-icon-btn:hover { background: var(--surface3); color: var(--text); border-color: color-mix(in srgb, var(--accent) 16%, var(--border)); }
 .topbar-icon-btn .app-svg-icon,
-.topbar-avatar .app-svg-icon { width: 24px; height: 24px; }
+.topbar-avatar .app-svg-icon { width: 28px; height: 28px; }
 .topbar-icon-dot {
   position: absolute;
   top: 6px;
