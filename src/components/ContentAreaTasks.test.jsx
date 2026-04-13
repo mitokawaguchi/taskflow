@@ -55,6 +55,7 @@ const baseProps = {
   sort: 'priority',
   setSort: vi.fn(),
   sortedTasks: [],
+  allTasks: [],
   taskFiltersClear: vi.fn(),
   onAddTask: vi.fn(),
   onEditTask: vi.fn(),

@@ -6,6 +6,7 @@ import { isRelevantForTodayViewTask, partitionTasksIntoWeekSections } from '../.
 import { applyPlannerDragEnd } from './applyPlannerDrag'
 import { DropColumn, SortableRow } from './DailyPlannerParts'
 import DailyPlannerPool from './DailyPlannerPool'
+import { usePlannerTaskRegistry } from './usePlannerTaskRegistry'
 
 function useDebounced(fn, ms) {
   const t = useRef(null)
@@ -21,7 +22,8 @@ function useDebounced(fn, ms) {
 }
 
 export default function DailyPlannerPage({
-  tasks,
+  allTasks,
+  tasksForPool,
   dailyPlanner,
   setDailyPlanner,
   focusSide,
@@ -44,32 +46,16 @@ export default function DailyPlannerPage({
   }, 450)
 
   const { todayTaskIds, tomorrowTaskIds } = dailyPlanner
-
-  useEffect(() => {
-    if (!tasks.length) return
-    setDailyPlanner((prev) => {
-      const ids = new Set(tasks.map((t) => t.id))
-      const ta = prev.todayTaskIds.filter((i) => ids.has(i))
-      const tb = prev.tomorrowTaskIds.filter((i) => ids.has(i))
-      if (ta.length === prev.todayTaskIds.length && tb.length === prev.tomorrowTaskIds.length) return prev
-      return {
-        todayTaskIds: ta,
-        tomorrowTaskIds: tb,
-        plannerAnchorYmd: prev.plannerAnchorYmd ?? null,
-      }
-    })
-  }, [tasks, setDailyPlanner])
-
-  const tasksById = useMemo(() => new Map(tasks.map((t) => [t.id, t])), [tasks])
+  const tasksById = usePlannerTaskRegistry(allTasks, setDailyPlanner)
 
   const { poolSections, poolOthers } = useMemo(() => {
     const ranked = new Set([...todayTaskIds, ...tomorrowTaskIds])
-    const base = tasks.filter((t) => !t.done)
+    const base = tasksForPool.filter((t) => !t.done)
     const notRanked = base.filter((t) => !ranked.has(t.id))
     const weekScoped = notRanked.filter((t) => isRelevantForTodayViewTask(t))
     const others = notRanked.filter((t) => !isRelevantForTodayViewTask(t))
     return { poolSections: partitionTasksIntoWeekSections(weekScoped), poolOthers: others }
-  }, [tasks, todayTaskIds, tomorrowTaskIds])
+  }, [tasksForPool, todayTaskIds, tomorrowTaskIds])
 
   const onDragEnd = useCallback(
     (e) => {

@@ -40,6 +40,7 @@ export default function ContentAreaTasks({
   sort,
   setSort,
   sortedTasks,
+  allTasks,
   taskFiltersClear,
   onAddTask,
   onEditTask,
@@ -95,7 +96,8 @@ export default function ContentAreaTasks({
   if (view === 'daily-today' || view === 'daily-tomorrow') {
     return (
       <DailyPlannerPage
-        tasks={sortedTasks}
+        allTasks={allTasks}
+        tasksForPool={sortedTasks}
         dailyPlanner={dailyPlanner}
         setDailyPlanner={setDailyPlanner}
         focusSide={view === 'daily-tomorrow' ? 'tomorrow' : 'today'}

@@ -97,7 +97,7 @@ export default function App() {
                   filterDueFrom={app.filterDueFrom} setFilterDueFrom={app.setFilterDueFrom} filterDueTo={app.filterDueTo} setFilterDueTo={app.setFilterDueTo}
                   filterPriorityFrom={app.filterPriorityFrom} setFilterPriorityFrom={app.setFilterPriorityFrom}
                   filterPriorityTo={app.filterPriorityTo} setFilterPriorityTo={app.setFilterPriorityTo}
-                  sort={app.sort} setSort={app.setSort} sortedTasks={app.sortedTasks} taskFiltersClear={app.taskFiltersClear}
+                  sort={app.sort} setSort={app.setSort} sortedTasks={app.sortedTasks} allTasks={app.tasks} taskFiltersClear={app.taskFiltersClear}
                   onAddTask={() => app.setShowTaskForm(true)} onEditTask={(t) => { app.setEditTask(t); app.setShowTaskForm(true) }}                   onToggleTask={app.toggleTask}
                   patchTask={app.patchTask}
                   weeklyReviews={app.weeklyReviews}
