@@ -77,9 +77,7 @@ export function useAppData(authUser, addToast) {
         try {
           dp = await fetchDailyPlanner()
         } catch (e) {
-          if (!cancelled && import.meta.env?.DEV) {
-            console.warn('daily_planner:', e?.message ?? e)
-          }
+          if (!cancelled) addToast('⚠️', '今日・明日プランの読み込みに失敗しました', e?.message ?? '')
         }
         const effectiveYmd = getEffectivePlannerYmd()
         const rolled = applyDailyPlannerRollover(

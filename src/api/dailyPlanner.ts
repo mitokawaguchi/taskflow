@@ -7,18 +7,39 @@ export type DailyPlannerRow = {
   plannerAnchorYmd: string | null
 }
 
+/**
+ * planner_anchor_ymd は「日付またぎ検知」専用のクライアント情報なので
+ * DB カラムに依存せず localStorage に保持する。
+ * DB には today_task_ids / tomorrow_task_ids の 2 列だけ書き込む。
+ */
+const ANCHOR_KEY = 'tf_planner_anchor_ymd'
+
+function getStoredAnchor(): string | null {
+  try {
+    const v = localStorage.getItem(ANCHOR_KEY)
+    return v && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : null
+  } catch {
+    return null
+  }
+}
+
+function setStoredAnchor(ymd: string | null): void {
+  try {
+    if (ymd) localStorage.setItem(ANCHOR_KEY, ymd)
+    else localStorage.removeItem(ANCHOR_KEY)
+  } catch {
+    // localStorage が使えない環境では無視
+  }
+}
+
 function rowFromDb(
-  row: { today_task_ids?: unknown; tomorrow_task_ids?: unknown; planner_anchor_ymd?: unknown } | null
-): DailyPlannerRow {
+  row: { today_task_ids?: unknown; tomorrow_task_ids?: unknown } | null
+): Pick<DailyPlannerRow, 'todayTaskIds' | 'tomorrowTaskIds'> {
   const t = row?.today_task_ids
   const m = row?.tomorrow_task_ids
-  const a = row?.planner_anchor_ymd
-  const anchor =
-    typeof a === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(a.trim()) ? a.trim() : null
   return {
     todayTaskIds: Array.isArray(t) ? (t as string[]).filter((x) => typeof x === 'string') : [],
     tomorrowTaskIds: Array.isArray(m) ? (m as string[]).filter((x) => typeof x === 'string') : [],
-    plannerAnchorYmd: anchor,
   }
 }
 
@@ -28,11 +49,14 @@ export async function fetchDailyPlanner(): Promise<DailyPlannerRow> {
   if (!ownerId) return { todayTaskIds: [], tomorrowTaskIds: [], plannerAnchorYmd: null }
   const { data, error } = await db
     .from('tf_user_daily_planner')
-    .select('today_task_ids, tomorrow_task_ids, planner_anchor_ymd')
+    .select('today_task_ids, tomorrow_task_ids')
     .eq('owner_id', ownerId)
     .maybeSingle()
   if (error) throw error
-  return rowFromDb(data ?? null)
+  return {
+    ...rowFromDb(data ?? null),
+    plannerAnchorYmd: getStoredAnchor(),
+  }
 }
 
 export async function upsertDailyPlanner(next: DailyPlannerRow): Promise<void> {
@@ -44,10 +68,10 @@ export async function upsertDailyPlanner(next: DailyPlannerRow): Promise<void> {
       owner_id: ownerId,
       today_task_ids: next.todayTaskIds,
       tomorrow_task_ids: next.tomorrowTaskIds,
-      planner_anchor_ymd: next.plannerAnchorYmd,
       updated_at: new Date().toISOString(),
     },
     { onConflict: 'owner_id' }
   )
   if (error) throw error
+  setStoredAnchor(next.plannerAnchorYmd)
 }
