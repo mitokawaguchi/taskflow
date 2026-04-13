@@ -8,19 +8,6 @@ import { DropColumn, SortableRow } from './DailyPlannerParts'
 import DailyPlannerPool from './DailyPlannerPool'
 import { usePlannerTaskRegistry } from './usePlannerTaskRegistry'
 
-function useDebounced(fn, ms) {
-  const t = useRef(null)
-  return useCallback(
-    (arg) => {
-      if (t.current) clearTimeout(t.current)
-      t.current = setTimeout(() => {
-        fn(arg)
-      }, ms)
-    },
-    [fn, ms]
-  )
-}
-
 export default function DailyPlannerPage({
   allTasks,
   tasksForPool,
@@ -41,10 +28,6 @@ export default function DailyPlannerPage({
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   )
 
-  const saveDebounced = useDebounced((p) => {
-    upsertDailyPlanner(p).catch((e) => addToast('❌', '保存に失敗しました', e?.message ?? ''))
-  }, 450)
-
   const { todayTaskIds, tomorrowTaskIds } = dailyPlanner
   const tasksById = usePlannerTaskRegistry(allTasks, setDailyPlanner)
 
@@ -58,15 +41,18 @@ export default function DailyPlannerPage({
   }, [tasksForPool, todayTaskIds, tomorrowTaskIds])
 
   const onDragEnd = useCallback(
-    (e) => {
+    async (e) => {
       const next = applyPlannerDragEnd(e, dailyPlanner)
-      if (next) {
-        const full = { ...next, plannerAnchorYmd: dailyPlanner.plannerAnchorYmd ?? null }
-        setDailyPlanner(full)
-        saveDebounced(full)
+      if (!next) return
+      const full = { ...next, plannerAnchorYmd: dailyPlanner.plannerAnchorYmd ?? null }
+      setDailyPlanner(full)
+      try {
+        await upsertDailyPlanner(full)
+      } catch (err) {
+        addToast('❌', '保存に失敗しました', err?.message ?? '')
       }
     },
-    [dailyPlanner, setDailyPlanner, saveDebounced]
+    [dailyPlanner, setDailyPlanner, addToast]
   )
 
   const [activeId, setActiveId] = useState(null)

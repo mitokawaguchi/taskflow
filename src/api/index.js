@@ -1,7 +1,7 @@
 export { getAuthSession, getOwnerId } from './helpers'
 export { signInWithPassword, signUpWithEmail, signOut, updateAuthPassword, updateAuthUserMetadata, subscribeAuth } from './auth'
 export { fetchProjects, insertProject, updateProject } from './projects'
-export { fetchTasks, insertTask, updateTask } from './tasks'
+export { fetchTasks, fetchTasksByIds, insertTask, updateTask } from './tasks'
 export { fetchTemplates, insertTemplate, updateTemplate, deleteTemplate } from './templates'
 export { fetchCategories, insertCategory } from './categories'
 export { fetchUsers, insertUser, updateUser } from './users'

@@ -17,6 +17,8 @@ import {
 } from '../api'
 import { applyDailyPlannerRollover } from '../utils/applyDailyPlannerRollover'
 import { getEffectivePlannerYmd } from '../utils/plannerDay'
+import { augmentTasksWithPlannerIds } from '../utils/augmentTasksWithPlannerIds'
+import { usePlannerAnchorTick } from './usePlannerAnchorTick'
 import { isOverdue } from '../utils'
 
 export function useAppData(authUser, addToast) {
@@ -107,6 +109,15 @@ export function useAppData(authUser, addToast) {
               if (!cancelled) addToast('⚠️', '期限超過タスクの更新に失敗しました', e?.message ?? '')
             }
           }
+          try {
+            tasksToSet = await augmentTasksWithPlannerIds(
+              tasksToSet,
+              rolled.next.todayTaskIds,
+              rolled.next.tomorrowTaskIds
+            )
+          } catch (e) {
+            if (!cancelled) addToast('⚠️', 'プラン用タスクの読み込みに失敗しました', e?.message ?? '')
+          }
           setProjects(projs)
           setTasks(tasksToSet)
           setTemplates(tpls)
@@ -129,43 +140,7 @@ export function useAppData(authUser, addToast) {
     }
   }, [authUser, addToast])
 
-  useEffect(() => {
-    if (!authUser || loading) return undefined
-    let cancelled = false
-    const tick = () => {
-      if (cancelled) return
-      const effective = getEffectivePlannerYmd()
-      setDailyPlanner((prev) => {
-        const rolled = applyDailyPlannerRollover(
-          {
-            todayTaskIds: prev.todayTaskIds ?? [],
-            tomorrowTaskIds: prev.tomorrowTaskIds ?? [],
-            plannerAnchorYmd: prev.plannerAnchorYmd ?? null,
-          },
-          effective
-        )
-        const prevAnchor = prev.plannerAnchorYmd ?? null
-        const nextAnchor = rolled.next.plannerAnchorYmd ?? null
-        if (!cancelled && (rolled.didRollover || prevAnchor !== nextAnchor)) {
-          upsertDailyPlanner(rolled.next).catch((e) => {
-            if (!cancelled) addToast('⚠️', '今日・明日プランの日付更新に失敗しました', e?.message ?? '')
-          })
-        }
-        return rolled.next
-      })
-    }
-    tick()
-    const id = setInterval(tick, 60_000)
-    const onVis = () => {
-      if (document.visibilityState === 'visible') tick()
-    }
-    document.addEventListener('visibilitychange', onVis)
-    return () => {
-      cancelled = true
-      clearInterval(id)
-      document.removeEventListener('visibilitychange', onVis)
-    }
-  }, [authUser, loading, addToast])
+  usePlannerAnchorTick(authUser, loading, addToast, setDailyPlanner)
 
   return {
     tasks,

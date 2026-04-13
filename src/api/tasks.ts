@@ -37,6 +37,30 @@ export async function fetchTasks(opts: FetchTasksOpts = {}): Promise<Task[]> {
   return rows.map((row) => taskFromRow((row as unknown) as TaskRow)).filter((t): t is Task => t != null)
 }
 
+const FETCH_TASKS_BY_IDS_CHUNK = 100
+
+/** プラン等で参照する ID が一覧取得の件数上限に含まれない場合の追加取得用 */
+export async function fetchTasksByIds(ids: string[]): Promise<Task[]> {
+  const unique = [...new Set(ids.filter((id): id is string => typeof id === 'string' && id.trim().length > 0))]
+  if (unique.length === 0) return []
+  const db = getSupabase()
+  const ownerId = await getOwnerId()
+  const acc: Task[] = []
+  for (let i = 0; i < unique.length; i += FETCH_TASKS_BY_IDS_CHUNK) {
+    const chunk = unique.slice(i, i + FETCH_TASKS_BY_IDS_CHUNK)
+    let q = db.from('tf_tasks').select('*').in('id', chunk)
+    if (ownerId) q = q.eq('owner_id', ownerId)
+    const { data, error } = await q
+    if (error) throw error
+    const rows = (data ?? []) as Array<Record<string, unknown>>
+    for (const row of rows) {
+      const t = taskFromRow((row as unknown) as TaskRow)
+      if (t) acc.push(t)
+    }
+  }
+  return acc
+}
+
 export type TaskInsertInput = Pick<Task, 'id' | 'title'> & Partial<Omit<Task, 'id' | 'title'>>
 
 export async function insertTask(task: TaskInsertInput): Promise<Task> {
